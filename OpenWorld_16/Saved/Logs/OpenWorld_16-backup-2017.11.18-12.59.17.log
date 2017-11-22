@@ -1,0 +1,936 @@
+﻿Log file open, 11/16/17 19:16:56
+LogInit:Display: Running engine for game: OpenWorld_16
+LogPlatformFile: Not using cached read wrapper
+LogInit:Display: RandInit(-705744151) SRandInit(-705744151).
+LogTaskGraph: Started task graph with 5 named threads and 6 total threads with 1 sets of task threads.
+LogStats: Stats thread started at 1.852611
+LogInit: Using libcurl 7.47.1
+LogInit:  - built for x86_64-pc-win32
+LogInit:  - supports SSL with OpenSSL/1.0.2g
+LogInit:  - supports HTTP deflate (compression) using libz 1.2.8
+LogInit:  - other features:
+LogInit:      CURL_VERSION_SSL
+LogInit:      CURL_VERSION_LIBZ
+LogInit:      CURL_VERSION_IPV6
+LogInit:      CURL_VERSION_ASYNCHDNS
+LogInit:      CURL_VERSION_LARGEFILE
+LogInit:      CURL_VERSION_IDN
+LogInit:  CurlRequestOptions (configurable via config and command line):
+LogInit:  - bVerifyPeer = false  - Libcurl will NOT verify peer certificate
+LogInit:  - bUseHttpProxy = false  - Libcurl will NOT use HTTP proxy
+LogInit:  - bDontReuseConnections = false  - Libcurl will reuse connections
+LogInit:  - CertBundlePath = nullptr  - Libcurl will use whatever was configured at build time.
+LogInit: Build: ++UE4+Release-4.16-CL-3561208
+LogInit: Engine Version: 4.16.3-3561208+++UE4+Release-4.16
+LogInit: Compatible Engine Version: 4.16.0-3452394+++UE4+Release-4.16
+LogInit: Net CL: 3452394
+LogDevObjectVersion: Number of dev versions registered: 16
+LogDevObjectVersion:   Dev-Blueprints (B0D832E4-1F89-4F0D-ACCF-7EB736FD4AA2): 9
+LogDevObjectVersion:   Dev-Build (E1C64328-A22C-4D53-A36C-8E866417BD8C): 0
+LogDevObjectVersion:   Dev-Core (375EC13C-06E4-48FB-B500-84F0262A717E): 2
+LogDevObjectVersion:   Dev-Editor (E4B068ED-F494-42E9-A231-DA0B2E46BB41): 17
+LogDevObjectVersion:   Dev-Framework (CFFC743F-43B0-4480-9391-14DF171D2073): 23
+LogDevObjectVersion:   Dev-Mobile (B02B49B5-BB20-44E9-A304-32B752E40360): 0
+LogDevObjectVersion:   Dev-Networking (A4E4105C-59A1-49B5-A7C5-40C4547EDFEE): 0
+LogDevObjectVersion:   Dev-Online (39C831C9-5AE6-47DC-9A44-9C173E1C8E7C): 0
+LogDevObjectVersion:   Dev-Physics (78F01B33-EBEA-4F98-B9B4-84EACCB95AA2): 0
+LogDevObjectVersion:   Dev-Platform (6631380F-2D4D-43E0-8009-CF276956A95A): 0
+LogDevObjectVersion:   Dev-Rendering (12F88B9F-8875-4AFC-A67C-D90C383ABD29): 15
+LogDevObjectVersion:   Dev-Sequencer (7B5AE74C-D270-4C10-A958-57980B212A5A): 4
+LogDevObjectVersion:   Dev-VR (D7296918-1DD6-4BDD-9DE2-64A83CC13884): 0
+LogDevObjectVersion:   Dev-LoadTimes (C2A15278-BFE7-4AFE-6C17-90FF531DF755): 1
+LogDevObjectVersion:   Private-Geometry (6EACA3D4-40EC-4CC1-B786-8BED09428FC5): 1
+LogDevObjectVersion:   Dev-AnimPhys (29E575DD-E0A3-4627-9D10-D276232CDCEA): 3
+LogInit: Compiled (64-bit): Jul 28 2017 11:49:47
+LogInit: Compiled with Visual C++: 19.00.24215.01
+LogInit: Build Configuration: Development
+LogInit: Branch Name: ++UE4+Release-4.16
+LogInit: Command line:  -skipcompile
+LogInit: Base directory: C:/Program Files (x86)/Epic Games/UE_4.16/Engine/Binaries/Win64/
+LogInit: Installed Engine Build: 1
+LogInit: Presizing for max 8388607 objects, including 0 objects not considered by GC, pre-allocating 0 bytes for permanent pool.
+LogInit: Object subsystem initialized
+[2017.11.16-18.16.58:744][  0]LogInit: Selected Device Profile: [Windows]
+[2017.11.16-18.16.58:744][  0]LogInit: Applying CVar settings loaded from the selected device profile: [Windows]
+[2017.11.16-18.16.58:822][  0]LogInit: Computer: HP-PC
+[2017.11.16-18.16.58:822][  0]LogInit: User: Admin
+[2017.11.16-18.16.58:822][  0]LogInit: CPU Page size=4096, Cores=2
+[2017.11.16-18.16.58:822][  0]LogInit: High frequency timer resolution =3.117587 MHz
+[2017.11.16-18.16.58:822][  0]LogMemory: Memory total: Physical=7.9GB (8GB approx)
+[2017.11.16-18.16.58:822][  0]LogMemory: Platform Memory Stats for Windows
+[2017.11.16-18.16.58:822][  0]LogMemory: Process Physical Memory: 273.72 MB used, 273.72 MB peak
+[2017.11.16-18.16.58:822][  0]LogMemory: Process Virtual Memory: 260.68 MB used, 260.68 MB peak
+[2017.11.16-18.16.58:822][  0]LogMemory: Physical Memory: 4403.87 MB used,  3651.42 MB free, 8055.29 MB total
+[2017.11.16-18.16.58:822][  0]LogMemory: Virtual Memory: 618.77 MB used,  3651.42 MB free, 8388608.00 MB total
+[2017.11.16-18.16.59:877][  0]LogInit: Overriding language with editor language configuration option (en).
+[2017.11.16-18.16.59:882][  0]LogInit: Overriding locale with editor locale configuration option (en).
+[2017.11.16-18.17.04:831][  0]LogD3D11RHI: D3D11 adapters:
+[2017.11.16-18.17.05:014][  0]LogD3D11RHI:    0. 'NVIDIA GeForce GT 730' (Feature Level 11_0)
+[2017.11.16-18.17.05:014][  0]LogD3D11RHI:       973/0/3072 MB DedicatedVideo/DedicatedSystem/SharedSystem, Outputs:1, VendorId:0x10de
+[2017.11.16-18.17.05:014][  0]LogD3D11RHI: Chosen D3D11 Adapter: 0
+[2017.11.16-18.17.05:023][  0]LogD3D11RHI: Creating new Direct3DDevice
+[2017.11.16-18.17.05:024][  0]LogD3D11RHI:     GPU DeviceId: 0x1287 (for the marketing name, search the web for "GPU Device Id")
+[2017.11.16-18.17.05:024][  0]LogWindows: EnumDisplayDevices:
+[2017.11.16-18.17.05:024][  0]LogWindows:    0. 'NVIDIA GeForce GT 730' (P:1 D:1)
+[2017.11.16-18.17.05:025][  0]LogWindows:    1. 'NVIDIA GeForce GT 730' (P:0 D:0)
+[2017.11.16-18.17.05:025][  0]LogWindows:    2. 'NVIDIA GeForce GT 730' (P:0 D:0)
+[2017.11.16-18.17.05:026][  0]LogWindows:    3. 'RDPDD Chained DD' (P:0 D:0)
+[2017.11.16-18.17.05:027][  0]LogWindows:    4. 'RDP Encoder Mirror Driver' (P:0 D:0)
+[2017.11.16-18.17.05:027][  0]LogWindows:    5. 'RDP Reflector Display Driver' (P:0 D:0)
+[2017.11.16-18.17.05:028][  0]LogWindows: DebugString: GetVideoDriverDetailsInvalid PrimaryIsNotTheChoosenAdapter GetVideoDriverDetailsInvalid PrimaryIsNotTheChoosenAdapter GetVideoDriverDetailsInvalid PrimaryIsNotTheChoosenAdapter FoundDriverCount:3 
+[2017.11.16-18.17.05:028][  0]LogD3D11RHI:     Adapter Name: NVIDIA GeForce GT 730
+[2017.11.16-18.17.05:028][  0]LogD3D11RHI:   Driver Version: 385.69 (internal:22.21.13.8569, unified:385.69)
+[2017.11.16-18.17.05:028][  0]LogD3D11RHI:      Driver Date: 9-16-2017
+[2017.11.16-18.17.05:028][  0]LogRHI: Texture pool is 681 MB (70% of 973 MB)
+[2017.11.16-18.17.05:059][  0]LogD3D11RHI: Async texture creation enabled
+[2017.11.16-18.17.05:085][  0]LogD3D11RHI: GPU Timing Frequency: 1000.000000 (Debug: 2 1)
+[2017.11.16-18.17.05:090][  0]LogShaderCompilers: Guid format shader working directory is -22 characters bigger than the processId version (../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Intermediate/Shaders/WorkingDirectory/6264/).
+[2017.11.16-18.17.05:091][  0]LogShaderCompilers: Cleaned the shader compiler working directory 'C:/Users/Admin/AppData/Local/Temp/UnrealShaderWorkingDir/F6789FEB4BEF6386C27FFA825F6B8503/'.
+[2017.11.16-18.17.05:091][  0]LogShaderCompilers:Display: Using Local Shader Compiler.
+[2017.11.16-18.17.09:538][  0]LogTemp:Display: Loaded TP AllDesktopTargetPlatform
+[2017.11.16-18.17.09:698][  0]LogTemp:Display: Loaded TP MacClientTargetPlatform
+[2017.11.16-18.17.09:929][  0]LogTemp:Display: Loaded TP MacNoEditorTargetPlatform
+[2017.11.16-18.17.10:124][  0]LogTemp:Display: Loaded TP MacServerTargetPlatform
+[2017.11.16-18.17.10:290][  0]LogTemp:Display: Loaded TP MacTargetPlatform
+[2017.11.16-18.17.10:446][  0]LogTemp:Display: Loaded TP WindowsClientTargetPlatform
+[2017.11.16-18.17.10:633][  0]LogTemp:Display: Loaded TP WindowsNoEditorTargetPlatform
+[2017.11.16-18.17.10:865][  0]LogTemp:Display: Loaded TP WindowsServerTargetPlatform
+[2017.11.16-18.17.10:986][  0]LogTemp:Display: Loaded TP WindowsTargetPlatform
+[2017.11.16-18.17.11:136][  0]LogTemp:Display: Loaded TP AndroidTargetPlatform
+[2017.11.16-18.17.11:331][  0]LogTemp:Display: Loaded TP Android_ASTCTargetPlatform
+[2017.11.16-18.17.11:533][  0]LogTemp:Display: Loaded TP Android_ATCTargetPlatform
+[2017.11.16-18.17.11:749][  0]LogTemp:Display: Loaded TP Android_DXTTargetPlatform
+[2017.11.16-18.17.11:935][  0]LogTemp:Display: Loaded TP Android_ETC1TargetPlatform
+[2017.11.16-18.17.12:248][  0]LogTemp:Display: Loaded TP Android_ETC2TargetPlatform
+[2017.11.16-18.17.12:617][  0]LogTemp:Display: Loaded TP Android_MultiTargetPlatform
+[2017.11.16-18.17.12:617][  0]LogTemp:Display: Loaded TP Android_PVRTCTargetPlatform
+[2017.11.16-18.17.12:755][  0]LogTemp:Display: Loaded TP HTML5TargetPlatform
+[2017.11.16-18.17.13:347][  0]LogTemp:Display: Loaded TP IOSTargetPlatform
+[2017.11.16-18.17.13:482][  0]LogTemp:Display: Loaded TP TVOSTargetPlatform
+[2017.11.16-18.17.13:624][  0]LogTemp:Display: Loaded TP LinuxClientTargetPlatform
+[2017.11.16-18.17.13:940][  0]LogTemp:Display: Loaded TP LinuxNoEditorTargetPlatform
+[2017.11.16-18.17.14:098][  0]LogTemp:Display: Loaded TP LinuxServerTargetPlatform
+[2017.11.16-18.17.14:331][  0]LogTemp:Display: Loaded TP LinuxTargetPlatform
+[2017.11.16-18.17.14:331][  0]LogTargetPlatformManager:Display: Building Assets For Windows
+[2017.11.16-18.17.17:079][  0]LogDerivedDataCache:Display: Max Cache Size: 512 MB
+[2017.11.16-18.17.17:715][  0]LogDerivedDataCache: Loaded boot cache 0.64s 90MB C:/Users/Admin/AppData/Local/UnrealEngine/4.16/DerivedDataCache/Boot.ddc.
+[2017.11.16-18.17.17:724][  0]LogDerivedDataCache:Display: Loaded Boot cache: C:/Users/Admin/AppData/Local/UnrealEngine/4.16/DerivedDataCache/Boot.ddc
+[2017.11.16-18.17.17:724][  0]LogDerivedDataCache: FDerivedDataBackendGraph:  Pak pak cache file ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/DerivedDataCache/DDC.ddp not found, will not use a pak cache.
+[2017.11.16-18.17.17:724][  0]LogDerivedDataCache: Unable to find inner node Pak for hierarchical cache Hierarchy.
+[2017.11.16-18.17.17:724][  0]LogDerivedDataCache: FDerivedDataBackendGraph:  CompressedPak pak cache file ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/DerivedDataCache/Compressed.ddp not found, will not use a pak cache.
+[2017.11.16-18.17.17:725][  0]LogDerivedDataCache: Unable to find inner node CompressedPak for hierarchical cache Hierarchy.
+[2017.11.16-18.17.17:771][  0]LogDerivedDataCache:Display: Pak cache opened for reading ../../../Engine/DerivedDataCache/Compressed.ddp.
+[2017.11.16-18.17.17:786][  0]LogDerivedDataCache: Using Local data cache path C:/Users/Admin/AppData/Local/UnrealEngine/Common/DerivedDataCache: Writable
+[2017.11.16-18.17.17:806][  0]LogMaterial: Verifying Global Shaders for PCD3D_SM5
+[2017.11.16-18.17.17:807][  0]LogSlate: Using Freetype 2.6.0
+[2017.11.16-18.17.17:811][  0]LogSlate: SlateFontCache - WITH_FREETYPE: 1, WITH_HARFBUZZ: 1
+[2017.11.16-18.17.17:811][  0]LogSlate: SlateFontCache - WITH_FREETYPE: 1, WITH_HARFBUZZ: 1
+[2017.11.16-18.17.21:038][  0]LogInit: Selected Device Profile: [Windows]
+[2017.11.16-18.17.21:048][  0]LogContentStreaming: Texture pool size is 0.00 MB
+[2017.11.16-18.17.22:344][  0]LogMeshUtilities: Using QuadricMeshReduction for automatic static mesh reduction
+[2017.11.16-18.17.22:692][  0]LogSimplygon: Simplygon DLL not present - disabling.
+[2017.11.16-18.17.22:843][  0]LogMeshUtilities: Using SimplygonSwarm for distributed automatic mesh merging
+[2017.11.16-18.17.22:844][  0]LogMeshUtilities: No automatic skeletal mesh reduction module available
+[2017.11.16-18.17.22:844][  0]LogMeshUtilities: No automatic mesh merging module available
+[2017.11.16-18.17.26:376][  0]LogNetVersion: OpenWorld_16 , NetCL: 3452394, EngineNetVer: 2, GameNetVer: 0 (Checksum: 878940126)
+[2017.11.16-18.17.26:519][  0]LogAssetRegistry: FAssetRegistry took 0.0340 seconds to start up
+[2017.11.16-18.17.26:623][  0]LogPackageLocalizationCache: Processed 4 localized package path(s) for 1 prioritized culture(s) in 0.038960 seconds
+[2017.11.16-18.17.26:637][  0]LogUObjectArray: 34194 objects as part of root set at end of initial load.
+[2017.11.16-18.17.26:639][  0]LogUObjectAllocator: 7260416 out of 0 bytes used by permanent object pool.
+[2017.11.16-18.17.26:640][  0]LogUObjectArray: CloseDisregardForGC: 0/0 objects in disregard for GC pool
+[2017.11.16-18.17.26:898][  0]LogInit: WinSock: version 1.1 (2.2), MaxSocks=32767, MaxUdp=65467
+[2017.11.16-18.17.54:625][  0]LogSubstanceCoreModule: Substance [CPU] Engine Loaded, Max Texture Size = 2048
+[2017.11.16-18.17.54:804][  0]LogTcpMessaging: Initializing TcpMessaging bridge
+[2017.11.16-18.17.54:972][  0]LogUdpMessaging: Initializing bridge on interface 0.0.0.0:0 to multicast group 230.0.0.1:6666.
+[2017.11.16-18.18.00:263][  0]LogMaterial: Uniform references updated for custom material expression Custom.
+[2017.11.16-18.18.02:313][  0]SourceControl: Info Source control is disabled
+[2017.11.16-18.18.02:835][  0]SourceControl: Info Source control is disabled
+[2017.11.16-18.18.03:147][  0]SourceControl: Info Source control is disabled
+[2017.11.16-18.18.03:507][  0]SourceControl: Info Source control is disabled
+[2017.11.16-18.18.08:724][  0]LogAndroidPermission: UAndroidPermissionCallbackProxy::GetInstance
+[2017.11.16-18.18.13:284][  0]LogEngine: Initializing Engine...
+[2017.11.16-18.18.13:285][  0]LogHMD: Failed to initialize OpenVR with code 110
+[2017.11.16-18.18.13:735][  0]LogStats: UGameplayTagsManager::ConstructGameplayTagTree: Construct from data asset -  0.000 s
+[2017.11.16-18.18.13:735][  0]LogStats: UGameplayTagsManager::ConstructGameplayTagTree: GameplayTagTreeChangedEvent.Broadcast -  0.000 s
+[2017.11.16-18.18.14:437][  0]LogAIModule: Creating AISystem for world Untitled
+[2017.11.16-18.18.14:483][  0]LogInit: XAudio2 using 'Altavoces (Realtek High Definition Audio)' : 2 channels at 48 kHz using 32 bits per sample (channel mask 0x3)
+[2017.11.16-18.18.14:538][  0]LogInit: FAudioDevice initialized.
+[2017.11.16-18.18.14:616][  0]LogDerivedDataCache: Saved boot cache 0.08s 90MB C:/Users/Admin/AppData/Local/UnrealEngine/4.16/DerivedDataCache/Boot.ddc.
+[2017.11.16-18.18.14:650][  0]LogInit: Texture streaming: Enabled
+[2017.11.16-18.18.14:976][  0]LogEngineSessionManager: EngineSessionManager initialized
+[2017.11.16-18.18.14:976][  0]LogEngineSessionManager: EngineSessionManager sent abnormal shutdown report. Type=Debugger, SessionId={AE13AC8C-43DE-E71E-F048-BA803F0D8B7B}
+[2017.11.16-18.18.16:330][  0]LogInit: Transaction tracking system initialized
+[2017.11.16-18.18.18:140][  0]BlueprintLog: New page: Editor Load
+[2017.11.16-18.18.23:879][  0]LocalizationService: Info Localization service is disabled
+[2017.11.16-18.18.28:960][  0]LogConsoleResponse:Display: 
+[2017.11.16-18.18.30:108][  0]LogCook:Display: Max memory allowance for cook 16384mb min free memory 0mb
+[2017.11.16-18.18.30:109][  0]LogCook:Display: Mobile HDR setting 1
+[2017.11.16-18.18.31:114][  0]LogFileCache: Scanning file cache for directory 'C:/Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/' took 0.06s
+[2017.11.16-18.18.36:413][  0]SourceControl: Info Source control is disabled
+[2017.11.16-18.18.36:414][  0]Cmd: MAP LOAD FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/FirstPersonBP/Maps/FirstPersonExampleMap.umap" TEMPLATE=0 SHOWPROGRESS=1 FEATURELEVEL=3
+[2017.11.16-18.18.36:418][  0]LightingResults: New page: Lighting Build
+[2017.11.16-18.18.36:606][  0]MapCheck: New page: Map Check
+[2017.11.16-18.18.36:606][  0]LightingResults: New page: Lighting Build
+[2017.11.16-18.18.39:001][  0]LogAIModule: Creating AISystem for world FirstPersonExampleMap
+[2017.11.16-18.18.39:231][  0]LogEditorServer: Finished looking for orphan Actors (0.000 secs)
+[2017.11.16-18.18.39:297][  0]Cmd: MAP CHECKDEP NOCLEARLOG
+[2017.11.16-18.18.39:663][  0]MapCheck: Info Map check complete: 0 Error(s), 0 Warning(s), took 365.458ms to complete.
+[2017.11.16-18.18.39:673][  0]LogFileHelpers: Loading map 'FirstPersonExampleMap' took 3.346
+[2017.11.16-18.18.40:334][  0]LogCollectionManager: Loaded 0 collections in 0.003375 seconds
+[2017.11.16-18.18.40:625][  0]LogFileCache: Scanning file cache for directory 'C:/Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/Collections/' took 0.05s
+[2017.11.16-18.18.40:626][  0]LogFileCache: Scanning file cache for directory 'C:/Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Developers/Admin/Collections/' took 0.00s
+[2017.11.16-18.18.40:626][  0]LogFileCache: Scanning file cache for directory 'C:/Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Collections/' took 0.00s
+[2017.11.16-18.18.40:627][  0]LogCollectionManager: Rebuilt the GUID cache for 0 collections in 0.000006 seconds
+[2017.11.16-18.18.40:656][  0]LogContentBrowser: Native class hierarchy populated in 0.0291 seconds. Added 2361 classes and 508 folders.
+[2017.11.16-18.18.40:994][  0]LogContentBrowser: Native class hierarchy updated for 'WidgetCarousel' in 0.0043 seconds. Added 0 classes and 0 folders.
+[2017.11.16-18.18.41:874][  0]LogContentBrowser: Native class hierarchy updated for 'AddContentDialog' in 0.0028 seconds. Added 0 classes and 0 folders.
+[2017.11.16-18.18.42:013][  0]LogContentBrowser: Native class hierarchy updated for 'SceneOutliner' in 0.0021 seconds. Added 1 classes and 2 folders.
+[2017.11.16-18.18.42:239][  0]LogCrashTracker: Crashtracker disabled due to settings.
+[2017.11.16-18.18.42:278][  0]LogSlate: Took 0.008545 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Regular.ttf' (155K)
+[2017.11.16-18.18.42:296][  0]LogSlate: Took 0.012154 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Bold.ttf' (160K)
+[2017.11.16-18.18.42:322][  0]LogSlate: Took 0.006119 seconds to synchronously load lazily loaded font '../../../Engine/Content/Editor/Slate/Fonts/FontAwesome.ttf' (139K)
+[2017.11.16-18.18.42:637][  0]LogRenderer: Reallocating scene render targets to support 844x408 NumSamples 1 (Frame:1).
+[2017.11.16-18.18.43:030][  0]LogSlate: Took 0.014338 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Light.ttf' (159K)
+[2017.11.16-18.18.43:261][  0]LogUObjectGlobals:Warning: Failed to find object 'Class None.'
+[2017.11.16-18.18.43:613][  0]LogContentBrowser: Native class hierarchy updated for 'HierarchicalLODOutliner' in 0.0037 seconds. Added 1 classes and 2 folders.
+[2017.11.16-18.18.43:615][  0]LogLoad: (Engine Initialization) Total time: 117.01 seconds
+[2017.11.16-18.18.43:616][  0]LogLoad: (Engine Initialization) Total Blueprint compile time: 0.67 seconds
+[2017.11.16-18.18.43:616][  0]LogExternalProfiler: Found external profiler: VSPerf
+[2017.11.16-18.18.43:617][  0]LogExternalProfiler: Using external profiler: VSPerf
+[2017.11.16-18.18.43:977][  0]LogOcInput: OculusInput pre-init called
+[2017.11.16-18.18.43:978][  0]LogHMD: Starting GearVRController plugin
+[2017.11.16-18.18.44:117][  0]LogContentStreaming: Texture pool size now 600 MB
+[2017.11.16-18.18.45:367][  4]LogAssetRegistry: Asset discovery search completed in 79.0031 seconds
+[2017.11.16-18.18.45:373][  4]LogCollectionManager: Rebuilt the object cache for 0 collections in 0.000001 seconds (found 0 objects)
+[2017.11.16-18.18.45:373][  4]LogCollectionManager: Fixed up redirectors for 0 collections in 0.000310 seconds (updated 0 objects)
+[2017.11.16-18.21.46:631][615]LogTemp: Repeting last play command: Selected Viewport
+[2017.11.16-18.21.46:741][615]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.21.46:745][615]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2017.11.16-18.21.46:756][615]PIE: New page: PIE session: FirstPersonExampleMap (Nov 16, 2017, 8:21:46 PM)
+[2017.11.16-18.21.46:757][615]LogPlayLevel: Creating play world package: /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap
+[2017.11.16-18.21.46:810][615]LogPlayLevel: PIE: StaticDuplicateObject took: (0.052909s)
+[2017.11.16-18.21.46:812][615]LogAIModule: Creating AISystem for world FirstPersonExampleMap
+[2017.11.16-18.21.46:812][615]LogPlayLevel: PIE: World Init took: (0.001977s)
+[2017.11.16-18.21.46:814][615]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap to /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap.FirstPersonExampleMap (0.057173s)
+[2017.11.16-18.21.46:848][615]LogInit: XAudio2 using 'Altavoces (Realtek High Definition Audio)' : 2 channels at 48 kHz using 32 bits per sample (channel mask 0x3)
+[2017.11.16-18.21.46:857][615]LogInit: FAudioDevice initialized.
+[2017.11.16-18.21.46:914][615]LogLoad: Game class is 'WorldGameMode_BP_C'
+[2017.11.16-18.21.46:932][615]LogWorld: Bringing World /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap.FirstPersonExampleMap up for play (max tick rate 30) at 2017.11.16-19.21.46
+[2017.11.16-18.21.46:935][615]LogWorld: Bringing up level for play took: 0.003650
+[2017.11.16-18.21.47:091][615]LogContentBrowser: Native class hierarchy updated for 'MovieSceneCapture' in 0.0032 seconds. Added 11 classes and 0 folders.
+[2017.11.16-18.21.47:101][615]LogBlueprintUserMessages: [WorldGameMode_BP_C_0] Hello
+[2017.11.16-18.21.47:203][615]LogTemp:Warning: First map load took: 102.619109 ms
+[2017.11.16-18.21.47:205][615]PIE: Info Play in editor start time for /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap -0.036
+[2017.11.16-18.21.47:205][615]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.21.47:265][616]Mat_Loader:Warning: Added transition meterial with index: 2-1-0
+[2017.11.16-18.21.49:436][657]LogBlueprintUserMessages: [WorldGameMode_BP_C_0] Hello
+[2017.11.16-18.21.52:997][761]Cmd: Stat UnitGraph
+[2017.11.16-18.21.53:005][761]Cmd: STAT Unit
+[2017.11.16-18.21.53:009][761]Cmd: STAT UnitTime
+[2017.11.16-18.22.39:299][967]LogEditorViewport: Clicking Background
+[2017.11.16-18.23.39:939][588]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.23.39:993][588]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.23.45:454][704]LogSlate: Took 0.000540 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Light.ttf' (159K)
+[2017.11.16-18.23.46:093][704]LogSlate: Took 0.000441 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Regular.ttf' (155K)
+[2017.11.16-18.23.46:361][704]LogContentBrowser: Native class hierarchy updated for 'BlueprintGraph' in 0.0028 seconds. Added 112 classes and 0 folders.
+[2017.11.16-18.23.47:912][704]LogSlate: Took 0.002529 seconds to synchronously load lazily loaded font '../../../Engine/Content/Editor/Slate/Fonts/Roboto-BoldCondensed.ttf' (158K)
+[2017.11.16-18.23.48:166][705]LogSlate: Took 0.008880 seconds to synchronously load lazily loaded font '../../../Engine/Content/Editor/Slate/Fonts/Roboto-Italic.ttf' (157K)
+[2017.11.16-18.24.00:424][ 44]LogMaterial: Missing cached shader map for material Material_0, compiling. 
+[2017.11.16-18.24.00:507][ 45]LogMaterial: Missing cached shader map for material Material_1, compiling. 
+[2017.11.16-18.24.02:886][ 97]LogRenderer: Reallocating scene render targets to support 988x612 NumSamples 1 (Frame:1).
+[2017.11.16-18.24.04:147][125]LogSlate: Took 0.000410 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Light.ttf' (159K)
+[2017.11.16-18.25.23:029][310]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/Cobblestone" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/Cobblestone.uasset" SILENT=true
+[2017.11.16-18.25.23:100][310]LogMaterial: Missing cached shader map for material FDebugViewModeMaterialProxy Cobblestone, compiling. 
+[2017.11.16-18.25.23:818][310]TextureStreamingBuild:Display: Compiling optional shaders took 0.728 seconds.
+[2017.11.16-18.25.23:949][310]LogSavePackage: Save=22.96ms
+[2017.11.16-18.25.23:949][310]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/Cobblestone758D92D34EA3916AA5A45C9899B2C5D4.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/Cobblestone.uasset'
+[2017.11.16-18.25.23:954][310]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/Cobblestone.uasset
+[2017.11.16-18.25.26:415][379]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/Cobblestone" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/Cobblestone.uasset" SILENT=true
+[2017.11.16-18.25.26:469][379]LogMaterial: Missing cached shader map for material FDebugViewModeMaterialProxy Cobblestone, compiling. 
+[2017.11.16-18.25.26:880][379]TextureStreamingBuild:Display: Compiling optional shaders took 0.415 seconds.
+[2017.11.16-18.25.26:966][379]LogSavePackage: Save=2.93ms
+[2017.11.16-18.25.26:966][379]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/Cobblestone6A591E6E4CB96F37277B8293F22FC746.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/Cobblestone.uasset'
+[2017.11.16-18.25.26:969][379]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/Cobblestone.uasset
+[2017.11.16-18.25.49:572][990]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/GameBP/WorldGameMode_BP" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/GameBP/WorldGameMode_BP.uasset" SILENT=true
+[2017.11.16-18.25.49:660][990]LogSavePackage: Save=34.74ms
+[2017.11.16-18.25.49:660][990]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/WorldGameMode_BPC999F50F4C0E4DD93E0DC0930DD8E5B9.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/GameBP/WorldGameMode_BP.uasset'
+[2017.11.16-18.25.49:665][990]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/GameBP/WorldGameMode_BP.uasset
+[2017.11.16-18.25.50:332][  9]BlueprintLog: New page: Compile WorldGameMode_BP
+[2017.11.16-18.25.52:638][ 60]LogTemp: Repeting last play command: Selected Viewport
+[2017.11.16-18.25.52:666][ 60]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.25.52:667][ 60]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2017.11.16-18.25.52:667][ 60]PIE: New page: PIE session: FirstPersonExampleMap (Nov 16, 2017, 8:25:52 PM)
+[2017.11.16-18.25.52:668][ 60]LogPlayLevel: Creating play world package: /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap
+[2017.11.16-18.25.52:693][ 60]LogPlayLevel: PIE: StaticDuplicateObject took: (0.025405s)
+[2017.11.16-18.25.52:702][ 60]LogAIModule: Creating AISystem for world FirstPersonExampleMap
+[2017.11.16-18.25.52:704][ 60]LogPlayLevel: PIE: World Init took: (0.002347s)
+[2017.11.16-18.25.52:704][ 60]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap to /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap.FirstPersonExampleMap (0.036650s)
+[2017.11.16-18.25.52:753][ 60]LogInit: XAudio2 using 'Altavoces (Realtek High Definition Audio)' : 2 channels at 48 kHz using 32 bits per sample (channel mask 0x3)
+[2017.11.16-18.25.52:768][ 60]LogInit: FAudioDevice initialized.
+[2017.11.16-18.25.52:817][ 60]LogLoad: Game class is 'WorldGameMode_BP_C'
+[2017.11.16-18.25.52:820][ 60]LogWorld: Bringing World /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap.FirstPersonExampleMap up for play (max tick rate 30) at 2017.11.16-19.25.52
+[2017.11.16-18.25.52:820][ 60]LogWorld: Bringing up level for play took: 0.001883
+[2017.11.16-18.25.52:823][ 60]LogBlueprintUserMessages: [WorldGameMode_BP_C_0] Hello
+[2017.11.16-18.25.52:902][ 60]LogTemp:Warning: First map load took: 79.754310 ms
+[2017.11.16-18.25.52:903][ 60]PIE: Info Play in editor start time for /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap -0.144
+[2017.11.16-18.25.52:903][ 60]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.25.52:938][ 61]Mat_Loader:Warning: Added transition meterial with index: 2-1-0
+[2017.11.16-18.26.45:718][425]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.26.45:837][425]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.26.57:418][707]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/Moss" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/Moss.uasset" SILENT=true
+[2017.11.16-18.26.57:489][707]LogMaterial: Missing cached shader map for material FDebugViewModeMaterialProxy Moss, compiling. 
+[2017.11.16-18.26.58:506][707]TextureStreamingBuild:Display: Compiling optional shaders took 1.022 seconds.
+[2017.11.16-18.26.58:584][707]LogSavePackage: Save=19.81ms
+[2017.11.16-18.26.58:584][707]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/MossD25B857B41B68DD3AF3EB29724AC94BF.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/Moss.uasset'
+[2017.11.16-18.26.58:589][707]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/Moss.uasset
+[2017.11.16-18.26.59:136][707]LogSavePackage: Save=3.66ms
+[2017.11.16-18.26.59:137][707]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/TriplanarTerrain_InstCA5851FF9437B6E046E250DB9E6CE0860.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/TriplanarTerrain_InstC.uasset'
+[2017.11.16-18.26.59:140][707]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/TriplanarTerrain_InstC.uasset
+[2017.11.16-18.26.59:148][707]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/GameBP/WorldGameMode_BP" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/GameBP/WorldGameMode_BP.uasset" SILENT=true
+[2017.11.16-18.26.59:223][707]LogSavePackage: Save=45.23ms
+[2017.11.16-18.26.59:224][707]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/WorldGameMode_BP37CBE79749220F15265AFC838205B397.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/GameBP/WorldGameMode_BP.uasset'
+[2017.11.16-18.26.59:230][707]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/GameBP/WorldGameMode_BP.uasset
+[2017.11.16-18.27.30:112][403]BlueprintLog: New page: Compile WorldGameMode_BP
+[2017.11.16-18.27.30:881][414]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/GameBP/WorldGameMode_BP" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/GameBP/WorldGameMode_BP.uasset" SILENT=true
+[2017.11.16-18.27.30:974][414]LogSavePackage: Save=48.66ms
+[2017.11.16-18.27.30:979][414]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/WorldGameMode_BPE8500E3F4540725701CD26A00C69C359.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/GameBP/WorldGameMode_BP.uasset'
+[2017.11.16-18.27.30:984][414]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/GameBP/WorldGameMode_BP.uasset
+[2017.11.16-18.27.34:563][505]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.27.34:724][505]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.27.34:763][505]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.27.34:892][505]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_1, compiling. 
+[2017.11.16-18.27.34:902][505]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_2, compiling. 
+[2017.11.16-18.27.34:911][505]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_4, compiling. 
+[2017.11.16-18.27.34:922][505]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_5, compiling. 
+[2017.11.16-18.27.34:958][505]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_6, compiling. 
+[2017.11.16-18.27.34:968][505]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_7, compiling. 
+[2017.11.16-18.27.40:392][618]MaterialEditorStats: Info Base pass shader: 185 instructions
+[2017.11.16-18.27.40:392][618]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.27.40:392][618]MaterialEditorStats: Info Texture samplers: 7/16
+[2017.11.16-18.28.53:794][601]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.28.53:805][601]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.28.53:815][601]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.28.53:825][601]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.28.53:834][601]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.28.53:880][601]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionFunctionOutput_0, compiling. 
+[2017.11.16-18.28.53:889][601]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionFunctionInput_2, compiling. 
+[2017.11.16-18.28.53:899][601]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionFunctionInput_5, compiling. 
+[2017.11.16-18.28.53:908][601]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionFunctionInput_6, compiling. 
+[2017.11.16-18.29.33:661][775]LogMaterialEditor: Saving and Compiling material MF_BlendTransition
+[2017.11.16-18.29.34:698][775]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.29.34:715][775]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.29.34:767][775]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.29.34:808][775]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.29.34:904][775]LogMaterial: Missing cached shader map for material Material_3, compiling. 
+[2017.11.16-18.29.34:988][775]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/MF_BlendTransition" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset" SILENT=true
+[2017.11.16-18.29.35:061][775]LogSavePackage: Save=22.11ms
+[2017.11.16-18.29.35:062][775]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/MF_BlendTransitionE9C335F24F8E2070C47B968E235853AA.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset'
+[2017.11.16-18.29.35:070][775]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset
+[2017.11.16-18.29.38:121][858]MaterialEditorStats: Info Base pass shader: 185 instructions
+[2017.11.16-18.29.38:121][858]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.29.38:122][858]MaterialEditorStats: Info Texture samplers: 7/16
+[2017.11.16-18.31.30:215][187]LogFileHelpers: Editor autosave (incl. sublevels) for '/Game/FirstPersonBP/Maps/FirstPersonExampleMap' took 0.044
+[2017.11.16-18.31.30:220][187]OBJ SavePackage: Generating thumbnails for [1] asset(s) in package [/Game/Materials/M_Triplanar_Transition_Inst] ([1] browsable assets)...
+[2017.11.16-18.31.30:261][187]OBJ SavePackage:     Rendered thumbnail for [MaterialInstanceConstant /Game/Materials/M_Triplanar_Transition_Inst.M_Triplanar_Transition_Inst]
+[2017.11.16-18.31.30:261][187]OBJ SavePackage: Finished generating thumbnails for package [/Game/Materials/M_Triplanar_Transition_Inst]
+[2017.11.16-18.31.30:314][187]LogMaterial: Missing cached shader map for material FDebugViewModeMaterialProxy M_Triplanar_Transition_Inst, compiling. 
+[2017.11.16-18.31.31:179][187]TextureStreamingBuild:Display: Compiling optional shaders took 0.875 seconds.
+[2017.11.16-18.31.31:281][187]LogSavePackage: Save=15.39ms
+[2017.11.16-18.31.31:281][187]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_Transition_Inst_Auto182CE26864C5ED3495AB6E087C576C0DA.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/Autosaves/Game/Materials/M_Triplanar_Transition_Inst_Auto1.uasset'
+[2017.11.16-18.31.31:286][187]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/Autosaves/Game/Materials/M_Triplanar_Transition_Inst_Auto1.uasset
+[2017.11.16-18.31.31:287][187]OBJ SavePackage: Generating thumbnails for [1] asset(s) in package [/Game/Materials/M_Triplanar_Transition] ([1] browsable assets)...
+[2017.11.16-18.31.31:325][187]OBJ SavePackage:     Rendered thumbnail for [Material /Game/Materials/M_Triplanar_Transition.M_Triplanar_Transition]
+[2017.11.16-18.31.31:325][187]OBJ SavePackage: Finished generating thumbnails for package [/Game/Materials/M_Triplanar_Transition]
+[2017.11.16-18.31.31:381][187]LogSavePackage: Save=27.72ms
+[2017.11.16-18.31.31:381][187]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_Transition_Auto10A0A29AA4AB08AAD8B7724A664A73508.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/Autosaves/Game/Materials/M_Triplanar_Transition_Auto1.uasset'
+[2017.11.16-18.31.31:387][187]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/Autosaves/Game/Materials/M_Triplanar_Transition_Auto1.uasset
+[2017.11.16-18.31.31:387][187]LogFileHelpers: Auto-saving content packages took 1.171
+[2017.11.16-18.33.34:839][824]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.34:849][824]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.33.34:865][824]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.34:877][824]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.33.34:973][825]LogMaterial: Missing cached shader map for material Material_4, compiling. 
+[2017.11.16-18.33.41:572][978]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.41:584][978]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.33.43:062][  7]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.43:073][  7]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.33.44:308][ 39]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.44:322][ 39]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.33.45:640][ 68]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.45:653][ 68]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.33.46:768][ 95]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.46:781][ 95]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.33.47:816][113]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.47:842][113]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.33.55:716][313]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.55:752][313]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.33.55:767][313]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.55:781][313]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.33.58:928][388]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.33.58:943][388]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.34.06:396][570]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.34.06:405][570]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.34.06:516][573]LogMaterialEditor: Applying material MF_BlendTransition
+[2017.11.16-18.34.08:314][573]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.34.08:358][573]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.34.08:431][573]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.34.08:532][573]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.34.08:637][573]LogMaterial: Missing cached shader map for material Material_5, compiling. 
+[2017.11.16-18.34.12:520][655]MaterialEditorStats: Info Base pass shader: 189 instructions
+[2017.11.16-18.34.12:521][655]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.34.12:521][655]MaterialEditorStats: Info Texture samplers: 7/16
+[2017.11.16-18.34.23:443][896]LogMaterialEditor: Saving and Compiling material MF_BlendTransition
+[2017.11.16-18.34.23:555][896]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/MF_BlendTransition" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset" SILENT=true
+[2017.11.16-18.34.23:614][896]LogSavePackage: Save=14.33ms
+[2017.11.16-18.34.23:615][896]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/MF_BlendTransition8A4641BA4AC80206054698B21C13C51F.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset'
+[2017.11.16-18.34.23:620][896]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset
+[2017.11.16-18.34.32:791][131]LogMaterialEditor: Saving and Compiling material M_Triplanar_Transition
+[2017.11.16-18.34.32:937][131]LogSavePackage: Save=31.10ms
+[2017.11.16-18.34.32:937][131]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_Transition6549F0174394752117EDB4AC611B2595.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition.uasset'
+[2017.11.16-18.34.32:944][131]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition.uasset
+[2017.11.16-18.34.46:458][483]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.34.46:470][483]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.34.50:537][573]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.34.50:548][573]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.34.52:748][619]LogMaterialEditor: Saving and Compiling material MF_BlendTransition
+[2017.11.16-18.34.54:100][619]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.34.54:126][619]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.34.54:188][619]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.34.54:260][619]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.34.54:382][619]LogMaterial: Missing cached shader map for material Material_6, compiling. 
+[2017.11.16-18.34.54:442][619]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/MF_BlendTransition" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset" SILENT=true
+[2017.11.16-18.34.54:593][619]LogSavePackage: Save=60.34ms
+[2017.11.16-18.34.54:596][619]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/MF_BlendTransition1B3F4DC94AFC59FFA4C646BD6DDB68EF.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset'
+[2017.11.16-18.34.54:603][619]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset
+[2017.11.16-18.34.59:056][708]MaterialEditorStats: Info Base pass shader: 189 instructions
+[2017.11.16-18.34.59:056][708]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.34.59:057][708]MaterialEditorStats: Info Texture samplers: 7/16
+[2017.11.16-18.35.06:246][871]LogTemp: Repeting last play command: Selected Viewport
+[2017.11.16-18.35.06:277][871]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.35.06:277][871]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2017.11.16-18.35.06:277][871]PIE: New page: PIE session: FirstPersonExampleMap (Nov 16, 2017, 8:35:06 PM)
+[2017.11.16-18.35.06:277][871]LogPlayLevel: Creating play world package: /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap
+[2017.11.16-18.35.06:303][871]LogPlayLevel: PIE: StaticDuplicateObject took: (0.025905s)
+[2017.11.16-18.35.06:305][871]LogAIModule: Creating AISystem for world FirstPersonExampleMap
+[2017.11.16-18.35.06:306][871]LogPlayLevel: PIE: World Init took: (0.002393s)
+[2017.11.16-18.35.06:307][871]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap to /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap.FirstPersonExampleMap (0.029730s)
+[2017.11.16-18.35.06:375][871]LogInit: XAudio2 using 'Altavoces (Realtek High Definition Audio)' : 2 channels at 48 kHz using 32 bits per sample (channel mask 0x3)
+[2017.11.16-18.35.06:385][871]LogInit: FAudioDevice initialized.
+[2017.11.16-18.35.06:475][871]LogLoad: Game class is 'WorldGameMode_BP_C'
+[2017.11.16-18.35.06:478][871]LogWorld: Bringing World /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap.FirstPersonExampleMap up for play (max tick rate 30) at 2017.11.16-19.35.06
+[2017.11.16-18.35.06:479][871]LogWorld: Bringing up level for play took: 0.002181
+[2017.11.16-18.35.06:482][871]LogBlueprintUserMessages: [WorldGameMode_BP_C_0] Hello
+[2017.11.16-18.35.06:635][871]LogTemp:Warning: First map load took: 153.073836 ms
+[2017.11.16-18.35.06:636][871]PIE: Info Play in editor start time for /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap -0.236
+[2017.11.16-18.35.06:637][871]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.35.06:672][872]Mat_Loader:Warning: Added transition meterial with index: 2-1-0
+[2017.11.16-18.35.37:001][631]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.35.37:132][631]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.35.40:761][717]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.35.40:772][717]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.35.42:629][759]LogMaterialEditor: Saving and Compiling material MF_BlendTransition
+[2017.11.16-18.35.44:295][759]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.35.44:312][759]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.35.44:377][759]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.35.44:444][759]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.35.44:543][759]LogMaterial: Missing cached shader map for material Material_7, compiling. 
+[2017.11.16-18.35.44:690][759]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/MF_BlendTransition" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset" SILENT=true
+[2017.11.16-18.35.44:766][759]LogSavePackage: Save=24.81ms
+[2017.11.16-18.35.44:767][759]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/MF_BlendTransition3EC0227A43A6D0C9CB051FB87B0BBD8C.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset'
+[2017.11.16-18.35.44:773][759]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset
+[2017.11.16-18.35.49:144][846]MaterialEditorStats: Info Base pass shader: 186 instructions
+[2017.11.16-18.35.49:145][846]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.35.49:145][846]MaterialEditorStats: Info Texture samplers: 7/16
+[2017.11.16-18.35.54:284][949]LogTemp: Repeting last play command: Selected Viewport
+[2017.11.16-18.35.54:316][949]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.35.54:327][949]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2017.11.16-18.35.54:328][949]PIE: New page: PIE session: FirstPersonExampleMap (Nov 16, 2017, 8:35:54 PM)
+[2017.11.16-18.35.54:328][949]LogPlayLevel: Creating play world package: /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap
+[2017.11.16-18.35.54:359][949]LogPlayLevel: PIE: StaticDuplicateObject took: (0.030609s)
+[2017.11.16-18.35.54:360][949]LogAIModule: Creating AISystem for world FirstPersonExampleMap
+[2017.11.16-18.35.54:361][949]LogPlayLevel: PIE: World Init took: (0.001811s)
+[2017.11.16-18.35.54:361][949]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap to /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap.FirstPersonExampleMap (0.033192s)
+[2017.11.16-18.35.54:519][949]LogInit: XAudio2 using 'Altavoces (Realtek High Definition Audio)' : 2 channels at 48 kHz using 32 bits per sample (channel mask 0x3)
+[2017.11.16-18.35.54:537][949]LogInit: FAudioDevice initialized.
+[2017.11.16-18.35.54:602][949]LogLoad: Game class is 'WorldGameMode_BP_C'
+[2017.11.16-18.35.54:605][949]LogWorld: Bringing World /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap.FirstPersonExampleMap up for play (max tick rate 30) at 2017.11.16-19.35.54
+[2017.11.16-18.35.54:606][949]LogWorld: Bringing up level for play took: 0.002408
+[2017.11.16-18.35.54:609][949]LogBlueprintUserMessages: [WorldGameMode_BP_C_0] Hello
+[2017.11.16-18.35.54:732][949]LogTemp:Warning: First map load took: 123.573456 ms
+[2017.11.16-18.35.54:734][949]PIE: Info Play in editor start time for /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap -0.138
+[2017.11.16-18.35.54:735][949]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.35.54:793][950]Mat_Loader:Warning: Added transition meterial with index: 2-1-0
+[2017.11.16-18.36.13:757][424]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.36.13:817][424]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.36.42:513][122]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.36.42:521][122]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.36.42:533][122]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.36.42:544][122]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.36.48:100][253]LogMaterialEditor: Saving and Compiling material MF_BlendTransition
+[2017.11.16-18.36.49:505][253]LogMaterial: Missing cached shader map for material PreviewMaterial_0, compiling. 
+[2017.11.16-18.36.49:529][253]LogMaterial: Missing cached shader map for material Material_2, compiling. 
+[2017.11.16-18.36.49:589][253]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.36.49:648][253]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.36.49:849][253]LogMaterial: Missing cached shader map for material Material_8, compiling. 
+[2017.11.16-18.36.49:909][253]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/MF_BlendTransition" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset" SILENT=true
+[2017.11.16-18.36.49:990][253]LogSavePackage: Save=29.64ms
+[2017.11.16-18.36.49:991][253]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/MF_BlendTransition3D512B6E483554B33011048621EA12E2.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset'
+[2017.11.16-18.36.49:996][253]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset
+[2017.11.16-18.36.53:442][325]MaterialEditorStats: Info Base pass shader: 189 instructions
+[2017.11.16-18.36.53:443][325]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.36.53:444][325]MaterialEditorStats: Info Texture samplers: 7/16
+[2017.11.16-18.36.58:998][441]LogMaterialEditor: Saving and Compiling material M_Triplanar_Transition
+[2017.11.16-18.36.59:749][441]LogSavePackage: Save=25.32ms
+[2017.11.16-18.36.59:750][441]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_Transition54FEF053402DA7D48D873CB7DA450358.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition.uasset'
+[2017.11.16-18.36.59:754][441]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition.uasset
+[2017.11.16-18.37.08:729][695]LogMaterial: Missing cached shader map for material FDebugViewModeMaterialProxy M_Triplanar_Transition_Inst, compiling. 
+[2017.11.16-18.37.10:335][695]TextureStreamingBuild:Display: Compiling optional shaders took 1.617 seconds.
+[2017.11.16-18.37.16:240][796]LogSavePackage: Save=3.13ms
+[2017.11.16-18.37.16:241][796]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_Transition_InstDC6DB6734DE4868DDE62379C4DA77D1A.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition_Inst.uasset'
+[2017.11.16-18.37.16:246][796]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition_Inst.uasset
+[2017.11.16-18.37.34:271][318]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.37.34:373][318]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.37.34:404][318]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.37.34:489][318]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_1, compiling. 
+[2017.11.16-18.37.34:498][318]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_2, compiling. 
+[2017.11.16-18.37.34:509][318]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_4, compiling. 
+[2017.11.16-18.37.34:518][318]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_5, compiling. 
+[2017.11.16-18.37.34:528][318]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_6, compiling. 
+[2017.11.16-18.37.34:538][318]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObjectParameter_7, compiling. 
+[2017.11.16-18.37.37:211][381]LogMaterial: Missing cached shader map for material Material_9, compiling. 
+[2017.11.16-18.37.37:226][381]LogMaterial: Missing cached shader map for material PreviewMaterial_1, compiling. 
+[2017.11.16-18.37.37:302][381]LogMaterial: Missing cached shader map for material Material_9, compiling. 
+[2017.11.16-18.37.37:317][381]LogMaterial: Missing cached shader map for material PreviewMaterial_1, compiling. 
+[2017.11.16-18.37.37:328][381]LogMaterial: Missing cached shader map for material Material_9, compiling. 
+[2017.11.16-18.37.37:396][381]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionFunctionOutput_0, compiling. 
+[2017.11.16-18.37.37:406][381]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionFunctionInput_2, compiling. 
+[2017.11.16-18.37.37:417][381]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionFunctionInput_5, compiling. 
+[2017.11.16-18.37.37:426][381]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionFunctionInput_6, compiling. 
+[2017.11.16-18.37.39:404][431]MaterialEditorStats: Info Base pass shader: 189 instructions
+[2017.11.16-18.37.39:405][431]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.37.39:405][431]MaterialEditorStats: Info Texture samplers: 7/16
+[2017.11.16-18.37.45:315][588]LogMaterial: Missing cached shader map for material PreviewMaterial_1, compiling. 
+[2017.11.16-18.37.45:325][588]LogMaterial: Missing cached shader map for material Material_9, compiling. 
+[2017.11.16-18.37.52:306][778]LogMaterial: Missing cached shader map for material PreviewMaterial_1, compiling. 
+[2017.11.16-18.37.52:317][778]LogMaterial: Missing cached shader map for material Material_9, compiling. 
+[2017.11.16-18.38.16:810][440]LogMaterial: Missing cached shader map for material PreviewMaterial_1, compiling. 
+[2017.11.16-18.38.16:821][440]LogMaterial: Missing cached shader map for material Material_9, compiling. 
+[2017.11.16-18.38.18:741][479]LogMaterialEditor: Saving and Compiling material MF_BlendTransition
+[2017.11.16-18.38.19:785][479]LogMaterial: Missing cached shader map for material PreviewMaterial_1, compiling. 
+[2017.11.16-18.38.19:804][479]LogMaterial: Missing cached shader map for material Material_9, compiling. 
+[2017.11.16-18.38.19:849][479]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.38.19:915][479]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.38.19:995][479]LogMaterial: Missing cached shader map for material Material_10, compiling. 
+[2017.11.16-18.38.20:093][479]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/MF_BlendTransition" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset" SILENT=true
+[2017.11.16-18.38.20:242][479]LogSavePackage: Save=67.35ms
+[2017.11.16-18.38.20:242][479]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/MF_BlendTransitionB454C7A547FADE4EA41B59BC90215A54.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset'
+[2017.11.16-18.38.20:282][479]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_BlendTransition.uasset
+[2017.11.16-18.38.24:251][550]MaterialEditorStats: Info Base pass shader: 189 instructions
+[2017.11.16-18.38.24:251][550]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.38.24:251][550]MaterialEditorStats: Info Texture samplers: 7/16
+[2017.11.16-18.38.31:324][729]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.38.33:001][761]LogMaterialEditor: Saving and Compiling material M_Triplanar_Transition
+[2017.11.16-18.38.34:697][761]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.38.34:771][761]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.38.34:828][761]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.38.34:970][761]LogMaterial: Missing cached shader map for material FDebugViewModeMaterialProxy M_Triplanar_Transition, compiling. 
+[2017.11.16-18.38.38:499][761]TextureStreamingBuild:Display: Compiling optional shaders took 3.543 seconds.
+[2017.11.16-18.38.41:950][761]LogSavePackage: Save=28.69ms
+[2017.11.16-18.38.41:950][761]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_TransitionB9A4495F448D6B417A0E08BAD8593EC1.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition.uasset'
+[2017.11.16-18.38.41:956][761]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition.uasset
+[2017.11.16-18.38.41:988][761]MaterialEditorStats: Info Base pass shader: 189 instructions
+[2017.11.16-18.38.41:989][761]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.38.41:989][761]MaterialEditorStats: Info Texture samplers: 8/16
+[2017.11.16-18.38.46:077][873]LogMaterial: Missing cached shader map for material Material_11, compiling. 
+[2017.11.16-18.38.46:093][873]LogMaterial: Missing cached shader map for material PreviewMaterial_2, compiling. 
+[2017.11.16-18.38.46:111][873]LogMaterial: Missing cached shader map for material Material_11, compiling. 
+[2017.11.16-18.38.46:131][873]LogMaterial: Missing cached shader map for material PreviewMaterial_2, compiling. 
+[2017.11.16-18.38.46:142][873]LogMaterial: Missing cached shader map for material Material_11, compiling. 
+[2017.11.16-18.38.46:422][873]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionFunctionOutput_0, compiling. 
+[2017.11.16-18.38.46:432][873]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionDivide_1, compiling. 
+[2017.11.16-18.38.46:442][873]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureSample_1, compiling. 
+[2017.11.16-18.38.46:452][873]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureSample_2, compiling. 
+[2017.11.16-18.38.46:462][873]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureSample_3, compiling. 
+[2017.11.16-18.38.46:472][873]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionFunctionInput_0, compiling. 
+[2017.11.16-18.38.46:477][873]LogMaterial: Missing cached shader map for material FMatExpressionPreview MaterialExpressionTextureObject_2, compiling. 
+[2017.11.16-18.39.08:768][445]LogMaterial: Missing cached shader map for material PreviewMaterial_2, compiling. 
+[2017.11.16-18.39.08:779][445]LogMaterial: Missing cached shader map for material Material_11, compiling. 
+[2017.11.16-18.39.21:782][765]LogMaterial: Missing cached shader map for material PreviewMaterial_2, compiling. 
+[2017.11.16-18.39.21:796][765]LogMaterial: Missing cached shader map for material Material_11, compiling. 
+[2017.11.16-18.39.25:505][858]LogMaterial: Missing cached shader map for material PreviewMaterial_2, compiling. 
+[2017.11.16-18.39.25:516][858]LogMaterial: Missing cached shader map for material Material_11, compiling. 
+[2017.11.16-18.39.28:939][935]LogMaterialEditor: Saving and Compiling material MF_TriplanarMapping
+[2017.11.16-18.39.30:469][935]LogMaterial: Missing cached shader map for material PreviewMaterial_2, compiling. 
+[2017.11.16-18.39.30:493][935]LogMaterial: Missing cached shader map for material Material_11, compiling. 
+[2017.11.16-18.39.30:584][935]LogMaterial: Missing cached shader map for material M_Triplanar_Terrain, compiling. 
+[2017.11.16-18.39.30:720][935]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.39.30:818][935]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.39.30:913][935]LogMaterial: Missing cached shader map for material Material_12, compiling. 
+[2017.11.16-18.39.31:027][935]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/MF_TriplanarMapping" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_TriplanarMapping.uasset" SILENT=true
+[2017.11.16-18.39.31:204][935]LogSavePackage: Save=42.62ms
+[2017.11.16-18.39.31:208][935]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/MF_TriplanarMapping1E8A54174B21A0A3407286B00E876806.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_TriplanarMapping.uasset'
+[2017.11.16-18.39.31:215][935]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_TriplanarMapping.uasset
+[2017.11.16-18.39.39:823][964]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/M_Triplanar_Terrain" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Terrain.uasset" SILENT=true
+[2017.11.16-18.39.39:916][964]LogSavePackage: Save=37.78ms
+[2017.11.16-18.39.39:917][964]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_Terrain9D473DC84018DF01788AD19A21AFAFA8.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Terrain.uasset'
+[2017.11.16-18.39.39:925][964]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Terrain.uasset
+[2017.11.16-18.39.43:004][964]LogSavePackage: Save=33.56ms
+[2017.11.16-18.39.43:004][964]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_Transition0F788D0345180920B7B21C9520437C83.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition.uasset'
+[2017.11.16-18.39.43:010][964]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition.uasset
+[2017.11.16-18.39.43:189][964]LogMaterial: Missing cached shader map for material FDebugViewModeMaterialProxy M_Triplanar_Transition_Inst, compiling. 
+[2017.11.16-18.39.44:192][964]TextureStreamingBuild:Display: Compiling optional shaders took 1.012 seconds.
+[2017.11.16-18.39.44:335][964]LogSavePackage: Save=50.67ms
+[2017.11.16-18.39.44:360][964]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_Transition_Inst7792268D4149F8F61C15AF8EF9518B0E.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition_Inst.uasset'
+[2017.11.16-18.39.44:369][964]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition_Inst.uasset
+[2017.11.16-18.39.44:408][964]MaterialEditorStats: Info Base pass shader: 189 instructions
+[2017.11.16-18.39.44:409][964]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.39.44:409][964]MaterialEditorStats: Info Texture samplers: 8/16
+[2017.11.16-18.39.57:233][249]LogMaterial: Missing cached shader map for material FDebugViewModeMaterialProxy M_Triplanar_Transition_Inst, compiling. 
+[2017.11.16-18.39.58:177][249]TextureStreamingBuild:Display: Compiling optional shaders took 0.950 seconds.
+[2017.11.16-18.40.45:521][439]LogMaterial: Missing cached shader map for material PreviewMaterial_2, compiling. 
+[2017.11.16-18.40.45:535][439]LogMaterial: Missing cached shader map for material Material_11, compiling. 
+[2017.11.16-18.40.45:621][441]LogMaterialEditor: Saving and Compiling material MF_TriplanarMapping
+[2017.11.16-18.40.47:595][441]LogMaterial: Missing cached shader map for material PreviewMaterial_2, compiling. 
+[2017.11.16-18.40.47:652][441]LogMaterial: Missing cached shader map for material Material_11, compiling. 
+[2017.11.16-18.40.47:757][441]LogMaterial: Missing cached shader map for material M_Triplanar_Terrain, compiling. 
+[2017.11.16-18.40.47:820][441]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.40.47:861][441]LogMaterial: Missing cached shader map for material M_Triplanar_Transition, compiling. 
+[2017.11.16-18.40.47:968][441]LogMaterial: Missing cached shader map for material Material_13, compiling. 
+[2017.11.16-18.40.48:139][441]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/MF_TriplanarMapping" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_TriplanarMapping.uasset" SILENT=true
+[2017.11.16-18.40.48:262][441]LogSavePackage: Save=49.55ms
+[2017.11.16-18.40.48:264][441]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/MF_TriplanarMapping379B39B3457CA191E6D6569EC0E0F007.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_TriplanarMapping.uasset'
+[2017.11.16-18.40.48:269][441]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/MF_TriplanarMapping.uasset
+[2017.11.16-18.41.02:868][734]MaterialEditorStats: Info Base pass shader: 189 instructions
+[2017.11.16-18.41.02:868][734]MaterialEditorStats: Info Vertex shader: 30 instructions
+[2017.11.16-18.41.02:868][734]MaterialEditorStats: Info Texture samplers: 8/16
+[2017.11.16-18.41.05:368][794]LogMaterialEditor: Saving and Compiling material M_Triplanar_Transition
+[2017.11.16-18.41.05:514][794]LogSavePackage: Save=32.88ms
+[2017.11.16-18.41.05:514][794]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_Transition35D31E774C8CCFE5A335679C846021A1.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition.uasset'
+[2017.11.16-18.41.05:519][794]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition.uasset
+[2017.11.16-18.41.10:635][915]LogMaterial: Missing cached shader map for material FDebugViewModeMaterialProxy M_Triplanar_Transition_Inst, compiling. 
+[2017.11.16-18.41.11:782][915]TextureStreamingBuild:Display: Compiling optional shaders took 1.157 seconds.
+[2017.11.16-18.41.14:485][948]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/M_Triplanar_Terrain" FILE="../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Terrain.uasset" SILENT=true
+[2017.11.16-18.41.14:559][948]LogSavePackage: Save=24.87ms
+[2017.11.16-18.41.14:559][948]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_TerrainDFAAFE2047067D6E8A506E98E17C60FE.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Terrain.uasset'
+[2017.11.16-18.41.14:565][948]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Terrain.uasset
+[2017.11.16-18.41.14:648][948]LogSavePackage: Save=22.34ms
+[2017.11.16-18.41.14:649][948]LogSavePackage: Moving '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/M_Triplanar_Transition_Inst5C8FD7824B69ADCC2041E9BDA282D1E4.tmp' to '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition_Inst.uasset'
+[2017.11.16-18.41.14:654][948]LogSavePackage:Display: Finished SavePackage ../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Materials/M_Triplanar_Transition_Inst.uasset
+[2017.11.16-18.41.17:599][ 20]LogTemp: Repeting last play command: Selected Viewport
+[2017.11.16-18.41.17:625][ 20]LogBlueprintUserMessages: Early PlayInEditor Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.41.17:625][ 20]LogPlayLevel: PlayLevel: No blueprints needed recompiling
+[2017.11.16-18.41.17:626][ 20]PIE: New page: PIE session: FirstPersonExampleMap (Nov 16, 2017, 8:41:17 PM)
+[2017.11.16-18.41.17:626][ 20]LogPlayLevel: Creating play world package: /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap
+[2017.11.16-18.41.17:661][ 20]LogPlayLevel: PIE: StaticDuplicateObject took: (0.034678s)
+[2017.11.16-18.41.17:663][ 20]LogAIModule: Creating AISystem for world FirstPersonExampleMap
+[2017.11.16-18.41.17:665][ 20]LogPlayLevel: PIE: World Init took: (0.003108s)
+[2017.11.16-18.41.17:666][ 20]LogPlayLevel: PIE: Created PIE world by copying editor world from /Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap to /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap.FirstPersonExampleMap (0.040148s)
+[2017.11.16-18.41.17:726][ 20]LogInit: XAudio2 using 'Altavoces (Realtek High Definition Audio)' : 2 channels at 48 kHz using 32 bits per sample (channel mask 0x3)
+[2017.11.16-18.41.17:740][ 20]LogInit: FAudioDevice initialized.
+[2017.11.16-18.41.17:873][ 20]LogLoad: Game class is 'WorldGameMode_BP_C'
+[2017.11.16-18.41.17:875][ 20]LogWorld: Bringing World /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap.FirstPersonExampleMap up for play (max tick rate 30) at 2017.11.16-19.41.17
+[2017.11.16-18.41.17:876][ 20]LogWorld: Bringing up level for play took: 0.001719
+[2017.11.16-18.41.17:878][ 20]LogBlueprintUserMessages: [WorldGameMode_BP_C_0] Hello
+[2017.11.16-18.41.17:975][ 20]LogTemp:Warning: First map load took: 96.393781 ms
+[2017.11.16-18.41.17:992][ 20]PIE: Info Play in editor start time for /Game/FirstPersonBP/Maps/UEDPIE_0_FirstPersonExampleMap 1.209
+[2017.11.16-18.41.17:993][ 20]LogBlueprintUserMessages: Late PlayInEditor Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.41.18:027][ 21]Mat_Loader:Warning: Added transition meterial with index: 2-1-0
+[2017.11.16-18.41.46:596][710]LogBlueprintUserMessages: Early EndPlayMap Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.41.46:654][710]LogBlueprintUserMessages: Late EndPlayMap Detection: Level '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel' has LevelScriptBlueprint '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap' with GeneratedClass '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap_C' with ClassGeneratedBy '/Game/FirstPersonBP/Maps/FirstPersonExampleMap.FirstPersonExampleMap:PersistentLevel.FirstPersonExampleMap'
+[2017.11.16-18.41.49:560][763]Cmd: QUIT_EDITOR
+[2017.11.16-18.41.49:672][763]LogExit: Preparing to exit.
+[2017.11.16-18.41.51:115][763]LogDirectoryWatcher: A directory notification for 'C:/Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/' was aborted.
+[2017.11.16-18.41.51:186][763]LogExit: Editor shut down
+[2017.11.16-18.41.51:192][763]LogExit: Transaction tracking system shut down
+[2017.11.16-18.41.51:588][763]LogObj: Freed 0b from 0 cluster array pools.
+[2017.11.16-18.41.51:588][763]LogExit: Object subsystem successfully closed.
+[2017.11.16-18.41.51:716][763]LogD3D11RHI: Shutdown
+[2017.11.16-18.41.51:716][763]LogD3D11RHI: CleanupD3DDevice
+[2017.11.16-18.41.51:977][763]LogD3D11RHI: ~FD3D11DynamicRHI
+[2017.11.16-18.41.52:103][763]LogModuleManager: Shutting down and abandoning module MaterialEditor (548)
+[2017.11.16-18.41.52:103][763]LogModuleManager: Shutting down and abandoning module BlueprintGraph (546)
+[2017.11.16-18.41.52:103][763]LogModuleManager: Shutting down and abandoning module BlueprintProfiler (544)
+[2017.11.16-18.41.52:109][763]LogModuleManager: Shutting down and abandoning module MovieSceneCapture (542)
+[2017.11.16-18.41.52:109][763]LogModuleManager: Shutting down and abandoning module HierarchicalLODOutliner (540)
+[2017.11.16-18.41.52:110][763]LogModuleManager: Shutting down and abandoning module CrashTracker (538)
+[2017.11.16-18.41.52:110][763]LogModuleManager: Shutting down and abandoning module SceneOutliner (536)
+[2017.11.16-18.41.52:111][763]LogModuleManager: Shutting down and abandoning module AddContentDialog (534)
+[2017.11.16-18.41.52:113][763]LogDirectoryWatcher: A directory notification for 'C:/Program Files (x86)/Epic Games/UE_4.16/FeaturePacks/' was aborted.
+[2017.11.16-18.41.52:117][763]LogModuleManager: Shutting down and abandoning module WidgetCarousel (533)
+[2017.11.16-18.41.52:117][763]LogModuleManager: Shutting down and abandoning module EditorWidgets (530)
+[2017.11.16-18.41.52:117][763]LogModuleManager: Shutting down and abandoning module CollectionManager (528)
+[2017.11.16-18.41.52:117][763]LogDirectoryWatcher: A directory notification for 'C:/Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Collections/' was aborted.
+[2017.11.16-18.41.52:118][763]LogDirectoryWatcher: A directory notification for 'C:/Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/Developers/Admin/Collections/' was aborted.
+[2017.11.16-18.41.52:118][763]LogDirectoryWatcher: A directory notification for 'C:/Users/Admin/Documents/Unreal Projects/OpenWorld_16/Saved/Collections/' was aborted.
+[2017.11.16-18.41.52:118][763]LogModuleManager: Shutting down and abandoning module StatsViewer (526)
+[2017.11.16-18.41.52:119][763]LogModuleManager: Shutting down and abandoning module FoliageEdit (524)
+[2017.11.16-18.41.52:119][763]LogModuleManager: Shutting down and abandoning module LandscapeEditor (522)
+[2017.11.16-18.41.52:122][763]LogModuleManager: Shutting down and abandoning module MeshPaintMode (520)
+[2017.11.16-18.41.52:122][763]LogModuleManager: Shutting down and abandoning module SceneDepthPickerMode (518)
+[2017.11.16-18.41.52:122][763]LogModuleManager: Shutting down and abandoning module ActorPickerMode (516)
+[2017.11.16-18.41.52:122][763]LogModuleManager: Shutting down and abandoning module GeometryMode (514)
+[2017.11.16-18.41.52:122][763]LogModuleManager: Shutting down and abandoning module TextureAlignMode (512)
+[2017.11.16-18.41.52:122][763]LogModuleManager: Shutting down and abandoning module BspMode (510)
+[2017.11.16-18.41.52:123][763]LogModuleManager: Shutting down and abandoning module HardwareSurvey (508)
+[2017.11.16-18.41.52:124][763]LogModuleManager: Shutting down and abandoning module SequenceRecorderSections (506)
+[2017.11.16-18.41.52:125][763]LogModuleManager: Shutting down and abandoning module AutomationWorker (504)
+[2017.11.16-18.41.52:125][763]LogModuleManager: Shutting down and abandoning module MatineeToLevelSequence (502)
+[2017.11.16-18.41.52:126][763]LogModuleManager: Shutting down and abandoning module LevelSequenceEditor (500)
+[2017.11.16-18.41.52:131][763]LogModuleManager: Shutting down and abandoning module PlacementMode (499)
+[2017.11.16-18.41.52:131][763]LogModuleManager: Shutting down and abandoning module WmfMediaFactory (496)
+[2017.11.16-18.41.52:131][763]LogModuleManager: Shutting down and abandoning module WmfMediaEditor (494)
+[2017.11.16-18.41.52:131][763]LogModuleManager: Shutting down and abandoning module AvfMediaFactory (492)
+[2017.11.16-18.41.52:131][763]LogModuleManager: Shutting down and abandoning module AvfMediaEditor (490)
+[2017.11.16-18.41.52:131][763]LogModuleManager: Shutting down and abandoning module AndroidMediaFactory (488)
+[2017.11.16-18.41.52:131][763]LogModuleManager: Shutting down and abandoning module Media (487)
+[2017.11.16-18.41.52:131][763]LogModuleManager: Shutting down and abandoning module AndroidMediaEditor (484)
+[2017.11.16-18.41.52:131][763]LogModuleManager: Shutting down and abandoning module CharacterAI (482)
+[2017.11.16-18.41.52:131][763]LogModuleManager: Shutting down and abandoning module AudioCapture (480)
+[2017.11.16-18.41.52:132][763]LogModuleManager: Shutting down and abandoning module SequenceRecorder (479)
+[2017.11.16-18.41.52:134][763]LogModuleManager: Shutting down and abandoning module SmartSnapping (476)
+[2017.11.16-18.41.52:134][763]LogModuleManager: Shutting down and abandoning module SessionServices (474)
+[2017.11.16-18.41.52:135][763]LogModuleManager: Shutting down and abandoning module ViewportSnapping (472)
+[2017.11.16-18.41.52:135][763]LogModuleManager: Shutting down and abandoning module ViewportInteraction (470)
+[2017.11.16-18.41.52:135][763]LogModuleManager: Shutting down and abandoning module ClothPainter (468)
+[2017.11.16-18.41.52:173][763]LogModuleManager: Shutting down and abandoning module LogVisualizer (466)
+[2017.11.16-18.41.52:174][763]LogModuleManager: Shutting down and abandoning module IntroTutorials (464)
+[2017.11.16-18.41.52:177][763]LogModuleManager: Shutting down and abandoning module GameProjectGeneration (463)
+[2017.11.16-18.41.52:178][763]LogModuleManager: Shutting down and abandoning module EditorLiveStreaming (460)
+[2017.11.16-18.41.52:178][763]LogModuleManager: Shutting down and abandoning module IOSPlatformEditor (458)
+[2017.11.16-18.41.52:179][763]LogModuleManager: Shutting down and abandoning module HTML5PlatformEditor (456)
+[2017.11.16-18.41.52:179][763]LogModuleManager: Shutting down and abandoning module AndroidPlatformEditor (454)
+[2017.11.16-18.41.52:179][763]LogModuleManager: Shutting down and abandoning module AndroidDeviceDetection (453)
+[2017.11.16-18.41.52:271][763]LogModuleManager: Shutting down and abandoning module IOSRuntimeSettings (450)
+[2017.11.16-18.41.52:272][763]LogModuleManager: Shutting down and abandoning module AndroidRuntimeSettings (448)
+[2017.11.16-18.41.52:272][763]LogModuleManager: Shutting down and abandoning module InputBindingEditor (446)
+[2017.11.16-18.41.52:304][763]LogModuleManager: Shutting down and abandoning module MergeActors (444)
+[2017.11.16-18.41.52:305][763]LogModuleManager: Shutting down and abandoning module SizeMap (442)
+[2017.11.16-18.41.52:305][763]LogModuleManager: Shutting down and abandoning module TreeMap (440)
+[2017.11.16-18.41.52:306][763]LogModuleManager: Shutting down and abandoning module ReferenceViewer (438)
+[2017.11.16-18.41.52:306][763]LogModuleManager: Shutting down and abandoning module LocalizationDashboard (436)
+[2017.11.16-18.41.52:308][763]LogModuleManager: Shutting down and abandoning module LocalizationService (435)
+[2017.11.16-18.41.52:309][763]LogModuleManager: Shutting down and abandoning module HardwareTargeting (432)
+[2017.11.16-18.41.52:309][763]LogModuleManager: Shutting down and abandoning module DeviceProfileEditor (430)
+[2017.11.16-18.41.52:310][763]LogModuleManager: Shutting down and abandoning module UndoHistory (428)
+[2017.11.16-18.41.52:311][763]LogModuleManager: Shutting down and abandoning module UserFeedback (426)
+[2017.11.16-18.41.52:311][763]LogModuleManager: Shutting down and abandoning module XmlParser (424)
+[2017.11.16-18.41.52:311][763]LogModuleManager: Shutting down and abandoning module Blutility (422)
+[2017.11.16-18.41.52:312][763]LogModuleManager: Shutting down and abandoning module ProjectSettingsViewer (420)
+[2017.11.16-18.41.52:312][763]LogModuleManager: Shutting down and abandoning module ProjectTargetPlatformEditor (419)
+[2017.11.16-18.41.52:313][763]LogModuleManager: Shutting down and abandoning module EditorSettingsViewer (416)
+[2017.11.16-18.41.52:313][763]LogModuleManager: Shutting down and abandoning module SettingsEditor (414)
+[2017.11.16-18.41.52:348][763]LogModuleManager: Shutting down and abandoning module ProjectLauncher (412)
+[2017.11.16-18.41.52:349][763]LogModuleManager: Shutting down and abandoning module SessionFrontend (410)
+[2017.11.16-18.41.52:351][763]LogModuleManager: Shutting down and abandoning module ProfilerClient (408)
+[2017.11.16-18.41.52:352][763]LogModuleManager: Shutting down and abandoning module DeviceManager (406)
+[2017.11.16-18.41.52:356][763]LogModuleManager: Shutting down and abandoning module TargetDeviceServices (405)
+[2017.11.16-18.41.52:488][763]LogModuleManager: Shutting down and abandoning module AutomationController (402)
+[2017.11.16-18.41.52:492][763]LogModuleManager: Shutting down and abandoning module AutomationWindow (400)
+[2017.11.16-18.41.52:493][763]LogModuleManager: Shutting down and abandoning module Layers (398)
+[2017.11.16-18.41.52:496][763]LogModuleManager: Shutting down and abandoning module ComponentVisualizers (396)
+[2017.11.16-18.41.52:496][763]LogModuleManager: Shutting down and abandoning module DetailCustomizations (394)
+[2017.11.16-18.41.52:497][763]LogModuleManager: Shutting down and abandoning module PackagesDialog (392)
+[2017.11.16-18.41.52:497][763]LogModuleManager: Shutting down and abandoning module Persona (390)
+[2017.11.16-18.41.52:501][763]LogModuleManager: Shutting down and abandoning module AdvancedPreviewScene (389)
+[2017.11.16-18.41.52:501][763]LogModuleManager: Shutting down and abandoning module AnimGraph (387)
+[2017.11.16-18.41.52:502][763]LogModuleManager: Shutting down and abandoning module Kismet (384)
+[2017.11.16-18.41.52:518][763]LogModuleManager: Shutting down and abandoning module ClassViewer (382)
+[2017.11.16-18.41.52:518][763]LogModuleManager: Shutting down and abandoning module Toolbox (380)
+[2017.11.16-18.41.52:520][763]LogModuleManager: Shutting down and abandoning module ModuleUI (378)
+[2017.11.16-18.41.52:521][763]LogModuleManager: Shutting down and abandoning module MovieSceneTools (376)
+[2017.11.16-18.41.52:524][763]LogModuleManager: Shutting down and abandoning module OutputLog (374)
+[2017.11.16-18.41.52:526][763]LogModuleManager: Shutting down and abandoning module GammaUI (372)
+[2017.11.16-18.41.52:526][763]LogModuleManager: Shutting down and abandoning module Documentation (370)
+[2017.11.16-18.41.52:527][763]LogModuleManager: Shutting down and abandoning module MovieSceneTracks (368)
+[2017.11.16-18.41.52:527][763]LogModuleManager: Shutting down and abandoning module MovieScene (366)
+[2017.11.16-18.41.52:527][763]LogModuleManager: Shutting down and abandoning module Niagara (364)
+[2017.11.16-18.41.52:527][763]LogModuleManager: Shutting down and abandoning module NiagaraEditor (363)
+[2017.11.16-18.41.52:534][763]LogModuleManager: Shutting down and abandoning module StreamingPauseRendering (360)
+[2017.11.16-18.41.52:534][763]LogModuleManager: Shutting down and abandoning module AnalyticsET (358)
+[2017.11.16-18.41.52:535][763]LogModuleManager: Shutting down and abandoning module PortalServices (356)
+[2017.11.16-18.41.52:535][763]LogModuleManager: Shutting down and abandoning module PortalRpc (354)
+[2017.11.16-18.41.52:535][763]LogModuleManager: Shutting down and abandoning module MessagingRpc (352)
+[2017.11.16-18.41.52:535][763]LogModuleManager: Shutting down and abandoning module AIModule (350)
+[2017.11.16-18.41.52:535][763]LogModuleManager: Shutting down and abandoning module GameplayDebugger (349)
+[2017.11.16-18.41.52:535][763]LogModuleManager: Shutting down and abandoning module AITestSuite (347)
+[2017.11.16-18.41.52:536][763]LogModuleManager: Shutting down and abandoning module ProfilerService (344)
+[2017.11.16-18.41.52:713][763]LogModuleManager: Shutting down and abandoning module TaskGraph (342)
+[2017.11.16-18.41.52:718][763]LogModuleManager: Shutting down and abandoning module SubstanceEditor (340)
+[2017.11.16-18.41.52:721][763]LogModuleManager: Shutting down and abandoning module UnrealFastNoisePlugin (338)
+[2017.11.16-18.41.52:721][763]LogModuleManager: Shutting down and abandoning module SteamVRController (336)
+[2017.11.16-18.41.52:721][763]LogModuleManager: Shutting down and abandoning module SteamVR (334)
+[2017.11.16-18.41.52:722][763]LogModuleManager: Shutting down and abandoning module ProceduralMeshComponentEditor (332)
+[2017.11.16-18.41.52:722][763]LogModuleManager: Shutting down and abandoning module ProceduralMeshComponent (330)
+[2017.11.16-18.41.52:724][763]LogModuleManager: Shutting down and abandoning module OculusLibrary (328)
+[2017.11.16-18.41.52:724][763]LogModuleManager: Shutting down and abandoning module OculusInput (326)
+[2017.11.16-18.41.52:724][763]LogModuleManager: Shutting down and abandoning module MobilePatchingUtils (324)
+[2017.11.16-18.41.52:724][763]LogModuleManager: Shutting down and abandoning module CustomMeshComponent (322)
+[2017.11.16-18.41.52:724][763]LogModuleManager: Shutting down and abandoning module CableComponent (320)
+[2017.11.16-18.41.52:726][763]LogModuleManager: Shutting down and abandoning module ArchVisCharacter (318)
+[2017.11.16-18.41.52:726][763]LogModuleManager: Shutting down and abandoning module AndroidPermission (316)
+[2017.11.16-18.41.52:726][763]LogModuleManager: Shutting down and abandoning module MediaPlayerEditor (312)
+[2017.11.16-18.41.52:731][763]LogModuleManager: Shutting down and abandoning module RuntimeMeshComponentSlicer (310)
+[2017.11.16-18.41.52:731][763]LogModuleManager: Shutting down and abandoning module RuntimeMeshComponentEditor (308)
+[2017.11.16-18.41.52:732][763]LogModuleManager: Shutting down and abandoning module RuntimeMeshComponent (306)
+[2017.11.16-18.41.52:732][763]LogModuleManager: Shutting down and abandoning module HTML5Networking (304)
+[2017.11.16-18.41.52:732][763]LogModuleManager: Shutting down and abandoning module CodeView (302)
+[2017.11.16-18.41.52:733][763]LogModuleManager: Shutting down and abandoning module AlembicImporter (300)
+[2017.11.16-18.41.52:733][763]LogModuleManager: Shutting down and abandoning module AlembicLibrary (299)
+[2017.11.16-18.41.52:733][763]LogModuleManager: Shutting down and abandoning module GeometryCache (298)
+[2017.11.16-18.41.52:734][763]LogModuleManager: Shutting down and abandoning module GeometryCacheEd (297)
+[2017.11.16-18.41.52:734][763]LogModuleManager: Shutting down and abandoning module SuperSearchEditor (292)
+[2017.11.16-18.41.52:734][763]LogModuleManager: Shutting down and abandoning module SuperSearch (291)
+[2017.11.16-18.41.52:734][763]LogModuleManager: Shutting down and abandoning module SpeedTreeImporter (288)
+[2017.11.16-18.41.52:734][763]LogModuleManager: Shutting down and abandoning module PluginBrowser (286)
+[2017.11.16-18.41.52:737][763]LogModuleManager: Shutting down and abandoning module MobileLauncherProfileWizard (284)
+[2017.11.16-18.41.52:738][763]LogModuleManager: Shutting down and abandoning module VisualStudioSourceCodeAccess (282)
+[2017.11.16-18.41.52:739][763]LogModuleManager: Shutting down and abandoning module DesktopPlatform (281)
+[2017.11.16-18.41.52:740][763]LogModuleManager: Shutting down and abandoning module UObjectPlugin (278)
+[2017.11.16-18.41.52:740][763]LogModuleManager: Shutting down and abandoning module SubversionSourceControl (276)
+[2017.11.16-18.41.52:741][763]LogModuleManager: Shutting down and abandoning module PerforceSourceControl (274)
+[2017.11.16-18.41.52:742][763]LogModuleManager: Shutting down and abandoning module GitSourceControl (272)
+[2017.11.16-18.41.52:743][763]LogModuleManager: Shutting down and abandoning module SourceControl (271)
+[2017.11.16-18.41.52:743][763]LogModuleManager: Shutting down and abandoning module LightPropagationVolumeEditor (268)
+[2017.11.16-18.41.52:743][763]LogModuleManager: Shutting down and abandoning module PaperTiledImporter (266)
+[2017.11.16-18.41.52:743][763]LogModuleManager: Shutting down and abandoning module PaperSpriteSheetImporter (264)
+[2017.11.16-18.41.52:743][763]LogModuleManager: Shutting down and abandoning module Paper2DEditor (262)
+[2017.11.16-18.41.52:744][763]LogModuleManager: Shutting down and abandoning module MeshPaint (261)
+[2017.11.16-18.41.52:745][763]LogModuleManager: Shutting down and abandoning module LevelEditor (259)
+[2017.11.16-18.41.52:748][763]LogModuleManager: Shutting down and abandoning module PixelInspectorModule (258)
+[2017.11.16-18.41.52:760][763]LogModuleManager: Shutting down and abandoning module MainFrame (256)
+[2017.11.16-18.41.52:761][763]LogModuleManager: Shutting down and abandoning module HotReload (255)
+[2017.11.16-18.41.52:762][763]LogDirectoryWatcher: A directory notification for 'C:/Users/Admin/Documents/Unreal Projects/OpenWorld_16/Binaries/Win64' was aborted.
+[2017.11.16-18.41.52:762][763]LogDirectoryWatcher: A directory notification for 'C:/Users/Admin/Documents/Unreal Projects/OpenWorld_16/Plugins/UnrealFastNoisePlugin/Binaries/Win64' was aborted.
+[2017.11.16-18.41.52:781][763]LogModuleManager: Shutting down and abandoning module OpenWorld_16 (250)
+[2017.11.16-18.41.52:782][763]LogModuleManager: Shutting down and abandoning module PhysXVehiclesEditor (248)
+[2017.11.16-18.41.52:782][763]LogModuleManager: Shutting down and abandoning module PhysXVehicles (246)
+[2017.11.16-18.41.52:782][763]LogModuleManager: Shutting down and abandoning module LocationServicesBPLibrary (244)
+[2017.11.16-18.41.52:782][763]LogModuleManager: Shutting down and abandoning module ImmediatePhysicsEditor (242)
+[2017.11.16-18.41.52:782][763]LogModuleManager: Shutting down and abandoning module ImmediatePhysics (240)
+[2017.11.16-18.41.52:783][763]LogModuleManager: Shutting down and abandoning module UdpMessaging (238)
+[2017.11.16-18.41.52:899][763]LogModuleManager: Shutting down and abandoning module TcpMessaging (236)
+[2017.11.16-18.41.53:002][763]LogModuleManager: Shutting down and abandoning module SubstanceCore (234)
+[2017.11.16-18.41.53:005][763]LogModuleManager: Shutting down and abandoning module GameplayTagsEditor (232)
+[2017.11.16-18.41.53:007][763]LogModuleManager: Shutting down and abandoning module FacialAnimationEditor (230)
+[2017.11.16-18.41.53:039][763]LogModuleManager: Shutting down and abandoning module FacialAnimation (228)
+[2017.11.16-18.41.53:039][763]LogModuleManager: Shutting down and abandoning module AssetManagerEditor (226)
+[2017.11.16-18.41.53:040][763]LogModuleManager: Shutting down and abandoning module GraphEditor (225)
+[2017.11.16-18.41.53:040][763]LogModuleManager: Shutting down and abandoning module ContentBrowser (223)
+[2017.11.16-18.41.53:043][763]LogModuleManager: Shutting down and abandoning module LightPropagationVolumeRuntime (220)
+[2017.11.16-18.41.53:043][763]LogModuleManager: Shutting down and abandoning module Paper2D (218)
+[2017.11.16-18.41.53:043][763]LogModuleManager: Shutting down and abandoning module WindowsMoviePlayer (216)
+[2017.11.16-18.41.53:044][763]LogModuleManager: Shutting down and abandoning module WmfMedia (214)
+[2017.11.16-18.41.53:046][763]LogModuleManager: Shutting down and abandoning module ClothingSystemEditor (212)
+[2017.11.16-18.41.53:048][763]LogModuleManager: Shutting down and abandoning module ClothingSystemRuntime (210)
+[2017.11.16-18.41.53:049][763]LogModuleManager: Shutting down and abandoning module MediaAssets (208)
+[2017.11.16-18.41.53:049][763]LogModuleManager: Shutting down and abandoning module GameLiveStreaming (206)
+[2017.11.16-18.41.53:050][763]LogModuleManager: Shutting down and abandoning module VREditor (204)
+[2017.11.16-18.41.53:050][763]LogModuleManager: Shutting down and abandoning module StringTableEditor (202)
+[2017.11.16-18.41.53:053][763]LogModuleManager: Shutting down and abandoning module GameplayTasksEditor (200)
+[2017.11.16-18.41.53:053][763]LogModuleManager: Shutting down and abandoning module BehaviorTreeEditor (198)
+[2017.11.16-18.41.53:058][763]LogModuleManager: Shutting down and abandoning module FunctionalTesting (196)
+[2017.11.16-18.41.53:058][763]LogModuleManager: Shutting down and abandoning module CollisionAnalyzer (194)
+[2017.11.16-18.41.53:064][763]LogModuleManager: Shutting down and abandoning module UMG (192)
+[2017.11.16-18.41.53:067][763]LogModuleManager: Shutting down and abandoning module UMGEditor (191)
+[2017.11.16-18.41.53:073][763]LogModuleManager: Shutting down and abandoning module Sequencer (190)
+[2017.11.16-18.41.53:077][763]LogModuleManager: Shutting down and abandoning module AssetTools (188)
+[2017.11.16-18.41.53:085][763]LogModuleManager: Shutting down and abandoning module MessageLog (187)
+[2017.11.16-18.41.53:085][763]LogModuleManager: Shutting down and abandoning module WorkspaceMenuStructure (186)
+[2017.11.16-18.41.53:085][763]LogModuleManager: Shutting down and abandoning module SlateReflector (180)
+[2017.11.16-18.41.53:088][763]LogModuleManager: Shutting down and abandoning module Slate (178)
+[2017.11.16-18.41.53:088][763]LogModuleManager: Shutting down and abandoning module EditorStyle (176)
+[2017.11.16-18.41.53:096][763]LogModuleManager: Shutting down and abandoning module SourceCodeAccess (174)
+[2017.11.16-18.41.53:096][763]LogModuleManager: Shutting down and abandoning module HeadMountedDisplay (172)
+[2017.11.16-18.41.53:096][763]LogModuleManager: Shutting down and abandoning module XAudio2 (170)
+[2017.11.16-18.41.53:097][763]LogModuleManager: Shutting down and abandoning module Networking (168)
+[2017.11.16-18.41.53:097][763]LogModuleManager: Shutting down and abandoning module Core (164)
+[2017.11.16-18.41.53:097][763]LogModuleManager: Shutting down and abandoning module AssetRegistry (162)
+[2017.11.16-18.41.53:319][763]LogDirectoryWatcher: A directory notification for '../../../Engine/Content/' was aborted.
+[2017.11.16-18.41.53:320][763]LogDirectoryWatcher: A directory notification for '../../../../../../Users/Admin/Documents/Unreal Projects/OpenWorld_16/Content/' was aborted.
+[2017.11.16-18.41.53:320][763]LogDirectoryWatcher: A directory notification for '../../../Engine/Plugins/2D/Paper2D/Content/' was aborted.
+[2017.11.16-18.41.53:320][763]LogDirectoryWatcher: A directory notification for '../../../Engine/Plugins/Runtime/GearVR/Content/' was aborted.
+[2017.11.16-18.41.53:324][763]LogModuleManager: Shutting down and abandoning module DirectoryWatcher (161)
+[2017.11.16-18.41.53:326][763]LogModuleManager: Shutting down and abandoning module KismetCompiler (158)
+[2017.11.16-18.41.53:326][763]LogModuleManager: Shutting down and abandoning module PhysXFormats (156)
+[2017.11.16-18.41.53:326][763]LogModuleManager: Shutting down and abandoning module MeshUtilities (154)
+[2017.11.16-18.41.53:328][763]LogModuleManager: Shutting down and abandoning module SimplygonSwarm (153)
+[2017.11.16-18.41.53:329][763]LogModuleManager: Shutting down and abandoning module SimplygonMeshReduction (151)
+[2017.11.16-18.41.53:329][763]LogModuleManager: Shutting down and abandoning module QuadricMeshReduction (149)
+[2017.11.16-18.41.53:330][763]LogModuleManager: Shutting down and abandoning module LevelSequence (146)
+[2017.11.16-18.41.53:330][763]LogModuleManager: Shutting down and abandoning module DerivedDataCache (144)
+[2017.11.16-18.41.53:384][763]LogDerivedDataCache: Shutdown
+[2017.11.16-18.41.53:384][763]LogModuleManager: Shutting down and abandoning module TargetPlatform (142)
+[2017.11.16-18.41.53:384][763]LogModuleManager: Shutting down and abandoning module VulkanShaderFormat (141)
+[2017.11.16-18.41.53:386][763]LogModuleManager: Shutting down and abandoning module ShaderFormatVectorVM (139)
+[2017.11.16-18.41.53:386][763]LogModuleManager: Shutting down and abandoning module ShaderFormatOpenGL (137)
+[2017.11.16-18.41.53:387][763]LogModuleManager: Shutting down and abandoning module ShaderFormatD3D (135)
+[2017.11.16-18.41.53:388][763]LogModuleManager: Shutting down and abandoning module MetalShaderFormat (133)
+[2017.11.16-18.41.53:389][763]LogModuleManager: Shutting down and abandoning module TextureFormatUncompressed (131)
+[2017.11.16-18.41.53:389][763]LogModuleManager: Shutting down and abandoning module TextureFormatPVR (129)
+[2017.11.16-18.41.53:389][763]LogModuleManager: Shutting down and abandoning module TextureFormatDXT (127)
+[2017.11.16-18.41.53:389][763]LogModuleManager: Shutting down and abandoning module TextureFormatIntelISPCTexComp (125)
+[2017.11.16-18.41.53:391][763]LogModuleManager: Shutting down and abandoning module TextureFormatASTC (123)
+[2017.11.16-18.41.53:391][763]LogModuleManager: Shutting down and abandoning module ImageWrapper (122)
+[2017.11.16-18.41.53:391][763]LogModuleManager: Shutting down and abandoning module TextureFormatAndroid (119)
+[2017.11.16-18.41.53:392][763]LogModuleManager: Shutting down and abandoning module AudioFormatOpus (117)
+[2017.11.16-18.41.53:392][763]LogModuleManager: Shutting down and abandoning module AudioFormatOgg (115)
+[2017.11.16-18.41.53:392][763]LogModuleManager: Shutting down and abandoning module AudioFormatADPCM (113)
+[2017.11.16-18.41.53:392][763]LogModuleManager: Shutting down and abandoning module LinuxTargetPlatform (111)
+[2017.11.16-18.41.53:392][763]LogModuleManager: Shutting down and abandoning module LinuxServerTargetPlatform (109)
+[2017.11.16-18.41.53:392][763]LogModuleManager: Shutting down and abandoning module LinuxNoEditorTargetPlatform (107)
+[2017.11.16-18.41.53:393][763]LogModuleManager: Shutting down and abandoning module LinuxClientTargetPlatform (105)
+[2017.11.16-18.41.53:393][763]LogModuleManager: Shutting down and abandoning module TVOSTargetPlatform (103)
+[2017.11.16-18.41.53:393][763]LogModuleManager: Shutting down and abandoning module Messaging (101)
+[2017.11.16-18.41.53:393][763]LogModuleManager: Shutting down and abandoning module IOSTargetPlatform (99)
+[2017.11.16-18.41.53:393][763]LogModuleManager: Shutting down and abandoning module HTML5TargetPlatform (97)
+[2017.11.16-18.41.53:393][763]LogModuleManager: Shutting down and abandoning module Android_PVRTCTargetPlatform (95)
+[2017.11.16-18.41.53:394][763]LogModuleManager: Shutting down and abandoning module Android_MultiTargetPlatform (93)
+[2017.11.16-18.41.53:394][763]LogModuleManager: Shutting down and abandoning module Android_ETC2TargetPlatform (91)
+[2017.11.16-18.41.53:394][763]LogModuleManager: Shutting down and abandoning module Android_ETC1TargetPlatform (89)
+[2017.11.16-18.41.53:395][763]LogModuleManager: Shutting down and abandoning module Android_DXTTargetPlatform (87)
+[2017.11.16-18.41.53:426][763]LogModuleManager: Shutting down and abandoning module Android_ATCTargetPlatform (85)
+[2017.11.16-18.41.53:426][763]LogModuleManager: Shutting down and abandoning module Android_ASTCTargetPlatform (83)
+[2017.11.16-18.41.53:426][763]LogModuleManager: Shutting down and abandoning module AndroidTargetPlatform (81)
+[2017.11.16-18.41.53:427][763]LogModuleManager: Shutting down and abandoning module WindowsTargetPlatform (79)
+[2017.11.16-18.41.53:427][763]LogModuleManager: Shutting down and abandoning module WindowsServerTargetPlatform (77)
+[2017.11.16-18.41.53:427][763]LogModuleManager: Shutting down and abandoning module WindowsNoEditorTargetPlatform (75)
+[2017.11.16-18.41.53:427][763]LogModuleManager: Shutting down and abandoning module WindowsClientTargetPlatform (73)
+[2017.11.16-18.41.53:427][763]LogModuleManager: Shutting down and abandoning module MacTargetPlatform (71)
+[2017.11.16-18.41.53:427][763]LogModuleManager: Shutting down and abandoning module MacServerTargetPlatform (69)
+[2017.11.16-18.41.53:428][763]LogModuleManager: Shutting down and abandoning module MacNoEditorTargetPlatform (67)
+[2017.11.16-18.41.53:428][763]LogModuleManager: Shutting down and abandoning module MacClientTargetPlatform (65)
+[2017.11.16-18.41.53:428][763]LogModuleManager: Shutting down and abandoning module AllDesktopTargetPlatform (63)
+[2017.11.16-18.41.53:428][763]LogModuleManager: Shutting down and abandoning module InputCore (60)
+[2017.11.16-18.41.53:428][763]LogModuleManager: Shutting down and abandoning module Settings (58)
+[2017.11.16-18.41.53:428][763]LogModuleManager: Shutting down and abandoning module OculusRift (56)
+[2017.11.16-18.41.53:429][763]LogModuleManager: Shutting down and abandoning module GearVRController (54)
+[2017.11.16-18.41.53:429][763]LogModuleManager: Shutting down and abandoning module GearVR (52)
+[2017.11.16-18.41.53:429][763]LogModuleManager: Shutting down and abandoning module ExampleDeviceProfileSelector (50)
+[2017.11.16-18.41.53:430][763]LogModuleManager: Shutting down and abandoning module OnlineBlueprintSupport (48)
+[2017.11.16-18.41.53:430][763]LogModuleManager: Shutting down and abandoning module OnlineSubsystem (44)
+[2017.11.16-18.41.53:430][763]LogOnline:Display: Unloading online subsystem: NULL
+[2017.11.16-18.41.53:432][763]LogModuleManager: Shutting down and abandoning module XMPP (43)
+[2017.11.16-18.41.53:434][763]LogModuleManager: Shutting down and abandoning module HTTP (41)
+[2017.11.16-18.41.53:434][763]LogHttp:Display: Http module shutting down, but needs to wait on 1 outstanding Http requests:
+[2017.11.16-18.41.53:472][763]LogHttp:Display: 	verb=[POST] url=[https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7BA02B7C77-4488-5C4B-2A00-15A35AB21C10%7D&AppID=UEEditor.Rocket.Release&AppVersion=4.16.3-3561208%2B%2B%2BUE4%2BRelease-4.16&UserID=617e6a62402b4484553a4cb6ea5114d1%7Ca0430c46660d4dc5973c0814ead9f1e2%7Cd0e4fba0-155e-424d-8985-2a3b896a1535&AppEnvironment=datacollector-binary&UploadType=eteventstream] status=Processing
+[2017.11.16-18.41.53:516][763]LogModuleManager: Shutting down and abandoning module SSL (40)
+[2017.11.16-18.41.53:554][763]LogModuleManager: Shutting down and abandoning module HTTPChunkInstaller (36)
+[2017.11.16-18.41.53:555][763]LogModuleManager: Shutting down and abandoning module AnimationModifiers (34)
+[2017.11.16-18.41.53:557][763]LogModuleManager: Shutting down and abandoning module PropertyEditor (33)
+[2017.11.16-18.41.53:566][763]LogModuleManager: Shutting down and abandoning module AudioEditor (30)
+[2017.11.16-18.41.53:592][763]LogModuleManager: Shutting down and abandoning module TextureCompressor (28)
+[2017.11.16-18.41.53:593][763]LogModuleManager: Shutting down and abandoning module ShaderCore (26)
+[2017.11.16-18.41.53:594][763]LogModuleManager: Shutting down and abandoning module Landscape (24)
+[2017.11.16-18.41.53:594][763]LogModuleManager: Shutting down and abandoning module SlateRHIRenderer (22)
+[2017.11.16-18.41.53:597][763]LogModuleManager: Shutting down and abandoning module OpenGLDrv (20)
+[2017.11.16-18.41.53:599][763]LogModuleManager: Shutting down and abandoning module D3D11RHI (18)
+[2017.11.16-18.41.53:599][763]LogModuleManager: Shutting down and abandoning module AnimGraphRuntime (16)
+[2017.11.16-18.41.53:600][763]LogModuleManager: Shutting down and abandoning module Renderer (14)
+[2017.11.16-18.41.53:600][763]LogModuleManager: Shutting down and abandoning module Engine (12)
+[2017.11.16-18.41.53:600][763]LogModuleManager: Shutting down and abandoning module CoreUObject (10)
+[2017.11.16-18.41.53:600][763]LogModuleManager: Shutting down and abandoning module NetworkFile (8)
+[2017.11.16-18.41.53:601][763]LogModuleManager: Shutting down and abandoning module StreamingFile (6)
+[2017.11.16-18.41.53:601][763]LogModuleManager: Shutting down and abandoning module SandboxFile (4)
+[2017.11.16-18.41.53:602][763]LogModuleManager: Shutting down and abandoning module PakFile (2)
+[2017.11.16-18.41.53:606][763]LogExit: Exiting.
+[2017.11.16-18.41.53:641][763]Log file closed, 11/16/17 19:41:53

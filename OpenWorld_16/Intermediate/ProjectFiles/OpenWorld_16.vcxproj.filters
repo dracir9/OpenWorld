@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<None Include="..\..\OpenWorld_16.uproject" />
+		<Filter Include="Source">
+			<UniqueIdentifier>{28A65DBD-E98E-4593-82F7-45F9F1DA0700}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Source\OpenWorld_16.Target.cs">
+			<Filter>Source</Filter>
+		</None >
+		<None Include="..\..\Source\OpenWorld_16Editor.Target.cs">
+			<Filter>Source</Filter>
+		</None >
+		<Filter Include="Config">
+			<UniqueIdentifier>{CFCD4C91-B6F1-4993-8F12-E3FB8570CCFE}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Config\DefaultEditor.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultEditorPerProjectUserSettings.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultEngine.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultGame.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultInput.ini">
+			<Filter>Config</Filter>
+		</None >
+		<Filter Include="Plugins">
+			<UniqueIdentifier>{9FFC2683-6AD9-4AF5-B63D-C807240E6CAD}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Plugins\UnrealFastNoisePlugin">
+			<UniqueIdentifier>{79473A68-281C-499F-98EA-504C0547350F}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Plugins\UnrealFastNoisePlugin\Source">
+			<UniqueIdentifier>{EFB5B2C4-F61C-4C4A-AD7D-4CFCD012DE93}</UniqueIdentifier>
+		</Filter>
+		<Filter Include="Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin">
+			<UniqueIdentifier>{DA46B0DF-D520-44EF-A460-1CA6C87CA73A}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\UnrealFastNoisePlugin.Build.cs">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin</Filter>
+		</None >
+		<Filter Include="Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private">
+			<UniqueIdentifier>{6C20DDC7-6422-4EEB-87FB-9AF0781E8D2D}</UniqueIdentifier>
+		</Filter>
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFN3SelectModule.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFNAddModule.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFNBlendModule.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFNBlueprintFunctionLibrary.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFNConstantModule.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFNNoiseGenerator.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFNScaleBiasModule.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFNSelectModule.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFNSplineGenerator.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFNUberNoiseModule.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UFNWarpModule.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UnrealFastNoisePlugin.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\UnrealFastNoisePluginPrivatePCH.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private</Filter>
+		</ClInclude >
+		<Filter Include="Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\FastNoise">
+			<UniqueIdentifier>{7905EBF0-95B1-42EA-9D90-A5F9CAA84F18}</UniqueIdentifier>
+		</Filter>
+		<ClCompile Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\FastNoise\FastNoise.cpp">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\FastNoise</Filter>
+		</ClCompile >
+		<None Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\FastNoise\LICENSE">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\FastNoise</Filter>
+		</None >
+		<None Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\FastNoise\README.md">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Private\FastNoise</Filter>
+		</None >
+		<Filter Include="Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public">
+			<UniqueIdentifier>{43367CC3-4B62-4F75-9E2E-B2CDD9ACB5FF}</UniqueIdentifier>
+		</Filter>
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFN3SelectModule.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFNAddModule.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFNBlendModule.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFNBlueprintFunctionLibrary.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFNConstantModule.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFNNoiseGenerator.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFNScaleBiasModule.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFNSelectModule.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFNSplineGenerator.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFNUberNoiseModule.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UFNWarpModule.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\UnrealFastNoisePlugin.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public</Filter>
+		</ClInclude >
+		<Filter Include="Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\FastNoise">
+			<UniqueIdentifier>{1DCD143B-5619-41C3-AACA-D486236FDC89}</UniqueIdentifier>
+		</Filter>
+		<ClInclude Include="..\..\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\FastNoise\FastNoise.h">
+			<Filter>Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\FastNoise</Filter>
+		</ClInclude >
+		<None Include="..\..\Plugins\UnrealFastNoisePlugin\UnrealFastNoisePlugin.uplugin">
+			<Filter>Plugins\UnrealFastNoisePlugin</Filter>
+		</None >
+		<Filter Include="Plugins\UnrealFastNoisePlugin\Resources">
+			<UniqueIdentifier>{537D65AB-3DC8-4CD6-AC92-08830ACB7E8F}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Plugins\UnrealFastNoisePlugin\Resources\Icon128.png">
+			<Filter>Plugins\UnrealFastNoisePlugin\Resources</Filter>
+		</None >
+		<Filter Include="Source\OpenWorld_16">
+			<UniqueIdentifier>{916775EB-78D1-4DC4-BC8A-4B7D16848C16}</UniqueIdentifier>
+		</Filter>
+		<ClCompile Include="..\..\Source\OpenWorld_16\Chunk.cpp">
+			<Filter>Source\OpenWorld_16</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\OpenWorld_16\Chunk.h">
+			<Filter>Source\OpenWorld_16</Filter>
+		</ClInclude >
+		<None Include="..\..\Source\OpenWorld_16\OpenWorld_16.Build.cs">
+			<Filter>Source\OpenWorld_16</Filter>
+		</None >
+		<ClCompile Include="..\..\Source\OpenWorld_16\OpenWorld_16.cpp">
+			<Filter>Source\OpenWorld_16</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\OpenWorld_16\OpenWorld_16.h">
+			<Filter>Source\OpenWorld_16</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\OpenWorld_16\SurfaceExtractor.cpp">
+			<Filter>Source\OpenWorld_16</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\OpenWorld_16\SurfaceExtractor.h">
+			<Filter>Source\OpenWorld_16</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\OpenWorld_16\WorldGameMode.cpp">
+			<Filter>Source\OpenWorld_16</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\OpenWorld_16\WorldGameMode.h">
+			<Filter>Source\OpenWorld_16</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\OpenWorld_16\WorldManager.cpp">
+			<Filter>Source\OpenWorld_16</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\OpenWorld_16\WorldManager.h">
+			<Filter>Source\OpenWorld_16</Filter>
+		</ClInclude >
+	</ItemGroup>
+</Project>
