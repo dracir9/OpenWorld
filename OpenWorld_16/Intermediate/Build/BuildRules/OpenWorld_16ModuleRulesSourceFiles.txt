@@ -1,4 +1,0 @@
-C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Source\OpenWorld_16\OpenWorld_16.Build.cs
-C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\UnrealFastNoisePlugin.Build.cs
-C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Source\OpenWorld_16.Target.cs
-C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Source\OpenWorld_16Editor.Target.cs
