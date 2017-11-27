@@ -23,11 +23,11 @@
 /wd4838
 /w44668
 /I "C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Source"
-/I "C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Source"
-/I "C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public"
-/I "C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\FastNoise"
-/I "C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Inc\UnrealFastNoisePlugin"
-/I "C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin"
+/I C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Source
+/I C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public
+/I C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin\Public\FastNoise
+/I C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Inc\UnrealFastNoisePlugin
+/I C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Source\UnrealFastNoisePlugin
 /I "C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Source\Runtime\Core\Public"
 /I "C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Source\Runtime\Core\Public\Internationalization"
 /I "C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Source\Runtime\Core\Public\Async"
@@ -319,9 +319,9 @@
 /FI"C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.h"
 /Yu"C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.h"
 /Fp"C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.h.pch"
-"C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\Module.UnrealFastNoisePlugin.cpp"
-/FI"C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\Definitions.UnrealFastNoisePlugin.h"
-/Fo"C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\Module.UnrealFastNoisePlugin.cpp.obj"
+"C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\Module.UnrealFastNoisePlugin.cpp"
+/FI"C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\Definitions.UnrealFastNoisePlugin.h"
+/Fo"C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\Module.UnrealFastNoisePlugin.cpp.obj"
 /TP
 /GR-
 /W4

@@ -534,19 +534,18 @@ PolygoniseTri(grid,iso,triangles,5,6,1,4);
 int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 {
 	static const char mask[6][4] = 
-	{{2,1,3,7},
-	{0,2,6,7},
-	{0,4,6,7},
+	{{0,2,3,7},
+	{0,2,7,6},
+	{0,4,7,6},
 	{0,6,1,2},
-	{0,6,1,4},
+	{0,6,4,1},
 	{5,6,1,4}};
 
 	int ntri = 0;
 	
 	for (char i = 0; i < 6; i++)
 	{
-		TRIANGLE tri[2];
-
+		
 		int v0 = mask[i][0];
 		int v1 = mask[i][1];
 		int v2 = mask[i][2];
@@ -567,69 +566,197 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 		case 0x00:
 		case 0x0F:
 			break;
+
+		/// Case 14
 		case 0x0E:
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),////////////////////////?POSSIBLE
+				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),
+				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3])));
+			ntri++;
+			break;
+
+		/// Case 1
 		case 0x01:
-			tri[0].p[0] = VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]);
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),/////////////////////////////?POSSIBLE
+				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),
+				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3])));
+			/*tri[0].p[0] = VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]);
 			tri[0].p[1] = VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]);
-			tri[0].p[2] = VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]);
+			tri[0].p[2] = VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]);*/
 			ntri++;
 			break;
+
+		/// Case 13
 		case 0x0D:
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v1], g.p[v0], g.val[v1], g.val[v0]),////////////?POSSIBLE
+				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),
+				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2])));
+			ntri++;
+			break;
+
+		/// Case 2
 		case 0x02:
-			tri[0].p[0] = VertexInterp(iso, g.p[v1], g.p[v0], g.val[v1], g.val[v0]);
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v1], g.p[v0], g.val[v1], g.val[v0]),///////////////?POSSIBLE
+				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),
+				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2])));
+			/*tri[0].p[0] = VertexInterp(iso, g.p[v1], g.p[v0], g.val[v1], g.val[v0]);
 			tri[0].p[1] = VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]);
-			tri[0].p[2] = VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]);
+			tri[0].p[2] = VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]);*/
 			ntri++;
 			break;
+
+		/// Case 12
 		case 0x0C:
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),//////////////////////?POSSIBLE
+				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]),
+				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3])));
+			ntri++;
+
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),//////////////////////?POSSIBLE
+				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]),
+				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2])));
+			ntri++;
+			break;
+
+		/// Case 3
 		case 0x03:
-			tri[0].p[0] = VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]);
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),/////////////////-NOT LIKELY
+				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]),
+				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3])));
+			/*tri[0].p[0] = VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]);
 			tri[0].p[1] = VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]);
-			tri[0].p[2] = VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]);
+			tri[0].p[2] = VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]);*/
 			ntri++;
-			tri[1].p[0] = tri[0].p[2];
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),////////////////-NOT LIKELY
+				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]),
+				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2])));
+			/*tri[1].p[0] = tri[0].p[2];
 			tri[1].p[1] = VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]);
-			tri[1].p[2] = tri[0].p[1];
+			tri[1].p[2] = tri[0].p[1];*/
 			ntri++;
 			break;
+
+		/// Case 11
 		case 0x0B:
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v2], g.p[v0], g.val[v2], g.val[v0]),///NOT YET FIXED
+
+				VertexInterp(iso, g.p[v2], g.p[v1], g.val[v2], g.val[v1]),
+				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
+			ntri++;
+			break;
+
+		/// Case 4
 		case 0x04:
-			tri[0].p[0] = VertexInterp(iso, g.p[v2], g.p[v0], g.val[v2], g.val[v0]);
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v2], g.p[v1], g.val[v2], g.val[v1]),//////////////////////
+				VertexInterp(iso, g.p[v2], g.p[v0], g.val[v2], g.val[v0]),
+				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
+			/*tri[0].p[0] = VertexInterp(iso, g.p[v2], g.p[v0], g.val[v2], g.val[v0]);
 			tri[0].p[1] = VertexInterp(iso, g.p[v2], g.p[v1], g.val[v2], g.val[v1]);
-			tri[0].p[2] = VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]);
+			tri[0].p[2] = VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]);*/
 			ntri++;
 			break;
+
+		///Case 10
 		case 0x0A:
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]),/// NOT YET FIXED
+				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),
+				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3])));
+			ntri++;
+
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),/// NOT YET FIXED
+				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]),
+				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
+			ntri++;
+			break;
+
+		/// Case 5
 		case 0x05:
-			tri[0].p[0] = VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]);
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),/////////////////////
+				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]),
+				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3])));
+			/*tri[0].p[0] = VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]);
 			tri[0].p[1] = VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]);
-			tri[0].p[2] = VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]);
+			tri[0].p[2] = VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]);*/
 			ntri++;
-			tri[1].p[0] = tri[0].p[0];
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),////////////////////
+				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]),
+				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
+			/*tri[1].p[0] = tri[0].p[0];
 			tri[1].p[1] = VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]);
-			tri[1].p[2] = tri[0].p[1];
+			tri[1].p[2] = tri[0].p[1];*/
 			ntri++;
 			break;
+
+		/// Case 9
 		case 0x09:
-		case 0x06:
-			tri[0].p[0] = VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]);
-			tri[0].p[1] = VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]);
-			tri[0].p[2] = VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]);
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),/// NOT TESTED YET
+				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),
+				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
 			ntri++;
-			tri[1].p[0] = tri[0].p[0];
-			tri[1].p[1] = VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]);
-			tri[1].p[2] = tri[0].p[2];
+
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),/// NOT TESTED YET
+				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),
+				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
 			ntri++;
 			break;
+
+		///Case 6
+		case 0x06:
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),/// NOT TESTED YET
+				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),
+				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
+			/*tri[0].p[0] = VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]);
+			tri[0].p[1] = VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]);
+			tri[0].p[2] = VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]);*/
+			ntri++;
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),/// NOT TESTED YET
+				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),
+				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
+			/*tri[1].p[0] = tri[0].p[0];
+			tri[1].p[1] = VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]);
+			tri[1].p[2] = tri[0].p[2];*/
+			ntri++;
+			break;
+
+		/// Case 7
 		case 0x07:
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v3], g.p[v0], g.val[v3], g.val[v0]),////////////////////
+				VertexInterp(iso, g.p[v3], g.p[v2], g.val[v3], g.val[v2]),
+				VertexInterp(iso, g.p[v3], g.p[v1], g.val[v3], g.val[v1])));
+			ntri++;
+			break;
+
+		/// Case 8
 		case 0x08:
-			tri[0].p[0] = VertexInterp(iso, g.p[v3], g.p[v0], g.val[v3], g.val[v0]);
+			triangles.Add(TRIANGLE(
+				VertexInterp(iso, g.p[v3], g.p[v0], g.val[v3], g.val[v0]),/// NOT TESTED YET
+				VertexInterp(iso, g.p[v3], g.p[v2], g.val[v3], g.val[v2]),
+				VertexInterp(iso, g.p[v3], g.p[v1], g.val[v3], g.val[v1])));
+			/*tri[0].p[0] = VertexInterp(iso, g.p[v3], g.p[v0], g.val[v3], g.val[v0]);
 			tri[0].p[1] = VertexInterp(iso, g.p[v3], g.p[v2], g.val[v3], g.val[v2]);
-			tri[0].p[2] = VertexInterp(iso, g.p[v3], g.p[v1], g.val[v3], g.val[v1]);
+			tri[0].p[2] = VertexInterp(iso, g.p[v3], g.p[v1], g.val[v3], g.val[v1]);*/
 			ntri++;
 			break;
 		}
-		triangles.Add(tri[0]);
 	}
 	return(ntri);
 }

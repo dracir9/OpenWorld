@@ -19,7 +19,7 @@ void AWorldGameMode::BeginPlay()
 
 	if (Voxels.Num() <= 0) Voxels.SetNum(5);
 
-
+	
 	UpdatePosition();
 	LoadMap();
 

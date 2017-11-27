@@ -17,7 +17,27 @@ struct TRIANGLE {
 	FVector p[3];
 	int32 mat[3];
 
-	TRIANGLE(FVector p1 = FVector(0,0,0), FVector p2, FVector p3, int32 m1 = 0, int32 m2 = 0, int32 m3 = 0) {
+	TRIANGLE() {
+		p[0] = FVector(0, 0, 0);
+		p[1] = FVector(0, 0, 0);
+		p[2] = FVector(0, 0, 0);
+
+		mat[0] = 0;
+		mat[1] = 0;
+		mat[2] = 0;
+	}
+
+	TRIANGLE(int32 m1, int32 m2, int32 m3) {
+		p[0] = FVector(0, 0, 0);
+		p[1] = FVector(0, 0, 0);
+		p[2] = FVector(0, 0, 0);
+
+		mat[0] = m1;
+		mat[1] = m2;
+		mat[2] = m3;
+	}
+
+	TRIANGLE(FVector p1, FVector p2, FVector p3, int32 m1 = 0, int32 m2 = 0, int32 m3 = 0) {
 		p[0] = p1;
 		p[1] = p2;
 		p[2] = p3;

@@ -70,15 +70,17 @@ void AChunk::InitializeChunk()
 			{
 				for (int8 z = 0; z < ChunkSize; z++)
 				{
-					int16 i = x + (y * ChunkSize) + (z * ChunkSize * ChunkSize);
+					int32 i = x + (y * ChunkSize) + (z * ChunkSize * ChunkSize);
 					heigh = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
-					heigh = heigh * 5 + 5;
+					heigh = (heigh * 5 + 5) * 100;
 
-					if (z < heigh) {
-						if (z < 5) {
+					int32 k = z* VoxelSize;
+
+					if (k < heigh) {
+						if (k < 500) {
 							ChunkDensity[i] = 1;
 						}
-						else if (z < 7) {
+						else if (k < 700) {
 							ChunkDensity[i] = 2;
 						}
 						else
@@ -124,12 +126,17 @@ void AChunk::RenderChunk()
 	for (int8 x = 0; x < ChunkSize; x++) {
 		for (int8 y = 0; y < ChunkSize; y++) {
 			for (int8 z = 0; z < ChunkSize; z++) {
+
 				// Fills the grid used to calculate the surface
 				for (int8 a = 0; a < 8; a++)
 				{
 					int16 ID = 0;
 					FVector mask = grid[a];
 					FVector p = FVector(x, y, z) + mask;
+
+					///*/////////////////////
+					// Get ID of the vertex
+					///*/////////////////////
 
 					// If point is over or under the chunk's limit set it as air.
 					if (p.Z >= ChunkSize || p.Z < 0) {
@@ -146,17 +153,19 @@ void AChunk::RenderChunk()
 					
 					// If point is inside the chunk
 					else {
-						int16 i = p.X + (p.Y * ChunkSize) + (p.Z * ChunkSize * ChunkSize);
+						int32 i = p.X + (p.Y * ChunkSize) + (p.Z * ChunkSize * ChunkSize);
 						ID = ChunkDensity[i];
 						p *= VoxelSize;
 					}
 
+					///*/////////////////////////////
 					// Set the material for vertex
-					
+					///*/////////////////////////////
+
 					if (ID == 0) {
 						points.p[a] = p;
 						points.val[a] = 255;
-						points.mat[a] = ID;
+						points.mat[a] = 0;
 					}
 					// If there is no neighbour chunk mark this chunk to be updated.
 					else if (ID == -1) {

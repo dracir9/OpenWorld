@@ -7,8 +7,8 @@
 /IGNORE:4221
 /NODEFAULTLIB
 "C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.h.obj"
-"C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\Module.UnrealFastNoisePlugin.cpp.obj"
-"C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\UnrealFastNoisePlugin.generated.cpp.obj"
+"C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\Module.UnrealFastNoisePlugin.cpp.obj"
+"C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\UnrealFastNoisePlugin.generated.cpp.obj"
 "C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Intermediate\Build\Win64\UE4Editor\Development\UnrealFastNoisePlugin\PCLaunch.rc.res"
 "C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Intermediate\Build\Win64\UE4Editor\Development\ModuleVersionResource.rc.inl.res"
-/OUT:"C:\Users\Admin\Documents\Unreal Projects\OpenWorld_16\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UnrealFastNoisePlugin.lib"
+/OUT:"C:\Users\Admin\GitHub\OpenWorld\Plugins\UnrealFastNoisePlugin\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-UnrealFastNoisePlugin.lib"
