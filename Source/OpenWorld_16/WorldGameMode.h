@@ -17,6 +17,7 @@ USTRUCT()
 struct FMesh {
 	GENERATED_BODY()
 
+
 	UPROPERTY(EditAnywhere)
 		TArray<FVector> Vertices;
 
@@ -154,6 +155,18 @@ public:
 	// Remove chunk time
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
 		float time1;
+
+	//
+	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
+		FString SMeshSizeMax;
+
+	//
+	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
+		FString SMeshSizeMin = "999999";
+
+	//
+	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
+		FString SMeshSizeAll;
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////*****     NOISE SETTINGS    *****////////////////////////////////////////////////////////////////////////////////////

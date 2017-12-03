@@ -75,6 +75,7 @@ public:
 	// Stores the reference to World Game Mode
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		class AWorldGameMode* GameMode;
+
 	// Stores the size of the voxels
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		int32 VoxelSize;

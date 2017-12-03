@@ -102,7 +102,7 @@ void AWorldGameMode::LoadMap()
 				if (!NChunk) 
 				{
 					NChunk = GetWorld()->SpawnActorDeferred<AChunk>(Chunk, SpawnTransform);
-					NChunk->SetActorLabel(*FString::Printf(TEXT("Chunk_%d_%d"), x + FMath::Round(ChunkCenter.X), y + FMath::Round(ChunkCenter.Y)));
+					NChunk->SetActorLabel(*FString::Printf(TEXT("Chunk_%d_%d"), x + FMath::RoundToInt(ChunkCenter.X), y + FMath::RoundToInt(ChunkCenter.Y)));
 					NChunk->Noise = Noise;
 					NChunk->VoxelSize = VoxelSize;
 					NChunk->ChunkSize = ChunkSize;

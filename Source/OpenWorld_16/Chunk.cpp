@@ -113,7 +113,7 @@ void AChunk::RenderChunk()
 
 	//Initializes the variables used to store all the mesh data.
 	TArray<FMesh> meshSections;
-	//meshSections.SetNum(1024);
+	
 
 	if (!GameMode) {
 		UE_LOG(LogTemp, Error, TEXT("Game Mode ref is null!!"));
@@ -251,7 +251,16 @@ void AChunk::RenderChunk()
 			}
 		}
 	}
-
+	
+	int size = meshSections.GetAllocatedSize();
+	if (size > FCString::Atoi(*(GameMode->SMeshSizeMax))){
+		GameMode->SMeshSizeMax = FString::FromInt(size);
+	}
+	else if (size < FCString::Atoi(*(GameMode->SMeshSizeMin))) {
+		GameMode->SMeshSizeMin = FString::FromInt(size);
+	}
+	GameMode->SMeshSizeAll = FString::FromInt(FCString::Atoi(*(GameMode->SMeshSizeAll)) + size);
+	
 	for (int16 s = 0; s < meshSections.Num(); s++)
 	{
 		if (!meshSections.IsValidIndex(s)) {
