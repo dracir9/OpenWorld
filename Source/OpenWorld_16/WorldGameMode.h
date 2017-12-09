@@ -6,7 +6,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "UFNBlueprintFunctionLibrary.h"
 #include "FastNoise/FastNoise.h"
-//#include "SurfaceExtractor.h"
+#include "ProceduralMeshComponent.h"
+#include "RuntimeMeshComponent.h"
+#include "Voxels/Voxel.h"
 #include "OpenWorld_16.h"
 #include "WorldGameMode.generated.h"
 
@@ -55,17 +57,22 @@ struct FDynamicMaterial {
 };
 
 USTRUCT()
-struct FVoxelTipes {
+struct FVoxelS {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
+	/* Regular material instance used when there is no material blend. It reduces the amount of 
+	Dynamic meterial Inatances and increases performance (It has a bit lower shader instructions too). */
+	UPROPERTY(EditDefaultsOnly)
 		UMaterialInstance* Mat;
 
-	UPROPERTY(EditAnywhere)
+	/* Base texture of the material, used in dynamic material when blending materials */
+	UPROPERTY(EditDefaultsOnly)
 		UTexture* BaseColor;
 
-	UPROPERTY(EditAnywhere)
+	/* Normal map texture of the material, used in dynamic material when blending materials */
+	UPROPERTY(EditDefaultsOnly)
 		UTexture* NormalMap;
+
 };
 
 /**
@@ -120,7 +127,7 @@ public:
 
 	// Stores the materials for all the tipes of voxel
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Varaibles")
-		TArray<FVoxelTipes> Voxels;
+		TArray<FVoxelS> Voxels;
 
 	// Stores dynamic material instances
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Variables")
@@ -132,7 +139,7 @@ public:
 
 	//Stores the generated chunks
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
-		TMap<FVector2D, class AChunk*> World;
+		TMap<FVector2D, AChunk*> World;
 
 	UPROPERTY()
 		FTimerHandle CountdownTimerHandle;
@@ -165,8 +172,8 @@ public:
 		FString SMeshSizeMin = "999999";
 
 	//
-	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		FString SMeshSizeAll;
+	UPROPERTY(EditAnywhere, Category = "Debug Variables")
+		FString SDensitySize;
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////*****     NOISE SETTINGS    *****////////////////////////////////////////////////////////////////////////////////////
@@ -215,7 +222,7 @@ public:
 
 	//Cheks if a chunk is in the render range
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Check Range", Keywords = "Range"), Category = Procedural)
-		bool InRange(int32 x, int32 y, FVector2D Center, int32 Range);
+		bool InRange(const int32& x, const int32& y, const FVector2D& Center, const int32& Range);
 
 	//Delete chunks
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Unload map", Keywords = "Unload"), Category = Procedural)
@@ -226,7 +233,7 @@ public:
 		void LoadMap();
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Voxel from world", Keywords = "block"), Category = Procedural)
-		int32 GetVoxelFromWorld(FVector Location);
+		int32 GetVoxelFromWorld(const FVector& Location);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set voxel from world", Keywords = "block"), Category = Procedural)
 		bool SetVoxelFromWorld(FVector Location, int32 value);

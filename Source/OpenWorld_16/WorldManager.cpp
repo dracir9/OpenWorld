@@ -68,7 +68,7 @@ void AWorldManager::LoadMap()
 			}
 			else {
 				AChunk* NChunk = World.FindRef(FVector2D(x + ChunkCenter.X, y + ChunkCenter.Y));
-				if (NChunk->NeedUpdate) {
+				if (NChunk->bNeedUpdate) {
 					NChunk->RenderChunk();
 				}
 			}

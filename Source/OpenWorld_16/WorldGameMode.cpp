@@ -2,6 +2,7 @@
 
 #include "WorldGameMode.h"
 #include "Chunk.h"
+#include "Voxels/Terrain.h"
 
 // Sets default values
 AWorldGameMode::AWorldGameMode()
@@ -18,11 +19,9 @@ void AWorldGameMode::BeginPlay()
 	Noise = UUFNBlueprintFunctionLibrary::CreateNoiseGenerator(this, NoiseType, CellularDistanceFunction, CellularReturnType, FractalType, Interpolation, seed, Octaves, Frequency, Lacunarity, FractialGain);
 
 	if (Voxels.Num() <= 0) Voxels.SetNum(5);
-
 	
 	UpdatePosition();
 	LoadMap();
-
 
 	double end = FPlatformTime::Seconds();
 	double time = (end - start) * 1000;
@@ -60,7 +59,7 @@ bool AWorldGameMode::UpdatePosition()
 	return false;
 }
 
-bool AWorldGameMode::InRange(int32 x, int32 y, FVector2D Center, int32 Range)
+bool AWorldGameMode::InRange(const int32& x, const int32& y, const FVector2D& Center, const int32& Range)
 {
 	if ((FVector2D(x, y) - Center).Size() < Range) {
 		return true;
@@ -121,9 +120,9 @@ void AWorldGameMode::LoadMap()
 	{
 		for (auto elem = World.CreateIterator(); elem; ++elem)
 		{
-			if (elem.Value()->NeedUpdate)
+			if (elem.Value()->bNeedUpdate)
 			{
-				elem.Value()->NeedUpdate = false;
+				elem.Value()->bNeedUpdate = false;
 				elem.Value()->RenderChunk();
 			}
 		}
@@ -132,20 +131,26 @@ void AWorldGameMode::LoadMap()
 	time = (end - start) * 1000;
 }
 
-int32 AWorldGameMode::GetVoxelFromWorld(FVector Location)
+int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 {
-	FVector2D ChunkPos = FVector2D(floor(round(Location.X) / (ChunkSize * VoxelSize)), floor(round(Location.Y) / (ChunkSize * VoxelSize)));
-	FVector LocalBlockPos = FVector((Location.X - (ChunkPos.X * ChunkSize * VoxelSize)) / VoxelSize, (Location.Y - (ChunkPos.Y * ChunkSize * VoxelSize)) / VoxelSize, Location.Z / VoxelSize);
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::FromInt(LocalBlockPos.X) + " " + FString::FromInt(LocalBlockPos.Y));
-	int32 ID = LocalBlockPos.X + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z * ChunkSize * ChunkSize;
+	// Calculate Chunk index
+	const FVector2D ChunkIndex = FVector2D(floor(round(Location.X) / (ChunkSize * VoxelSize)), floor(round(Location.Y) / (ChunkSize * VoxelSize)));
+
+	// Calculate local coordinates of the voxel so it can be found inside chunk
+	const FVector LocalBlockPos = FVector((Location.X - (ChunkIndex.X * ChunkSize * VoxelSize)) / VoxelSize, (Location.Y - (ChunkIndex.Y * ChunkSize * VoxelSize)) / VoxelSize, Location.Z / VoxelSize);
+
+	const int32 Idx = LocalBlockPos.X + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z * ChunkSize * ChunkSize;
+
+	// Check if local coordinates are inside the actual chunk, it should always be inside!
 	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize) {
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString("Input:" + Location.ToString() + "Output: " + LocalBlockPos.ToString()));
 		UE_LOG(Terrain_Renderer, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
 		return int32(0);
 	}
-	if (World.Contains(ChunkPos)) {
-		AChunk* NChunk = World.FindRef(ChunkPos);
-		return NChunk->GetVoxelDensity(ID);
+
+	// Finally get the voxel ID
+	AChunk* NChunk = World.FindRef(ChunkIndex);
+	if (NChunk) {		
+		return NChunk->GetVoxelDensity(Idx);
 	}
 	//*****************  If some chunks not found:
 	return int32(-1);
@@ -153,26 +158,29 @@ int32 AWorldGameMode::GetVoxelFromWorld(FVector Location)
 
 bool AWorldGameMode::SetVoxelFromWorld(FVector Location, int32 value)
 {
-	FVector2D ChunkPos = FVector2D(floor(round(Location.X) / (ChunkSize * VoxelSize)), floor(round(Location.Y) / (ChunkSize * VoxelSize)));
-	FVector LocalBlockPos = FVector((Location.X - (ChunkPos.X * ChunkSize * VoxelSize)) / VoxelSize, (Location.Y - (ChunkPos.Y * ChunkSize * VoxelSize)) / VoxelSize, Location.Z / VoxelSize);
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::FromInt(LocalBlockPos.X) + " " + FString::FromInt(LocalBlockPos.Y));
-	int32 ID = LocalBlockPos.X + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z * ChunkSize * ChunkSize;
+	// Calculate Chunk index
+	const FVector2D ChunkIndex = FVector2D(floor(round(Location.X) / (ChunkSize * VoxelSize)), floor(round(Location.Y) / (ChunkSize * VoxelSize)));
+
+	// Calculate local coordinates of the voxel so it can be found inside chunk
+	const FVector LocalBlockPos = FVector((Location.X - (ChunkIndex.X * ChunkSize * VoxelSize)) / VoxelSize, (Location.Y - (ChunkIndex.Y * ChunkSize * VoxelSize)) / VoxelSize, Location.Z / VoxelSize);
+
+	const int32 Idx = LocalBlockPos.X + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z * ChunkSize * ChunkSize;
+
+	// Check if local coordinates are inside the actual chunk, it should always be inside!
 	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize) {
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString("Input:" + Location.ToString() + "Output: " + LocalBlockPos.ToString()));
 		UE_LOG(Terrain_Renderer, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
 		return int32(0);
 	}
-	if (World.Contains(ChunkPos)) {
-		AChunk* NChunk = World.FindRef(ChunkPos);
 
-		if (NChunk->GetVoxelDensity(ID) == value) return true;
-
-		NChunk->SetVoxelDensity(ID, value);
+	// Finally change the value
+	AChunk* NChunk = World.FindRef(ChunkIndex);
+	if (NChunk) {
+		if (!NChunk->SetVoxelDensity(Idx, value)) return true;
 		NChunk->RenderChunk();
 		return true;
 	}
-	//*****************  If chunk not found:
 
+	//*****************  If chunk not found:
 	return false;
 }
 
@@ -213,46 +221,60 @@ FString AWorldGameMode::CalcMatIndex(int32 & id1, int32 & id2, int32 & id3)
 {
 	int32 tmp;
 
-	if (id3>id2) {
+	// Order input from bigger to smaller
+	if (id3>id2) 
+	{
 		tmp = id3;
 		id3 = id2;
 		id2 = tmp;
 	}
-	if (id3>id1) {
+	if (id3>id1) 
+	{
 		tmp = id3;
 		id3 = id1;
 		id1 = tmp;
 	}
-	if (id2>id1) {
+	if (id2>id1) 
+	{
 		tmp = id2;
 		id2 = id1;
 		id1 = tmp;
 	}
 	
-	if (id1 == id2) {
+	// Change input so there is no duplicated index
+	if (id1 == id2) 
+	{
 		if (id1 == 1)
+		{
 			id1 = 2;
-		else
-			id2 = 1;
-	}
-	if (id2 == id3) {
-		if (id2 == 0) {
-			id2 = 1;
-			if (id1 == 1) id1 = 2;
 		}
 		else
+		{
+			id2 = 1;
+		}
+	}
+	if (id2 == id3) 
+	{
+		if (id2 == 0) 
+		{
+			id2 = 1;
+			if (id1 == 1)
+			{
+				id1 = 2;
+			}
+		}
+		else
+		{
 			id3 = 0;
+		}
 	}
 
+	// Finally construct the material index
 	return FString(FString::FromInt(id1) + "-" + FString::FromInt(id2) + "-" + FString::FromInt(id3));
 }
 
 FDynamicMaterial AWorldGameMode::GetDynMat(int32 & id1, int32 & id2, int32 & id3)
 {
-	int t1 = id1;
-	int t2 = id2;
-	int t3 = id3;
-
 	FString matIdx = CalcMatIndex(id1, id2, id3);
 	FDynamicMaterial mat;
 	if (DynamicMatChache.Contains(matIdx)) {
@@ -277,7 +299,7 @@ FDynamicMaterial AWorldGameMode::GetDynMat(int32 & id1, int32 & id2, int32 & id3
 		mat.index = idx;
 
 		DynamicMatChache.Add(matIdx, mat);
-
+		
 		return mat;
 	}
 }

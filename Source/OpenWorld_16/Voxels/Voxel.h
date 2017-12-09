@@ -9,13 +9,17 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class OPENWORLD_16_API UVoxel : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere)
-		int64 fillstate;
 	
+	int32 ID;
+	
+	virtual bool IsSolid(const int32& x, const int32& y, const int32& z) const 
+	{
+		return true;
+	}
 };

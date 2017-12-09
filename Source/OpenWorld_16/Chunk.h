@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WorldManager.h"
+#include "ProceduralMeshComponent.h"
+#include "RuntimeMeshComponent.h"
 #include "WorldGameMode.h"
+#include "Voxels/Voxel.h"
+#include "SurfaceExtractor.h"
 #include "Chunk.generated.h"
 
 UCLASS()
@@ -21,26 +24,42 @@ public:
 	void RemoveChunk();
 
 	/** Enables using RuntimeMesh */
-	void EnableRuntime() { RuntimeEnabled = true; };
+	void EnableRuntime()
+	{ 
+		bRuntimeEnabled = true; 
+	};
 	
 	/** Check if we can use RuntimeMesh*/
-	bool CanUseRuntime() { return RuntimeEnabled; };
+	bool CanUseRuntime()
+	{
+		return bRuntimeEnabled;
+	};
 
 	/** Returns the voxel density of a given location*/
-	int32 GetVoxelDensity(int32 index) { return ChunkDensity[index]; };
+	int32 GetVoxelDensity(int32 index) 
+	{ 
+		return ChunkDensity[index]; 
+	};
 
 	/**Returns the voxel density of a given location*/
-	int32 GetVoxelDensity(int32 x, int32 y, int32 z) { 
+	int32 GetVoxelDensity(const int32& x, const int32& y, const int32& z) const 
+	{ 
 		int32 idx = x + y * ChunkSize + z * ChunkSize * ChunkSize; 
 		return ChunkDensity[idx];
 	};
 
 	/** Set the voxel density at given location*/
-	bool SetVoxelDensity(int32 index, int32 value) {
-		if (index >= 0 && index < ChunkDensity.Num()) ChunkDensity[index] = value;
-		else return false;
+	bool SetVoxelDensity(const int32& index, const int32& value) 
+	{
+		if (index >= 0 && index < ChunkDensity.Num()) 
+		{
+			// If the voxel alredy has this value there is no need to change it
+			if (ChunkDensity[index] == value) return false;
 
-		return true;
+			ChunkDensity[index] = value;
+			return true;
+		}
+		else return false;
 	};
 
 	// Calculates all the block data
@@ -90,16 +109,20 @@ public:
 
 	// Sets the chunk to be updated in the next load world cicle
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		bool NeedUpdate = false;
+		bool bNeedUpdate = false;
 
 private:
 
 	// Stores the voxel IDs of the chunk
 	UPROPERTY()
-	TArray<uint16> ChunkDensity;
+		TArray<uint16> ChunkDensity;
+
+	UPROPERTY()
+		TArray<UVoxel*> Density;
 
 	/// Can we use RuntimeMeshComponent plugin?
-	bool RuntimeEnabled = true;
+	UPROPERTY()
+		bool bRuntimeEnabled = true;
 
 };
 

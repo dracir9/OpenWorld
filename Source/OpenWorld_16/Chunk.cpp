@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Chunk.h"
+#include "Voxels/Voxel.h"
 #include "ProceduralMeshComponent.h"
 
 //                 v7______________________v6
@@ -48,6 +49,8 @@ void AChunk::BeginPlay()
 {
 	Super::BeginPlay();
 	GameMode = (AWorldGameMode*)GetWorld()->GetAuthGameMode();
+
+	InitializeChunk();
 }
 
 // Called every frame
@@ -59,7 +62,8 @@ void AChunk::Tick(float DeltaTime)
 
 void AChunk::InitializeChunk()
 {
-	ChunkDensity.SetNumUninitialized(ChunkSize * ChunkSize * ChunkSize);
+	ChunkDensity.SetNum(ChunkSize * ChunkSize * ChunkSize);
+	Density.SetNum(ChunkSize * ChunkSize * ChunkSize);
 	float heigh;
 	if (Noise)
 	{
@@ -74,28 +78,44 @@ void AChunk::InitializeChunk()
 					heigh = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
 					heigh = (heigh * 5 + 5) * 100;
 
+					Density[i] = NewObject<UVoxel>(this, UVoxel);
+
 					int32 k = z* VoxelSize;
 
-					if (k < heigh) {
-						if (k < 500) {
+					if (k < heigh) 
+					{
+						if (k < 500) 
+						{
 							ChunkDensity[i] = 1;
+							Density[i]->ID = 1;
 						}
-						else if (k < 700) {
+						else if (k < 700) 
+						{
 							ChunkDensity[i] = 2;
+							Density[i]->ID = 2;
 						}
 						else
 						{
 							ChunkDensity[i] = 3;
+							Density[i]->ID = 3;
 						}
-						//ChunkDensity[i] = 2;
 					}
-					else {
+					else 
+					{
 						ChunkDensity[i] = 0;
+						Density[i]->ID = 0;
 					}
 				}
 			}
 		}
 	}
+
+	// Optimize memory
+	ChunkDensity.Shrink();
+	Density.Shrink();
+
+	// Set debug variables to be displayed. Get allocated memory of ChunkDenity array
+	GameMode->SDensitySize = FString::FromInt(ChunkDensity.GetAllocatedSize());
 }
 
 
@@ -106,7 +126,7 @@ void AChunk::RenderChunk()
 		UE_LOG(Terrain_Renderer, Error, TEXT("Components not created properly"));
 		return;
 	}
-	if (RuntimeEnabled) {
+	if (bRuntimeEnabled) {
 		//TerrainMesh->ClearAllMeshSections();
 	}
 		
@@ -120,7 +140,7 @@ void AChunk::RenderChunk()
 		return;
 	}
 
-	GRIDCELL points;
+	GRIDCELL cell;
 
 	//UE_LOG(LogTemp, Warning, TEXT("Mesh building started"));
 	for (int8 x = 0; x < ChunkSize; x++) {
@@ -151,53 +171,57 @@ void AChunk::RenderChunk()
 						ID = GameMode->GetVoxelFromWorld(pos);
 					}
 					
-					// If point is inside the chunk
+					// If point is inside the chunk get the value directly from ChunkDensity array
 					else {
 						int32 i = p.X + (p.Y * ChunkSize) + (p.Z * ChunkSize * ChunkSize);
-						ID = ChunkDensity[i];
+						ID = Density[i]->ID;
 						p *= VoxelSize;
 					}
 
 					///*/////////////////////////////
-					// Set the material for vertex
+					// Set position, isovalue and material for vertex
 					///*/////////////////////////////
 
 					if (ID == 0) {
-						points.p[a] = p;
-						points.val[a] = 255;
-						points.mat[a] = 0;
+						cell.p[a] = p;
+						cell.val[a] = 255;
+						cell.mat[a] = 0;
 					}
 					// If there is no neighbour chunk mark this chunk to be updated.
 					else if (ID == -1) {
-						NeedUpdate = true;
-						points.p[a] = p;
-						points.val[a] = 255;
-						points.mat[a] = 0;
+						bNeedUpdate = true;
+						cell.p[a] = p;
+						cell.val[a] = 255;
+						cell.mat[a] = 0;
 					}
 					// If is terrain
 					else {
-						points.p[a] = p;
-						points.val[a] = 0;
-						points.mat[a] = --ID;
+						cell.p[a] = p;
+						cell.val[a] = 0;
+						cell.mat[a] = --ID;
 					}
 				}
 
 				TArray<TRIANGLE> triangles;
 
-				// Calculate shape
-				Polygonise(points, 127, triangles);
+				// Calculate shape using Marching Cubes algorithm
+				Polygonise(cell, 127, triangles);
 
 				int16 ID = 0;
 
-				for (int8 a = 0; a < triangles.Num(); a++) {
-					if (triangles[a].mat[0] == triangles[a].mat[1] && triangles[a].mat[1] == triangles[a].mat[2]) {
+				for (int8 a = 0; a < triangles.Num(); a++) 
+				{
+					if (triangles[a].mat[0] == triangles[a].mat[1] && triangles[a].mat[1] == triangles[a].mat[2]) 
+					{
 						ID = triangles[a].mat[0];
-						if (!meshSections.IsValidIndex(ID)) {
+						if (!meshSections.IsValidIndex(ID)) 
+						{
 							meshSections.SetNum(ID + 1);
 						}
 						meshSections[ID].Mat = GameMode->Voxels[ID].Mat;
 					}
-					else {
+					else 
+					{
 						int32 id1 = triangles[a].mat[0];
 						int32 id2 = triangles[a].mat[1];
 						int32 id3 = triangles[a].mat[2];
@@ -205,12 +229,14 @@ void AChunk::RenderChunk()
 						FDynamicMaterial mat = GameMode->GetDynMat(id1, id2, id3);
 
 						ID = mat.index;
-						if (!meshSections.IsValidIndex(ID)) {
+						if (!meshSections.IsValidIndex(ID)) 
+						{
 							meshSections.SetNum(ID + 1);
 						}
 						meshSections[ID].Mat = mat.Mat;
 
-						for (char p = 0; p < 3; p++) {
+						for (char p = 0; p < 3; p++) 
+						{
 							if (triangles[a].mat[p] == id1)
 								meshSections[ID].VertexColors.Add(FColor(255, 0, 0, 0));
 							else if (triangles[a].mat[p] == id2)
@@ -233,25 +259,17 @@ void AChunk::RenderChunk()
 					meshSections[ID].Triangles.Add(oldVertCount + 2);
 					
 					// Calculate Normals
-					meshSections[ID].Normals.Add(CalcNormal(triangles[a].p[0], triangles[a].p[1], triangles[a].p[2]));
-					meshSections[ID].Normals.Add(CalcNormal(triangles[a].p[0], triangles[a].p[1], triangles[a].p[2]));
-					meshSections[ID].Normals.Add(CalcNormal(triangles[a].p[0], triangles[a].p[1], triangles[a].p[2]));
-
-					// Add UVs
-					/*meshSections[ID].UVs.Add(FVector2D(0, 0));
-					meshSections[ID].UVs.Add(FVector2D(1, 0));
-					meshSections[ID].UVs.Add(FVector2D(0, 1));*/
-
-					/* Vertex Colors
-					meshSections[ID].VertexColors.Add(FColor(255, 255, 255, ID));
-					meshSections[ID].VertexColors.Add(FColor(255, 255, 255, ID));
-					meshSections[ID].VertexColors.Add(FColor(255, 255, 255, ID));*/
+					FVector Normal = CalcNormal(triangles[a].p[0], triangles[a].p[1], triangles[a].p[2]);
+					meshSections[ID].Normals.Add(Normal);
+					meshSections[ID].Normals.Add(Normal);
+					meshSections[ID].Normals.Add(Normal);
 
 				}
 			}
 		}
 	}
 	
+	meshSections.Shrink();
 	int size = meshSections.GetAllocatedSize();
 	if (size > FCString::Atoi(*(GameMode->SMeshSizeMax))){
 		GameMode->SMeshSizeMax = FString::FromInt(size);
@@ -259,7 +277,7 @@ void AChunk::RenderChunk()
 	else if (size < FCString::Atoi(*(GameMode->SMeshSizeMin))) {
 		GameMode->SMeshSizeMin = FString::FromInt(size);
 	}
-	GameMode->SMeshSizeAll = FString::FromInt(FCString::Atoi(*(GameMode->SMeshSizeAll)) + size);
+
 	
 	for (int16 s = 0; s < meshSections.Num(); s++)
 	{
@@ -268,7 +286,7 @@ void AChunk::RenderChunk()
 		}
 
 		if (meshSections[s].Vertices.Num() == 0) continue;
-		if (RuntimeEnabled) {
+		if (bRuntimeEnabled) {
 
 			if (TerrainMesh->DoesSectionExist(s))
 			{
@@ -292,6 +310,7 @@ void AChunk::RenderChunk()
 void AChunk::RemoveChunk()
 {
 	ChunkDensity.Empty();
+	
 	Destroy();
 }
 
