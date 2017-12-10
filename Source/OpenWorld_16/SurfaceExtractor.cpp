@@ -70,7 +70,7 @@ uint16 VertexMat(unsigned char isolevel, uint16 p1, uint16 p2, unsigned char val
 	return temp;
 }
 
-int Polygonise(GRIDCELL grid, unsigned char isolevel, TArray<TRIANGLE>& triangles)
+bool Polygonise(const GRIDCELL& grid, const unsigned char& isolevel, TArray<TRIANGLE>& triangles)
 {
 
 	const static int edgeTable[256] = {
@@ -386,7 +386,7 @@ int Polygonise(GRIDCELL grid, unsigned char isolevel, TArray<TRIANGLE>& triangle
 
 	/* Cube is entirely in/out of the surface */
 	if (edgeTable[cubeindex] == 0)
-		return(0);
+		return false;
 
 	//* Find the vertices where the surface intersects the cube */
 	if (edgeTable[cubeindex] & 1) {
@@ -450,27 +450,25 @@ int Polygonise(GRIDCELL grid, unsigned char isolevel, TArray<TRIANGLE>& triangle
 		matlist[11] = VertexMat(isolevel, grid.mat[3], grid.mat[7], grid.val[3], grid.val[7]);
 	}
 
-	/* Create the triangle */
-	int ntriang = 0;
-	for (int i = 0; triTable[cubeindex][i] != -1; i += 3) {
-
+	// Fill triangles array
+	for (int i = 0; triTable[cubeindex][i] != -1; i += 3) 
+	{
 		//TRIANGLE temp;
-		triangles.Add(TRIANGLE(
+		triangles.Add(
+			TRIANGLE(
 			// Add vertex to the triangles array
-			/*		temp.p[0] = */vertlist[triTable[cubeindex][i]],
-			/*temp.p[1] =*/ vertlist[triTable[cubeindex][i + 1]],
-			/*temp.p[2] =*/ vertlist[triTable[cubeindex][i + 2]],
+			vertlist[triTable[cubeindex][i]],
+			vertlist[triTable[cubeindex][i + 1]],
+			vertlist[triTable[cubeindex][i + 2]],
 
 			// Add the material ID for each vertex
-			/*temp.mat[0] =*/ matlist[triTable[cubeindex][i]],
-			/*temp.mat[1] =*/ matlist[triTable[cubeindex][i + 1]],
-			/*temp.mat[2] =*/ matlist[triTable[cubeindex][i + 2]]));
-
-		//triangles.Add(temp);
-		ntriang++;
+			matlist[triTable[cubeindex][i]],
+			matlist[triTable[cubeindex][i + 1]],
+			matlist[triTable[cubeindex][i + 2]]
+			));
 	}
 
-	return(ntriang);
+	return true;
 }
 
 

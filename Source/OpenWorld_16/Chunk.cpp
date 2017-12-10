@@ -78,8 +78,6 @@ void AChunk::InitializeChunk()
 					heigh = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
 					heigh = (heigh * 5 + 5) * 100;
 
-					Density[i] = NewObject<UVoxel>(this, UVoxel);
-
 					int32 k = z* VoxelSize;
 
 					if (k < heigh) 
@@ -87,23 +85,19 @@ void AChunk::InitializeChunk()
 						if (k < 500) 
 						{
 							ChunkDensity[i] = 1;
-							Density[i]->ID = 1;
 						}
 						else if (k < 700) 
 						{
 							ChunkDensity[i] = 2;
-							Density[i]->ID = 2;
 						}
 						else
 						{
 							ChunkDensity[i] = 3;
-							Density[i]->ID = 3;
 						}
 					}
 					else 
 					{
 						ChunkDensity[i] = 0;
-						Density[i]->ID = 0;
 					}
 				}
 			}
@@ -112,7 +106,6 @@ void AChunk::InitializeChunk()
 
 	// Optimize memory
 	ChunkDensity.Shrink();
-	Density.Shrink();
 
 	// Set debug variables to be displayed. Get allocated memory of ChunkDenity array
 	GameMode->SDensitySize = FString::FromInt(ChunkDensity.GetAllocatedSize());
@@ -174,7 +167,7 @@ void AChunk::RenderChunk()
 					// If point is inside the chunk get the value directly from ChunkDensity array
 					else {
 						int32 i = p.X + (p.Y * ChunkSize) + (p.Z * ChunkSize * ChunkSize);
-						ID = Density[i]->ID;
+						ID = ChunkDensity[i];
 						p *= VoxelSize;
 					}
 
@@ -184,7 +177,7 @@ void AChunk::RenderChunk()
 
 					if (ID == 0) {
 						cell.p[a] = p;
-						cell.val[a] = 255;
+						cell.val[a] = 255/*FMath::GetMappedRangeValueClamped(FVector2D(-1, 1), FVector2D(127, 255), Noise->GetNoise3D(p.X, p.Y, p.Z))*/;
 						cell.mat[a] = 0;
 					}
 					// If there is no neighbour chunk mark this chunk to be updated.
@@ -197,7 +190,7 @@ void AChunk::RenderChunk()
 					// If is terrain
 					else {
 						cell.p[a] = p;
-						cell.val[a] = 0;
+						cell.val[a] = 0/*FMath::GetMappedRangeValueClamped(FVector2D(-1, 1), FVector2D(0, 127), Noise->GetNoise3D(p.X, p.Y, p.Z))*/;
 						cell.mat[a] = --ID;
 					}
 				}
@@ -205,7 +198,7 @@ void AChunk::RenderChunk()
 				TArray<TRIANGLE> triangles;
 
 				// Calculate shape using Marching Cubes algorithm
-				Polygonise(cell, 127, triangles);
+				if (!Polygonise(cell, 127, triangles)) continue;
 
 				int16 ID = 0;
 

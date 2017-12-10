@@ -9,6 +9,6 @@
 
 	uint16 VertexMat(unsigned char isolevel, uint16 p1, uint16 p2, unsigned char valp1, unsigned char valp2);
 
-	int Polygonise(GRIDCELL grid, unsigned char isolevel, TArray<TRIANGLE>& triangles);
+	bool Polygonise(const GRIDCELL& grid, const unsigned char& isolevel, TArray<TRIANGLE>& triangles);
 
 	int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles);
