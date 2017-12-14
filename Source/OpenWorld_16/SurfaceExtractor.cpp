@@ -34,8 +34,7 @@ an edge between two vertices, each with their own scalar value
 //              |/_____________________|/
 //              v0         e0          v1
 
-FVector VertexInterp(float isolevel, FVector p1, FVector p2, float valp1, float valp2) 
-{
+FVector VertexInterp(float isolevel, FVector p1, FVector p2, float valp1, float valp2) {
 
 	float mu;
 	FVector p;
@@ -56,13 +55,17 @@ FVector VertexInterp(float isolevel, FVector p1, FVector p2, float valp1, float 
 
 uint16 VertexMat(unsigned char isolevel, uint16 p1, uint16 p2, unsigned char valp1, unsigned char valp2) {
 	uint16 temp;
-	if (valp1 < isolevel) 
-	{
+	if (valp1 < isolevel) {
 		temp = p1;
 	}
-	else 
-	{
+	else {
 		temp = p2;
+	}
+	if (valp1 > isolevel && valp2 > isolevel) {
+		UE_LOG(Terrain_Renderer, Warning, TEXT("???? There seems to be 2 verts over the wheight"));
+	}
+	else if (valp1 < isolevel && valp2 < isolevel) {
+		UE_LOG(Terrain_Renderer, Warning, TEXT("???? There seems to be 2 verts under the wheight"));
 	}
 	return temp;
 }
@@ -70,8 +73,7 @@ uint16 VertexMat(unsigned char isolevel, uint16 p1, uint16 p2, unsigned char val
 bool Polygonise(const GRIDCELL& grid, const unsigned char& isolevel, TArray<TRIANGLE>& triangles)
 {
 
-	const static int edgeTable[256] = 
-	{
+	const static int edgeTable[256] = {
 		0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
 		0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
 		0x190, 0x99 , 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c,
@@ -363,12 +365,15 @@ bool Polygonise(const GRIDCELL& grid, const unsigned char& isolevel, TArray<TRIA
 	{ 0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 	{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 } };
 
+	int cubeindex;
+	FVector vertlist[12];
+	uint16 matlist[12];
 
 	/*
 	Determine the index into the edge table which
 	tells us which vertices are inside of the surface
 	*/
-	int cubeindex = 0;
+	cubeindex = 0;
 	if (grid.val[0] < isolevel) cubeindex |= 1;
 	if (grid.val[1] < isolevel) cubeindex |= 2;
 	if (grid.val[2] < isolevel) cubeindex |= 4;
@@ -383,67 +388,65 @@ bool Polygonise(const GRIDCELL& grid, const unsigned char& isolevel, TArray<TRIA
 	if (edgeTable[cubeindex] == 0)
 		return false;
 
-	uint16 matlist[12];
-	FVector vertlist[12];
 	//* Find the vertices where the surface intersects the cube */
-	if (edgeTable[cubeindex] & 1) 
-	{
-		vertlist[0] = VertexInterp(isolevel, grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
+	if (edgeTable[cubeindex] & 1) {
+		vertlist[0] =
+			VertexInterp(isolevel, grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
 		matlist[0] = VertexMat(isolevel, grid.mat[0], grid.mat[1], grid.val[0], grid.val[1]);
 	}
-	if (edgeTable[cubeindex] & 2) 
-	{
-		vertlist[1] = VertexInterp(isolevel, grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
+	if (edgeTable[cubeindex] & 2) {
+		vertlist[1] =
+			VertexInterp(isolevel, grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
 		matlist[1] = VertexMat(isolevel, grid.mat[1], grid.mat[2], grid.val[1], grid.val[2]);
 	}
-	if (edgeTable[cubeindex] & 4) 
-	{
-		vertlist[2] = VertexInterp(isolevel, grid.p[2], grid.p[3], grid.val[2], grid.val[3]);
+	if (edgeTable[cubeindex] & 4) {
+		vertlist[2] =
+			VertexInterp(isolevel, grid.p[2], grid.p[3], grid.val[2], grid.val[3]);
 		matlist[2] = VertexMat(isolevel, grid.mat[2], grid.mat[3], grid.val[2], grid.val[3]);
 	}
-	if (edgeTable[cubeindex] & 8) 
-	{
-		vertlist[3] = VertexInterp(isolevel, grid.p[3], grid.p[0], grid.val[3], grid.val[0]);
+	if (edgeTable[cubeindex] & 8) {
+		vertlist[3] =
+			VertexInterp(isolevel, grid.p[3], grid.p[0], grid.val[3], grid.val[0]);
 		matlist[3] = VertexMat(isolevel, grid.mat[3], grid.mat[0], grid.val[3], grid.val[0]);
 	}
-	if (edgeTable[cubeindex] & 16) 
-	{
-		vertlist[4] = VertexInterp(isolevel, grid.p[4], grid.p[5], grid.val[4], grid.val[5]);
+	if (edgeTable[cubeindex] & 16) {
+		vertlist[4] =
+			VertexInterp(isolevel, grid.p[4], grid.p[5], grid.val[4], grid.val[5]);
 		matlist[4] = VertexMat(isolevel, grid.mat[4], grid.mat[5], grid.val[4], grid.val[5]);
 	}
-	if (edgeTable[cubeindex] & 32) 
-	{
-		vertlist[5] = VertexInterp(isolevel, grid.p[5], grid.p[6], grid.val[5], grid.val[6]);
+	if (edgeTable[cubeindex] & 32) {
+		vertlist[5] =
+			VertexInterp(isolevel, grid.p[5], grid.p[6], grid.val[5], grid.val[6]);
 		matlist[5] = VertexMat(isolevel, grid.mat[5], grid.mat[6], grid.val[5], grid.val[6]);
 	}
-	if (edgeTable[cubeindex] & 64) 
-	{
-		vertlist[6] = VertexInterp(isolevel, grid.p[6], grid.p[7], grid.val[6], grid.val[7]);
+	if (edgeTable[cubeindex] & 64) {
+		vertlist[6] =
+			VertexInterp(isolevel, grid.p[6], grid.p[7], grid.val[6], grid.val[7]);
 		matlist[6] = VertexMat(isolevel, grid.mat[6], grid.mat[7], grid.val[6], grid.val[7]);
 	}
-	if (edgeTable[cubeindex] & 128) 
-	{
-		vertlist[7] = VertexInterp(isolevel, grid.p[7], grid.p[4], grid.val[7], grid.val[4]);
+	if (edgeTable[cubeindex] & 128) {
+		vertlist[7] =
+			VertexInterp(isolevel, grid.p[7], grid.p[4], grid.val[7], grid.val[4]);
 		matlist[7] = VertexMat(isolevel, grid.mat[7], grid.mat[4], grid.val[7], grid.val[4]);
 	}
-	if (edgeTable[cubeindex] & 256) 
-	{
-		vertlist[8] = VertexInterp(isolevel, grid.p[0], grid.p[4], grid.val[0], grid.val[4]);
+	if (edgeTable[cubeindex] & 256) {
+		vertlist[8] =
+			VertexInterp(isolevel, grid.p[0], grid.p[4], grid.val[0], grid.val[4]);
 		matlist[8] = VertexMat(isolevel, grid.mat[0], grid.mat[4], grid.val[0], grid.val[4]);
 	}
-	if (edgeTable[cubeindex] & 512) 
-	{
-		vertlist[9] = VertexInterp(isolevel, grid.p[1], grid.p[5], grid.val[1], grid.val[5]);
+	if (edgeTable[cubeindex] & 512) {
+		vertlist[9] =
+			VertexInterp(isolevel, grid.p[1], grid.p[5], grid.val[1], grid.val[5]);
 		matlist[9] = VertexMat(isolevel, grid.mat[1], grid.mat[5], grid.val[1], grid.val[5]);
 	}
-	if (edgeTable[cubeindex] & 1024) 
-	{
-		vertlist[10] = VertexInterp(isolevel, grid.p[2], grid.p[6], grid.val[2], grid.val[6]);
+	if (edgeTable[cubeindex] & 1024) {
+		vertlist[10] =
+			VertexInterp(isolevel, grid.p[2], grid.p[6], grid.val[2], grid.val[6]);
 		matlist[10] = VertexMat(isolevel, grid.mat[2], grid.mat[6], grid.val[2], grid.val[6]);
 	}
-	if (edgeTable[cubeindex] & 2048) 
-	{
-		vertlist[11] = VertexInterp(isolevel, grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
+	if (edgeTable[cubeindex] & 2048) {
+		vertlist[11] =
+			VertexInterp(isolevel, grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
 		matlist[11] = VertexMat(isolevel, grid.mat[3], grid.mat[7], grid.val[3], grid.val[7]);
 	}
 

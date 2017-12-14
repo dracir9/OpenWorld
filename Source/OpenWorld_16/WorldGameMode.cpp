@@ -217,69 +217,56 @@ void AWorldGameMode::AddTriangles(TArray<FVector>& Vertex, TArray<int32>& Triang
 }
 
 
-FString AWorldGameMode::CalcMatIndex(int32 & id1, int32 & id2, int32 & id3, int32 (&or)[3])
+FString AWorldGameMode::CalcMatIndex(int32 & id1, int32 & id2, int32 & id3)
 {
-	// Change input so there is no duplicated index
-	if (id1 == id2)
-	{
-		if (id1 == 1)
-		{
-			id1 = 2;
-			or [0] = or [1];
-		}
-		else
-		{
-			id2 = 1;
-			or [1] = or [0];
-		}
-	}
-	if (id2 == id3)
-	{
-		if (id2 == 0)
-		{
-			id2 = 1;
-			if (id1 == 1)
-			{
-				id1 = 2;
-				or [0] = or [1];
-			}
-			or [1] = or [2];
-		}
-		else
-		{
-			id3 = 0;
-			or [2] = or [1];
-		}
-	}
-
 	int32 tmp;
+
 	// Order input from bigger to smaller
 	if (id3>id2) 
 	{
 		tmp = id3;
 		id3 = id2;
 		id2 = tmp;
-		tmp = or [2];
-		or [2] = or [1];
-		or [1] = tmp;
 	}
 	if (id3>id1) 
 	{
 		tmp = id3;
 		id3 = id1;
 		id1 = tmp;
-		tmp = or [2];
-		or [2] = or [0];
-		or [0] = tmp;
 	}
 	if (id2>id1) 
 	{
 		tmp = id2;
 		id2 = id1;
 		id1 = tmp;
-		tmp = or [1];
-		or [1] = or [0];
-		or [0] = tmp;
+	}
+	
+	// Change input so there is no duplicated index
+	if (id1 == id2) 
+	{
+		if (id1 == 1)
+		{
+			id1 = 2;
+		}
+		else
+		{
+			id2 = 1;
+		}
+	}
+	if (id2 == id3) 
+	{
+		if (id2 == 0) 
+		{
+			id2 = 1;
+			if (id1 == 1)
+			{
+				id1 = 2;
+			}
+		}
+		else
+		{
+			id3 = 0;
+		}
 	}
 
 	// Finally construct the material index
@@ -288,23 +275,12 @@ FString AWorldGameMode::CalcMatIndex(int32 & id1, int32 & id2, int32 & id3, int3
 
 FDynamicMaterial AWorldGameMode::GetDynMat(int32 & id1, int32 & id2, int32 & id3)
 {
-	FDynamicMaterial mat;
-
-	if (id1 == id2 && id2 == id3)
-	{
-		mat.Mat = Voxels[id1].Mat;
-		mat.index = id1;
-		return mat;
-	}
-
 	FString matIdx = CalcMatIndex(id1, id2, id3);
-	
-	if (DynamicMatChache.Contains(matIdx)) 
-	{
+	FDynamicMaterial mat;
+	if (DynamicMatChache.Contains(matIdx)) {
 		return DynamicMatChache.FindRef(matIdx);
 	}
-	else 
-	{
+	else {
 		UE_LOG(Mat_Loader, Warning, TEXT("Added transition meterial with index: %s"), *matIdx)
 
 		UMaterialInstanceDynamic* DynMat = UMaterialInstanceDynamic::Create(TransitionMat, this);
