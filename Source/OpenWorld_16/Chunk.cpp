@@ -4,24 +4,7 @@
 #include "Voxels/Voxel.h"
 #include "ProceduralMeshComponent.h"
 
-//                 v7______________________v6
-//                  /|                    /|
 //                 / |       1           / |
-//                /  |                  /  |
-//               /___|_________________/   |
-//            v4|    |                 |   |
-//              |    |         4       |   |
-//              | 32 |                 | 16|
-//              |    |     8           |   |
-//              |    |_________________|___|
-//              |   / v3               |   /v2
-//             Z|  /         2         |  /
-//              | /Y                   | /
-//              |/_____________________|/ 
-//              v0    X                v1
-
-const FVector grid[] = { FVector(0, 0, 0), FVector(1, 0, 0),  FVector(1, 1, 0),  FVector(0, 1, 0),  FVector(0, 0, 1),
-						FVector(1, 0, 1),  FVector(1, 1, 1),  FVector(0, 1, 1) };
 
 AChunk::AChunk()
 {
@@ -119,9 +102,6 @@ void AChunk::RenderChunk()
 		UE_LOG(Terrain_Renderer, Error, TEXT("Components not created properly"));
 		return;
 	}
-	if (bRuntimeEnabled) {
-		//TerrainMesh->ClearAllMeshSections();
-	}
 		
 
 	//Initializes the variables used to store all the mesh data.
@@ -133,110 +113,158 @@ void AChunk::RenderChunk()
 		return;
 	}
 
-	GRIDCELL cell;
+	
+	TArray<POINT> points;
+	points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
+	for (int8 x = 0; x < ChunkSize + 1; x++)
+	{
+		for (int8 y = 0; y < ChunkSize + 1; y++)
+		{
+			for (int8 z = 0; z < ChunkSize + 1; z++)
+			{
+				int16 ID = 0;
+				FVector p = FVector(x, y, z);
+				
+				///*/////////////////////
+				// Get ID of the vertex
+				///*/////////////////////
 
-	//UE_LOG(LogTemp, Warning, TEXT("Mesh building started"));
-	for (int8 x = 0; x < ChunkSize; x++) {
-		for (int8 y = 0; y < ChunkSize; y++) {
-			for (int8 z = 0; z < ChunkSize; z++) {
+				// If point is over or under the chunk's limit set it as air.
+				if (p.Z >= ChunkSize || p.Z < 0) 
+				{
+					p *= VoxelSize;
+					ID = 0;
+				}
 
+				//If point is outside the chunk get the value from world
+				else if (p.X >= ChunkSize || p.X < 0 || p.Y >= ChunkSize || p.Y < 0) 
+				{
+					p *= VoxelSize;
+					FVector pos = FVector(GetActorLocation().X + p.X, GetActorLocation().Y + p.Y, GetActorLocation().Z + p.Z);
+					ID = GameMode->GetVoxelFromWorld(pos);
+				}
+
+				// If point is inside the chunk get the value directly from ChunkDensity array
+				else 
+				{
+					int32 idx = p.X + (p.Y * ChunkSize) + (p.Z * ChunkSize * ChunkSize);
+					ID = ChunkDensity[idx];
+					p *= VoxelSize;
+				}
+
+				///*/////////////////////////////
+				// Set position, isovalue and material for vertex
+				///*/////////////////////////////
+				POINT point;
+
+				if (ID == 0) 
+				{
+					point.p = p;
+					float heigh = Noise->GetNoise2D(p.X + GetActorLocation().X, p.Y + GetActorLocation().Y);
+					heigh = (heigh * 5 + 5) * 100;
+					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 255), heigh - p.Z));
+					point.mat = 0;
+				}
+
+				// If there is no neighbour chunk mark this chunk to be updated.
+				else if (ID == -1) 
+				{
+					bNeedUpdate = true;
+					point.p = p;
+					point.val = 255;
+					point.mat = 0;
+				}
+
+				// If is terrain
+				else 
+				{
+					point.p = p;
+					float heigh = Noise->GetNoise2D(p.X + GetActorLocation().X, p.Y + GetActorLocation().Y);
+					heigh = (heigh * 5 + 5) * 100;
+					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 127), heigh - p.Z));
+					point.mat = --ID;
+				}
+
+				p /= VoxelSize;
+				int32 idx = p.X + (p.Y * (ChunkSize + 1)) + (p.Z * (ChunkSize + 1) * (ChunkSize + 1));
+				points[idx] = point;
+
+			} // Close z for loop
+		} // Close y for loop
+	} // Close x for loop
+	
+	//                 v7______________________v6
+	//                  /|                    /|
+	//                 / |       1           / |
+	//                /  |                  /  |
+	//               /___|_________________/   |
+	//            v4|    |                 |   |
+	//              |    |         4       |   |
+	//              | 32 |                 | 16|
+	//              |    |     8           |   |
+	//              |    |_________________|___|
+	//              |   / v3               |   /v2
+	//             Z|  /         2         |  /
+	//              | /Y                   | /
+	//              |/_____________________|/ 
+	//              v0    X                v1
+
+	const FVector grid[] = 
+	{
+		FVector(0, 0, 0), FVector(1, 0, 0), FVector(1, 1, 0), FVector(0, 1, 0), 
+		FVector(0, 0, 1), FVector(1, 0, 1), FVector(1, 1, 1), FVector(0, 1, 1) 
+	};
+
+	for (int8 i = 0; i < ChunkSize; i++) 
+	{
+		for (int8 j = 0; j < ChunkSize; j++) 
+		{
+			for (int8 k = 0; k < ChunkSize; k++) 
+			{
+				GRIDCELL cell;
 				// Fills the grid used to calculate the surface
 				for (int8 a = 0; a < 8; a++)
 				{
-					int16 ID = 0;
 					FVector mask = grid[a];
-					FVector p = FVector(x, y, z) + mask;
+					FVector p = FVector(i, j, k) + mask;
+					int32 idx = p.X + (p.Y * (ChunkSize + 1)) + (p.Z * (ChunkSize + 1) * (ChunkSize + 1));
 
-					///*/////////////////////
-					// Get ID of the vertex
-					///*/////////////////////
-
-					// If point is over or under the chunk's limit set it as air.
-					if (p.Z >= ChunkSize || p.Z < 0) {
-						p *= VoxelSize;
-						ID = 0;
-					}
-
-					//If point is outside the chunk get the value from world
-					else if (p.X >= ChunkSize || p.X < 0 || p.Y >= ChunkSize || p.Y < 0) {
-						p *= VoxelSize;
-						FVector pos = FVector(GetActorLocation().X + p.X, GetActorLocation().Y + p.Y, GetActorLocation().Z + p.Z);
-						ID = GameMode->GetVoxelFromWorld(pos);
-					}
-					
-					// If point is inside the chunk get the value directly from ChunkDensity array
-					else {
-						int32 i = p.X + (p.Y * ChunkSize) + (p.Z * ChunkSize * ChunkSize);
-						ID = ChunkDensity[i];
-						p *= VoxelSize;
-					}
-
-					///*/////////////////////////////
-					// Set position, isovalue and material for vertex
-					///*/////////////////////////////
-
-					if (ID == 0) {
-						cell.p[a] = p;
-						cell.val[a] = 255/*FMath::GetMappedRangeValueClamped(FVector2D(-1, 1), FVector2D(127, 255), Noise->GetNoise3D(p.X, p.Y, p.Z))*/;
-						cell.mat[a] = 0;
-					}
-					// If there is no neighbour chunk mark this chunk to be updated.
-					else if (ID == -1) {
-						bNeedUpdate = true;
-						cell.p[a] = p;
-						cell.val[a] = 255;
-						cell.mat[a] = 0;
-					}
-					// If is terrain
-					else {
-						cell.p[a] = p;
-						cell.val[a] = 0/*FMath::GetMappedRangeValueClamped(FVector2D(-1, 1), FVector2D(0, 127), Noise->GetNoise3D(p.X, p.Y, p.Z))*/;
-						cell.mat[a] = --ID;
-					}
+					cell.p[a] = points[idx].p;
+					cell.val[a] = points[idx].val;
+					cell.mat[a] = points[idx].mat;
 				}
 
 				TArray<TRIANGLE> triangles;
 
 				// Calculate shape using Marching Cubes algorithm
-				if (!Polygonise(cell, 127, triangles)) continue;
+				if (!Polygonise(cell, 128, triangles)) continue;
 
 				int16 ID = 0;
 
 				for (int8 a = 0; a < triangles.Num(); a++) 
 				{
-					if (triangles[a].mat[0] == triangles[a].mat[1] && triangles[a].mat[1] == triangles[a].mat[2]) 
+					int32 order[3] = { 0,1,2 };
+					int32 id1 = triangles[a].mat[0];
+					int32 id2 = triangles[a].mat[1];
+					int32 id3 = triangles[a].mat[2];
+
+					FDynamicMaterial mat = GameMode->GetDynMat(id1, id2, id3, order);
+
+					ID = mat.index;
+					if (!meshSections.IsValidIndex(ID)) 
 					{
-						ID = triangles[a].mat[0];
-						if (!meshSections.IsValidIndex(ID)) 
-						{
-							meshSections.SetNum(ID + 1);
-						}
-						meshSections[ID].Mat = GameMode->Voxels[ID].Mat;
+						meshSections.SetNum(ID + 1);
 					}
-					else 
+					meshSections[ID].Mat = mat.Mat;
+
+					for (char p = 0; p < 3; p++) 
 					{
-						int32 id1 = triangles[a].mat[0];
-						int32 id2 = triangles[a].mat[1];
-						int32 id3 = triangles[a].mat[2];
-
-						FDynamicMaterial mat = GameMode->GetDynMat(id1, id2, id3);
-
-						ID = mat.index;
-						if (!meshSections.IsValidIndex(ID)) 
-						{
-							meshSections.SetNum(ID + 1);
-						}
-						meshSections[ID].Mat = mat.Mat;
-
-						for (char p = 0; p < 3; p++) 
-						{
-							if (triangles[a].mat[p] == id1)
-								meshSections[ID].VertexColors.Add(FColor(255, 0, 0, 0));
-							else if (triangles[a].mat[p] == id2)
-								meshSections[ID].VertexColors.Add(FColor(0, 255, 0, 0));
-							else
-								meshSections[ID].VertexColors.Add(FColor(0, 0, 255, 0));
-						}
+						if (triangles[a].mat[p] == id1)
+							meshSections[ID].VertexColors.Add(FColor(255, 0, 0, 0));
+						else if (triangles[a].mat[p] == id2)
+							meshSections[ID].VertexColors.Add(FColor(0, 255, 0, 0));
+						else
+							meshSections[ID].VertexColors.Add(FColor(0, 0, 255, 0));
 					}
 
 					
@@ -274,25 +302,29 @@ void AChunk::RenderChunk()
 	
 	for (int16 s = 0; s < meshSections.Num(); s++)
 	{
-		if (!meshSections.IsValidIndex(s)) {
+		if (!meshSections.IsValidIndex(s)) 
+		{
 			UE_LOG(LogTemp, Warning, TEXT("Not a valid index"))
 		}
 
 		if (meshSections[s].Vertices.Num() == 0) continue;
-		if (bRuntimeEnabled) {
+		if (bRuntimeEnabled) 
+		{
 
 			if (TerrainMesh->DoesSectionExist(s))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Updating MeshSection %d"), s)
 				TerrainMesh->UpdateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents);
 			}
-			else {
+			else 
+			{
 				TerrainMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents, true, EUpdateFrequency::Average);
 			}
 			TerrainMesh->SetMaterial(s, meshSections[s].Mat);
 			
 		}
-		else {
+		else 
+		{
 			ChunkMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].Tangents, true);
 			ChunkMesh->SetMaterial(s, meshSections[s].Mat);
 		}
