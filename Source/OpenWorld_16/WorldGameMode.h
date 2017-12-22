@@ -243,7 +243,7 @@ public:
 
 	/** Gives the index for a given group of material ID's*/
 	UFUNCTION(BlueprintCallable)
-		FString CalcMatIndex(int32 &id1, int32 &id2, int32 &id3, int32 (&or)[3]);
+		FString CalcMatIndex(int32 &id1, int32 &id2, int32 &id3);
 
 	/** Returns a dynamic transition material with the specified matetial index*/
 	UFUNCTION(BlueprintCallable)

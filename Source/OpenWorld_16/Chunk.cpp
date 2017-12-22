@@ -162,7 +162,8 @@ void AChunk::RenderChunk()
 					point.p = p;
 					float heigh = Noise->GetNoise2D(p.X + GetActorLocation().X, p.Y + GetActorLocation().Y);
 					heigh = (heigh * 5 + 5) * 100;
-					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 255), heigh - p.Z));
+					heigh -= p.Z;
+					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), heigh));
 					point.mat = 0;
 				}
 
@@ -181,7 +182,8 @@ void AChunk::RenderChunk()
 					point.p = p;
 					float heigh = Noise->GetNoise2D(p.X + GetActorLocation().X, p.Y + GetActorLocation().Y);
 					heigh = (heigh * 5 + 5) * 100;
-					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 127), heigh - p.Z));
+					heigh -= p.Z;
+					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), heigh));
 					point.mat = --ID;
 				}
 
@@ -243,12 +245,12 @@ void AChunk::RenderChunk()
 
 				for (int8 a = 0; a < triangles.Num(); a++) 
 				{
-					int32 order[3] = { 0,1,2 };
+					
 					int32 id1 = triangles[a].mat[0];
 					int32 id2 = triangles[a].mat[1];
 					int32 id3 = triangles[a].mat[2];
 
-					FDynamicMaterial mat = GameMode->GetDynMat(id1, id2, id3, order);
+					FDynamicMaterial mat = GameMode->GetDynMat(id1, id2, id3);
 
 					ID = mat.index;
 					if (!meshSections.IsValidIndex(ID)) 
@@ -257,16 +259,22 @@ void AChunk::RenderChunk()
 					}
 					meshSections[ID].Mat = mat.Mat;
 
-					for (char p = 0; p < 3; p++) 
+
+					for (char p = 0; p < 3; p++)
 					{
 						if (triangles[a].mat[p] == id1)
+						{
 							meshSections[ID].VertexColors.Add(FColor(255, 0, 0, 0));
+						}
 						else if (triangles[a].mat[p] == id2)
+						{
 							meshSections[ID].VertexColors.Add(FColor(0, 255, 0, 0));
+						}
 						else
+						{
 							meshSections[ID].VertexColors.Add(FColor(0, 0, 255, 0));
+						}
 					}
-
 					
 					// Add vertices
 					int32 oldVertCount = meshSections[ID].Vertices.Num();
