@@ -20,15 +20,18 @@ public:
 	AChunk();
 	
 	/** Destroys the current chunk */
+	UFUNCTION(BlueprintCallable)
 	void RemoveChunk();
 
 	/** Enables using RuntimeMesh */
+	UFUNCTION(BlueprintCallable)
 	void EnableRuntime()
 	{ 
 		bRuntimeEnabled = true; 
 	};
 	
 	/** Check if we can use RuntimeMesh*/
+	UFUNCTION(BlueprintCallable)
 	bool CanUseRuntime()
 	{
 		return bRuntimeEnabled;
@@ -41,13 +44,15 @@ public:
 	};
 
 	/**Returns the voxel density of a given location*/
-	int32 GetVoxelDensity(const int32& x, const int32& y, const int32& z) const 
+	UFUNCTION(BlueprintCallable)
+	int32 GetVoxelDensity(const int32& x, const int32& y, const int32& z) const
 	{ 
 		int32 idx = x + y * ChunkSize + z * ChunkSize * ChunkSize; 
 		return ChunkDensity[idx];
 	};
 
 	/** Set the voxel density at given location*/
+	UFUNCTION(BlueprintCallable)
 	bool SetVoxelDensity(const int32& index, const int32& value) 
 	{
 		if (index >= 0 && index < ChunkDensity.Num()) 
@@ -86,7 +91,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Terrain")
 		class UProceduralMeshComponent* ChunkMesh;
 
-	// Base component of the terrain ****** EPERIMENTAL********
+	// Base component of the terrain
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Terrain")
 		class URuntimeMeshComponent* TerrainMesh;
 
@@ -121,5 +126,3 @@ private:
 		bool bRuntimeEnabled = true;
 
 };
-
-FVector CalcNormal(FVector & p1, FVector & p2, FVector & p3);

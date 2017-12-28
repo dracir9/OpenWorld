@@ -94,7 +94,7 @@ void AChunk::InitializeChunk()
 
 void AChunk::RenderChunk()
 {
-	
+	static bool thread;
 	if (!TerrainMesh || !ChunkMesh) {
 		UE_LOG(RenderTerrain, Error, TEXT("Components not created properly"));
 		return;
@@ -104,7 +104,6 @@ void AChunk::RenderChunk()
 		UE_LOG(LogTemp, Error, TEXT("Game Mode ref is null!!"));
 		return;
 	}
-
 	
 	TArray<POINT> points;
 	points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
@@ -205,6 +204,16 @@ void AChunk::RenderChunk()
 
 	//Initializes the variables used to store all the mesh data.
 	TArray<FMesh> meshSections;
+
+	if (!thread)
+	{
+		FJob Job;
+		Job.Density = &ChunkDensity;
+		Job.Mesh = &meshSections;
+		Job.Position = GetActorLocation();
+		GameMode->Jobs.Enqueue(Job);
+		thread = true;
+	}
 
 	const FVector grid[] = 
 	{
@@ -316,7 +325,6 @@ void AChunk::RenderChunk()
 
 			if (TerrainMesh->DoesSectionExist(s))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Updating MeshSection %d"), s)
 				TerrainMesh->UpdateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents);
 			}
 			else 

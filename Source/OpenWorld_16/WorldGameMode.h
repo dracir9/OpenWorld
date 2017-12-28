@@ -12,6 +12,7 @@
 
 
 class AChunk;
+class FMeshExtractor;
 
 USTRUCT()
 struct FMesh 
@@ -113,6 +114,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 public:
 	// Sets default values for this actor's properties
 	AWorldGameMode();
@@ -130,6 +133,10 @@ public:
 	// Stores the base instance for transition between materials
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
 		UMaterialInterface* TransitionMat;
+
+	// Stores the materials for all the tipes of voxel
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+		TArray<FVoxelS> Voxels;
 
 	//Sets the number of voxels per line that the chunk will contain.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
@@ -151,9 +158,8 @@ public:
 //////*****     WORLD VARIABLES    *****///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// Stores the materials for all the tipes of voxel
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Varaibles")
-		TArray<FVoxelS> Voxels;
+	// Backgrund thread
+	FMeshExtractor* BackThread;
 
 	// Stores dynamic material instances
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Variables")
@@ -170,6 +176,7 @@ public:
 	UPROPERTY()
 		FTimerHandle CountdownTimerHandle;
 
+	// Queue for jobs to be runed on a background thread
 		TQueue<FJob> Jobs;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

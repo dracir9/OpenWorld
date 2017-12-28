@@ -3,6 +3,7 @@
 #include "WorldGameMode.h"
 #include "Chunk.h"
 #include "UFNBlueprintFunctionLibrary.h"
+#include "MeshExtractor.h"
 
 
 // Sets default values
@@ -21,7 +22,7 @@ void AWorldGameMode::BeginPlay()
 
 	if (Voxels.Num() <= 0) Voxels.SetNum(5);
 	
-	
+	BackThread = FMeshExtractor::JoyInit(this, ChunkSize, VoxelSize, Noise);
 
 	UpdatePosition();
 	LoadMap();
@@ -29,6 +30,12 @@ void AWorldGameMode::BeginPlay()
 	double end = FPlatformTime::Seconds();
 	double time = (end - start) * 1000;
 	UE_LOG(LogTemp, Warning, TEXT("First map load took: %f ms"), time);
+}
+
+void AWorldGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	BackThread->Shutdown();
+	Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame
