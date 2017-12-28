@@ -1,10 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Chunk.h"
-#include "Voxels/Voxel.h"
 #include "ProceduralMeshComponent.h"
 
-//                 / |       1           / |
 
 AChunk::AChunk()
 {
@@ -46,7 +44,6 @@ void AChunk::Tick(float DeltaTime)
 void AChunk::InitializeChunk()
 {
 	ChunkDensity.SetNum(ChunkSize * ChunkSize * ChunkSize);
-	Density.SetNum(ChunkSize * ChunkSize * ChunkSize);
 	float heigh;
 	if (Noise)
 	{
@@ -99,15 +96,10 @@ void AChunk::RenderChunk()
 {
 	
 	if (!TerrainMesh || !ChunkMesh) {
-		UE_LOG(Terrain_Renderer, Error, TEXT("Components not created properly"));
+		UE_LOG(RenderTerrain, Error, TEXT("Components not created properly"));
 		return;
 	}
-		
-
-	//Initializes the variables used to store all the mesh data.
-	TArray<FMesh> meshSections;
 	
-
 	if (!GameMode) {
 		UE_LOG(LogTemp, Error, TEXT("Game Mode ref is null!!"));
 		return;
@@ -210,6 +202,9 @@ void AChunk::RenderChunk()
 	//              | /Y                   | /
 	//              |/_____________________|/ 
 	//              v0    X                v1
+
+	//Initializes the variables used to store all the mesh data.
+	TArray<FMesh> meshSections;
 
 	const FVector grid[] = 
 	{
@@ -339,20 +334,20 @@ void AChunk::RenderChunk()
 	}
 }
 
-
-void AChunk::RemoveChunk()
+FVector AChunk::CalcNormal(const FVector & p1, const FVector & p2, const FVector & p3)
 {
-	ChunkDensity.Empty();
-	
-	Destroy();
-}
-
-
-FVector CalcNormal(FVector &p1, FVector &p2, FVector &p3) {
 	FVector Norm;
 	Norm.X = (p3.Y - p1.Y)*(p2.Z - p1.Z) - (p3.Z - p1.Z)*(p2.Y - p1.Y);
 	Norm.Y = (p3.Z - p1.Z)*(p2.X - p1.X) - (p3.X - p1.X)*(p2.Z - p1.Z);
 	Norm.Z = (p3.X - p1.X)*(p2.Y - p1.Y) - (p3.Y - p1.Y)*(p2.X - p1.X);
 	Norm.Normalize();
 	return Norm;
+}
+
+
+void AChunk::RemoveChunk()
+{
+	ChunkDensity.Empty();
+	
+	Destroy();
 }

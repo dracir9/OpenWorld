@@ -2,7 +2,8 @@
 
 #include "WorldGameMode.h"
 #include "Chunk.h"
-#include "Voxels/Terrain.h"
+#include "UFNBlueprintFunctionLibrary.h"
+
 
 // Sets default values
 AWorldGameMode::AWorldGameMode()
@@ -20,6 +21,8 @@ void AWorldGameMode::BeginPlay()
 
 	if (Voxels.Num() <= 0) Voxels.SetNum(5);
 	
+	
+
 	UpdatePosition();
 	LoadMap();
 
@@ -143,7 +146,7 @@ int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 
 	// Check if local coordinates are inside the actual chunk, it should always be inside!
 	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize) {
-		UE_LOG(Terrain_Renderer, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
+		UE_LOG(RenderTerrain, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
 		return int32(0);
 	}
 
@@ -168,7 +171,7 @@ bool AWorldGameMode::SetVoxelFromWorld(FVector Location, int32 value)
 
 	// Check if local coordinates are inside the actual chunk, it should always be inside!
 	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize) {
-		UE_LOG(Terrain_Renderer, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
+		UE_LOG(RenderTerrain, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
 		return int32(0);
 	}
 

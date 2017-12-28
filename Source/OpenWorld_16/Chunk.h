@@ -7,7 +7,6 @@
 #include "ProceduralMeshComponent.h"
 #include "RuntimeMeshComponent.h"
 #include "WorldGameMode.h"
-#include "Voxels/Voxel.h"
 #include "SurfaceExtractor.h"
 #include "Chunk.generated.h"
 
@@ -70,6 +69,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void RenderChunk();
 
+	/** Helper function to calculate normal vector of a plane.*/
+	UFUNCTION(BlueprintCallable)
+	FVector CalcNormal(const FVector& p1, const FVector& p2, const FVector& p3);
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -86,10 +89,6 @@ public:
 	// Base component of the terrain ****** EPERIMENTAL********
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Terrain")
 		class URuntimeMeshComponent* TerrainMesh;
-
-	// Stores the reference to the World Manager
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		class AWorldManager* WorldManager;
 
 	// Stores the reference to World Game Mode
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -116,9 +115,6 @@ private:
 	// Stores the voxel IDs of the chunk
 	UPROPERTY()
 		TArray<uint16> ChunkDensity;
-
-	UPROPERTY()
-		TArray<UVoxel*> Density;
 
 	/// Can we use RuntimeMeshComponent plugin?
 	UPROPERTY()

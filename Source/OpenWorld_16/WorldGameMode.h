@@ -4,11 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "UFNBlueprintFunctionLibrary.h"
 #include "FastNoise/FastNoise.h"
 #include "ProceduralMeshComponent.h"
 #include "RuntimeMeshComponent.h"
-#include "Voxels/Voxel.h"
 #include "OpenWorld_16.h"
 #include "WorldGameMode.generated.h"
 
@@ -16,7 +14,8 @@
 class AChunk;
 
 USTRUCT()
-struct FMesh {
+struct FMesh 
+{
 	GENERATED_BODY()
 
 
@@ -46,7 +45,8 @@ struct FMesh {
 };
 
 USTRUCT()
-struct FDynamicMaterial {
+struct FDynamicMaterial 
+{
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
@@ -57,22 +57,48 @@ struct FDynamicMaterial {
 };
 
 USTRUCT()
-struct FVoxelS {
+struct FVoxelS 
+{
 	GENERATED_BODY()
 
-	/* Regular material instance used when there is no material blend. It reduces the amount of 
+	/** Regular material instance used when there is no material blend. It reduces the amount of 
 	Dynamic meterial Inatances and increases performance (It has a bit lower shader instructions too). */
 	UPROPERTY(EditDefaultsOnly)
 		UMaterialInstance* Mat;
 
-	/* Base texture of the material, used in dynamic material when blending materials */
+	/** Base texture of the material, used in dynamic material when blending materials */
 	UPROPERTY(EditDefaultsOnly)
 		UTexture* BaseColor;
 
-	/* Normal map texture of the material, used in dynamic material when blending materials */
+	/** Normal map texture of the material, used in dynamic material when blending materials */
 	UPROPERTY(EditDefaultsOnly)
 		UTexture* NormalMap;
 
+};
+
+UENUM(BlueprintType)		//"BlueprintType" is essential to include
+enum class EJobEnum : uint8
+{
+	J_ExtractMesh 	UMETA(DisplayName = "Extract Mesh")
+};
+
+USTRUCT()
+struct FJob
+{
+	GENERATED_BODY()
+
+	/** Type of Job */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enum)
+		EJobEnum JobType;
+
+	/** Chunk density data pointer */
+	TArray<uint16>* Density = NULL;
+
+	/** Mesh data pointer */
+	TArray<FMesh>* Mesh = NULL;
+
+	/** Chunk Position */
+	FVector Position;
 };
 
 /**
@@ -143,6 +169,8 @@ public:
 
 	UPROPERTY()
 		FTimerHandle CountdownTimerHandle;
+
+		TQueue<FJob> Jobs;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////*****     DEBUG SETTINGS    *****////////////////////////////////////////////////////////////////////////////////////

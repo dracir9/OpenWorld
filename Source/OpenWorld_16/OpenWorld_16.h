@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 
 
-//Logging during game startup
-DECLARE_LOG_CATEGORY_EXTERN(Terrain_Renderer, Log, All);
+//Logging during terrain rendering
+DECLARE_LOG_CATEGORY_EXTERN(RenderTerrain, Log, All);
 
 //
 DECLARE_LOG_CATEGORY_EXTERN(Mat_Loader, Log, All);

@@ -5,7 +5,7 @@
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, OpenWorld_16, "OpenWorld_16" );
 
-//Logging during game startup
-DEFINE_LOG_CATEGORY(Terrain_Renderer);
+
+DEFINE_LOG_CATEGORY(RenderTerrain);
 
 DEFINE_LOG_CATEGORY(Mat_Loader);
