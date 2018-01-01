@@ -77,26 +77,16 @@ struct FVoxelS
 
 };
 
-UENUM(BlueprintType)		//"BlueprintType" is essential to include
-enum class EJobEnum : uint8
-{
-	J_ExtractMesh 	UMETA(DisplayName = "Extract Mesh")
-};
-
 USTRUCT()
 struct FJob
 {
 	GENERATED_BODY()
 
-	/** Type of Job */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enum)
-		EJobEnum JobType;
-
 	/** Chunk density data pointer */
 	TArray<uint16>* Density = NULL;
 
-	/** Mesh data pointer */
-	TArray<FMesh>* Mesh = NULL;
+	/** Mesh data array */
+	TArray<FMesh> Mesh;
 
 	/** Chunk Position */
 	FVector Position;
@@ -176,8 +166,16 @@ public:
 	UPROPERTY()
 		FTimerHandle CountdownTimerHandle;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////******      MULTYTHREADING      ******////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	// Queue for jobs to be runed on a background thread
 		TQueue<FJob> Jobs;
+
+	// Queue for finished jobs that must be finished in the game thread.
+		TQueue<FJob> FinishedJobs;
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////*****     DEBUG SETTINGS    *****////////////////////////////////////////////////////////////////////////////////////
@@ -192,11 +190,11 @@ public:
 
 	// Add chunk time
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		float time;
+		FString addtime;
 
 	// Remove chunk time
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		float time1;
+		FString removetime;
 
 	//
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")

@@ -205,15 +205,12 @@ void AChunk::RenderChunk()
 	//Initializes the variables used to store all the mesh data.
 	TArray<FMesh> meshSections;
 
-	if (!thread)
-	{
-		FJob Job;
-		Job.Density = &ChunkDensity;
-		Job.Mesh = &meshSections;
-		Job.Position = GetActorLocation();
-		GameMode->Jobs.Enqueue(Job);
-		thread = true;
-	}
+
+	FJob Job;
+	Job.Density = &ChunkDensity;
+	Job.Position = GetActorLocation();
+	GameMode->Jobs.Enqueue(Job);
+	thread = true;
 
 	const FVector grid[] = 
 	{
@@ -342,6 +339,33 @@ void AChunk::RenderChunk()
 	}
 }
 
+void AChunk::FinishRendering(const TArray<FMesh>& meshSections)
+{
+	for (int16 s = 0; s < meshSections.Num(); s++)
+	{
+		if (meshSections[s].Vertices.Num() == 0) continue;
+		if (bRuntimeEnabled)
+		{
+
+			if (TerrainMesh->DoesSectionExist(s))
+			{
+				TerrainMesh->UpdateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents);
+			}
+			else
+			{
+				TerrainMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents, true, EUpdateFrequency::Average);
+			}
+			TerrainMesh->SetMaterial(s, meshSections[s].Mat);
+
+		}
+		else
+		{
+			ChunkMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].Tangents, true);
+			ChunkMesh->SetMaterial(s, meshSections[s].Mat);
+		}
+	}
+}
+
 FVector AChunk::CalcNormal(const FVector & p1, const FVector & p2, const FVector & p3)
 {
 	FVector Norm;
@@ -356,6 +380,6 @@ FVector AChunk::CalcNormal(const FVector & p1, const FVector & p2, const FVector
 void AChunk::RemoveChunk()
 {
 	ChunkDensity.Empty();
-	
+	ChunkDensity.~TArray();
 	Destroy();
 }

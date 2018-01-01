@@ -66,13 +66,17 @@ public:
 		else return false;
 	};
 
-	// Calculates all the block data
+	/** Calculates all the block data */
 	UFUNCTION(BlueprintCallable)
 		void InitializeChunk();
 
-	//Creates the mesh to be rendered
+	/** Creates the mesh to be rendered */
 	UFUNCTION(BlueprintCallable)
 		void RenderChunk();
+
+	/** Add given mesh to component to be rendered */
+	UFUNCTION(BlueprintCallable)
+		void FinishRendering(const TArray<FMesh>& meshSections);
 
 	/** Helper function to calculate normal vector of a plane.*/
 	UFUNCTION(BlueprintCallable)

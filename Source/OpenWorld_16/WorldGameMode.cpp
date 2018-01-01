@@ -47,6 +47,19 @@ void AWorldGameMode::Tick(float DeltaTime)
 		LoadMap();
 		UnloadMap();
 	}
+
+
+	FJob job
+	if (FinishedJobs.Dequeue(job))
+	{
+		// Calculate Chunk index
+		const FVector2D ChunkIndex = FVector2D(floor(round(job.Position.X) / (ChunkSize * VoxelSize)), floor(round(job.Position.Y) / (ChunkSize * VoxelSize)));
+		
+		AChunk* NChunk = World.FindRef(ChunkIndex);
+		if (NChunk) {
+			NChunk->FinishRendering(job.Mesh);
+		}
+	}
 }
 
 bool AWorldGameMode::UpdatePosition()
@@ -91,7 +104,7 @@ void AWorldGameMode::UnloadMap()
 	}
 	
 	double end = FPlatformTime::Seconds();
-	time1 = (end - start) * 1000;
+	removetime = FString::FromInt((end - start) * 1000);
 }
 
 void AWorldGameMode::LoadMap()
@@ -138,7 +151,7 @@ void AWorldGameMode::LoadMap()
 		}
 	}
 	double end = FPlatformTime::Seconds();
-	time = (end - start) * 1000;
+	addtime = FString::FromInt((end - start) * 1000);
 }
 
 int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)

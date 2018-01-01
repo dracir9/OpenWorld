@@ -40,15 +40,12 @@ class FMeshExtractor : public FRunnable
 	FThreadSafeCounter StopTaskCounter;
 
 	/** The surface mesh calculation*/
-	void ExtractMesh(TArray<uint16>* TheArray, TArray<FMesh>* MeshSections, FVector Position);
+	void ExtractMesh(TArray<uint16>* TheArray, FVector Position);
 
 public:
 
 	//Done?
-	bool IsFinished() const
-	{
-		return false;
-	}
+	bool IsFinished = false;
 
 	//Constructor / Destructor
 	FMeshExtractor(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, UUFNNoiseGenerator* noise);

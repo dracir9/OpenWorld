@@ -5,6 +5,7 @@
 #include "OpenWorld_16.h"
 #include "FastNoise/FastNoise.h"
 #include "SurfaceExtractor.h"
+#include "Async.h"
 
 DEFINE_LOG_CATEGORY(Mesh_Extractor);
 
@@ -21,7 +22,7 @@ FMeshExtractor::FMeshExtractor(AWorldGameMode* IN_GM, int32 size, int32 Voxelsiz
 	VoxelSize = Voxelsize;
 	Noise = noise;
 
-	Thread = FRunnableThread::Create(this, TEXT("FPrimeNumberWorker"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
+	Thread = FRunnableThread::Create(this, TEXT("FMeshExtractor"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
 }
 
 FMeshExtractor::~FMeshExtractor()
@@ -55,7 +56,7 @@ uint32 FMeshExtractor::Run()
 	//Initial wait before starting
 	FPlatformProcess::Sleep(0.03);
 
-	while (StopTaskCounter.GetValue() == 0 && !IsFinished())
+	while (StopTaskCounter.GetValue() == 0 && !IsFinished)
 	{
 		if (GameMode)
 		{
@@ -63,10 +64,10 @@ uint32 FMeshExtractor::Run()
 
 			if (GameMode->Jobs.Dequeue(Job))
 			{
-				ExtractMesh(Job.Density, Job.Mesh, Job.Position);
+				ExtractMesh(Job.Density, Job.Position);
 			}
 		}
-		FPlatformProcess::Sleep(0.1);
+		FPlatformProcess::Sleep(0.01);
 	}
 	return 0;
 }
@@ -74,12 +75,14 @@ uint32 FMeshExtractor::Run()
 void FMeshExtractor::Stop()
 {
 	StopTaskCounter.Increment();
+	IsFinished = true;
 }
 
 void FMeshExtractor::EnsureCompletion()
 {
 	Stop();
 	Thread->WaitForCompletion();
+	UE_LOG(Mesh_Extractor, Warning, TEXT("Thread shutdown"));
 }
 
 FMeshExtractor * FMeshExtractor::JoyInit(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, UUFNNoiseGenerator* noise)
@@ -115,17 +118,33 @@ void FMeshExtractor::Shutdown()
 
 bool FMeshExtractor::IsThreadFinished()
 {
-	if (Runnable) return Runnable->IsFinished();
+	if (Runnable) return Runnable->IsFinished;
 	return true;
 }
 
-void FMeshExtractor::ExtractMesh(TArray<uint16>* ChunkDensity, TArray<FMesh>* MeshSections, FVector Position)
+void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 {
-	UE_LOG(Mesh_Extractor, Warning, TEXT("Start Background calculations"));
+	//Debug Log
+	//UE_LOG(Mesh_Extractor, Warning, TEXT("Start Background calculations at %s"), *Position.ToString());
+	
+	TArray<uint16> ChunkDensity;
+	
 	// Initial checks for safety
+	if (Density)
+	{
+		if ((*Density).Num() != ChunkSize * ChunkSize * ChunkSize)
+		{
+			UE_LOG(Mesh_Extractor, Error, TEXT("Denisty array not full. This shouldn't hapen! Chunk pos: %s"), *Position.ToString());
+			return;
+		}
 
-	if (!ChunkDensity) return;
-	if (!MeshSections) return;
+		ChunkDensity = *Density;
+	}
+	else
+	{
+		UE_LOG(Mesh_Extractor, Error, TEXT("Bad pointer!"));
+		return;
+	}
 
 	TArray<POINT> points;
 	points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
@@ -154,14 +173,15 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* ChunkDensity, TArray<FMesh>* Me
 				{
 					p *= VoxelSize;
 					FVector pos = FVector(Position.X + p.X, Position.Y + p.Y, Position.Z + p.Z);
-					ID = GameMode->GetVoxelFromWorld(pos);
+						ID = GameMode->GetVoxelFromWorld(pos);
+
 				}
 
 				// If point is inside the chunk get the value directly from ChunkDensity array
 				else
 				{
 					int32 idx = p.X + (p.Y * ChunkSize) + (p.Z * ChunkSize * ChunkSize);
-					ID = (*ChunkDensity)[idx];
+					ID = ChunkDensity[idx];
 					p *= VoxelSize;
 				}
 
@@ -310,8 +330,15 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* ChunkDensity, TArray<FMesh>* Me
 					meshSections[ID].Normals.Add(Normal);
 					meshSections[ID].Normals.Add(Normal);
 					
-				}
-			}
-		}
-	}
+				}// for (int8 a = 0; a < triangles.Num(); a++)
+
+			}// for (int8 k = 0; k < ChunkSize; k++)
+		}// for (int8 j = 0; j < ChunkSize; j++)
+	} // for (int8 i = 0; i < ChunkSize; i++)
+
+	FJob finishedJob;
+
+	finishedJob.Mesh = meshSections;
+
+	GameMode->FinishedJobs.Enqueue(finishedJob);
 }
