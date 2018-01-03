@@ -126,7 +126,7 @@ private:
 		TArray<uint16> ChunkDensity;
 
 	/// Can we use RuntimeMeshComponent plugin?
-	UPROPERTY()
-		bool bRuntimeEnabled = true;
+	
+		FThreadSafeBool bRuntimeEnabled = true;
 
 };

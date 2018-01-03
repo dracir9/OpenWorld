@@ -94,7 +94,6 @@ void AChunk::InitializeChunk()
 
 void AChunk::RenderChunk()
 {
-	static bool thread;
 	if (!TerrainMesh || !ChunkMesh) {
 		UE_LOG(RenderTerrain, Error, TEXT("Components not created properly"));
 		return;
@@ -104,7 +103,14 @@ void AChunk::RenderChunk()
 		UE_LOG(LogTemp, Error, TEXT("Game Mode ref is null!!"));
 		return;
 	}
-	
+
+	FJob Job;
+	Job.jobType = EJobType::JT_ExtractMesh;
+	Job.Density = &ChunkDensity;
+	Job.Position = GetActorLocation();
+	GameMode->Jobs.Enqueue(Job);
+	return;
+
 	TArray<POINT> points;
 	points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
 	for (int8 x = 0; x < ChunkSize + 1; x++)
@@ -204,13 +210,6 @@ void AChunk::RenderChunk()
 
 	//Initializes the variables used to store all the mesh data.
 	TArray<FMesh> meshSections;
-
-
-	FJob Job;
-	Job.Density = &ChunkDensity;
-	Job.Position = GetActorLocation();
-	GameMode->Jobs.Enqueue(Job);
-	thread = true;
 
 	const FVector grid[] = 
 	{
@@ -344,25 +343,16 @@ void AChunk::FinishRendering(const TArray<FMesh>& meshSections)
 	for (int16 s = 0; s < meshSections.Num(); s++)
 	{
 		if (meshSections[s].Vertices.Num() == 0) continue;
-		if (bRuntimeEnabled)
+
+		if (TerrainMesh->DoesSectionExist(s))
 		{
-
-			if (TerrainMesh->DoesSectionExist(s))
-			{
-				TerrainMesh->UpdateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents);
-			}
-			else
-			{
-				TerrainMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents, true, EUpdateFrequency::Average);
-			}
-			TerrainMesh->SetMaterial(s, meshSections[s].Mat);
-
+			TerrainMesh->UpdateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents);
 		}
 		else
 		{
-			ChunkMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].Tangents, true);
-			ChunkMesh->SetMaterial(s, meshSections[s].Mat);
+			TerrainMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents, true, EUpdateFrequency::Average);
 		}
+		TerrainMesh->SetMaterial(s, meshSections[s].Mat);
 	}
 }
 

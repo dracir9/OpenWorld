@@ -4,6 +4,7 @@
 #include "Chunk.h"
 #include "UFNBlueprintFunctionLibrary.h"
 #include "MeshExtractor.h"
+#include "Async.h"
 
 
 // Sets default values
@@ -18,18 +19,26 @@ void AWorldGameMode::BeginPlay()
 {
 	double start = FPlatformTime::Seconds();
 	Super::BeginPlay();
+
+	// Generate noise used for terrain
 	Noise = UUFNBlueprintFunctionLibrary::CreateNoiseGenerator(this, NoiseType, CellularDistanceFunction, CellularReturnType, FractalType, Interpolation, seed, Octaves, Frequency, Lacunarity, FractialGain);
 
+	// if Voxel prototypes array is empty, fill with default values. Otherwise error will be triggered.
 	if (Voxels.Num() <= 0) Voxels.SetNum(5);
 	
+	// Start Background for mesh calculations
 	BackThread = FMeshExtractor::JoyInit(this, ChunkSize, VoxelSize, Noise);
 
+	// Start timer to finish jobs from background thread
+	GetWorldTimerManager().SetTimer(AsynkThreadCountTH, this, &AWorldGameMode::FinishJob, 0.1f, true, 1.0f);
+
+	// Load Map
 	UpdatePosition();
 	LoadMap();
 
 	double end = FPlatformTime::Seconds();
 	double time = (end - start) * 1000;
-	UE_LOG(LogTemp, Warning, TEXT("First map load took: %f ms"), time);
+	UE_LOG(LogTemp, Warning, TEXT("Game Initialization took: %f ms"), time);
 }
 
 void AWorldGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -46,19 +55,6 @@ void AWorldGameMode::Tick(float DeltaTime)
 	if (UpdatePosition()) {
 		LoadMap();
 		UnloadMap();
-	}
-
-
-	FJob job
-	if (FinishedJobs.Dequeue(job))
-	{
-		// Calculate Chunk index
-		const FVector2D ChunkIndex = FVector2D(floor(round(job.Position.X) / (ChunkSize * VoxelSize)), floor(round(job.Position.Y) / (ChunkSize * VoxelSize)));
-		
-		AChunk* NChunk = World.FindRef(ChunkIndex);
-		if (NChunk) {
-			NChunk->FinishRendering(job.Mesh);
-		}
 	}
 }
 
@@ -160,7 +156,7 @@ int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 	const FVector2D ChunkIndex = FVector2D(floor(round(Location.X) / (ChunkSize * VoxelSize)), floor(round(Location.Y) / (ChunkSize * VoxelSize)));
 
 	// Calculate local coordinates of the voxel so it can be found inside chunk
-	const FVector LocalBlockPos = FVector((Location.X - (ChunkIndex.X * ChunkSize * VoxelSize)) / VoxelSize, (Location.Y - (ChunkIndex.Y * ChunkSize * VoxelSize)) / VoxelSize, Location.Z / VoxelSize);
+	const FVector LocalBlockPos = FVector((Location.X / VoxelSize - (ChunkIndex.X * ChunkSize)) , (Location.Y / VoxelSize - (ChunkIndex.Y * ChunkSize)), Location.Z / VoxelSize);
 
 	const int32 Idx = LocalBlockPos.X + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z * ChunkSize * ChunkSize;
 
@@ -182,10 +178,10 @@ int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 bool AWorldGameMode::SetVoxelFromWorld(FVector Location, int32 value)
 {
 	// Calculate Chunk index
-	const FVector2D ChunkIndex = FVector2D(floor(round(Location.X) / (ChunkSize * VoxelSize)), floor(round(Location.Y) / (ChunkSize * VoxelSize)));
+	FVector2D ChunkIndex = FVector2D(floor(round(Location.X) / (ChunkSize * VoxelSize)), floor(round(Location.Y) / (ChunkSize * VoxelSize)));
 
 	// Calculate local coordinates of the voxel so it can be found inside chunk
-	const FVector LocalBlockPos = FVector((Location.X - (ChunkIndex.X * ChunkSize * VoxelSize)) / VoxelSize, (Location.Y - (ChunkIndex.Y * ChunkSize * VoxelSize)) / VoxelSize, Location.Z / VoxelSize);
+	FVector LocalBlockPos = FVector((Location.X - (ChunkIndex.X * ChunkSize * VoxelSize)) / VoxelSize, (Location.Y - (ChunkIndex.Y * ChunkSize * VoxelSize)) / VoxelSize, Location.Z / VoxelSize);
 
 	const int32 Idx = LocalBlockPos.X + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z * ChunkSize * ChunkSize;
 
@@ -196,7 +192,13 @@ bool AWorldGameMode::SetVoxelFromWorld(FVector Location, int32 value)
 	}
 
 	// Finally change the value
-	AChunk* NChunk = World.FindRef(ChunkIndex);
+	AChunk* NChunk;
+	if (LocalBlockPos.X = ChunkSize - 1)
+	{
+		ChunkIndex += FVector2D(1, 0);
+	}
+
+	NChunk = World.FindRef(ChunkIndex);
 	if (NChunk) {
 		if (!NChunk->SetVoxelDensity(Idx, value)) return true;
 		NChunk->RenderChunk();
@@ -307,32 +309,77 @@ FDynamicMaterial AWorldGameMode::GetDynMat(int32 & id1, int32 & id2, int32 & id3
 	}
 	
 	FString matIdx = CalcMatIndex(id1, id2, id3);
-	
+
 	if (DynamicMatChache.Contains(matIdx)) 
 	{
 		return DynamicMatChache.FindRef(matIdx);
 	}
 	else 
 	{
-		UE_LOG(Mat_Loader, Warning, TEXT("Added transition meterial with index: %s"), *matIdx)
+		FJob job;
+		job.id1 = id1;
+		job.id2 = id2;
+		job.id3 = id3;
+		job.matIdx = matIdx;
+		FinishedJobs.Enqueue(job);
+	}
+	while (!DynamicMatChache.Contains(matIdx))
+	{
+		if(!IsInGameThread()) FPlatformProcess::Sleep(0.5);
+		continue;
+	}
 
-		UMaterialInstanceDynamic* DynMat = UMaterialInstanceDynamic::Create(TransitionMat, this);
-		DynMat->SetTextureParameterValue(FName("BaseColor_1"), Voxels[id1].BaseColor);
-		DynMat->SetTextureParameterValue(FName("Normal_1"), Voxels[id1].NormalMap);
-		
-		DynMat->SetTextureParameterValue(FName("BaseColor_2"), Voxels[id2].BaseColor);
-		DynMat->SetTextureParameterValue(FName("Normal_2"), Voxels[id2].NormalMap);
-		
-		DynMat->SetTextureParameterValue(FName("BaseColor_3"), Voxels[id3].BaseColor);
-		DynMat->SetTextureParameterValue(FName("Normal_3"), Voxels[id3].NormalMap);
-		
-		int32 idx = DynamicMatChache.Num() + Voxels.Num();
+	return DynamicMatChache.FindRef(matIdx);
+}
 
-		mat.Mat = DynMat;
-		mat.index = idx;
-
-		DynamicMatChache.Add(matIdx, mat);
+void AWorldGameMode::FinishJob()
+{
+	double start = FPlatformTime::Seconds();
+	FJob job;
+	int8 count = 0;
+	while ((FPlatformTime::Seconds() - start) < 0.001f && count < 64 && FinishedJobs.Dequeue(job))
+	{
 		
-		return mat;
+		count++;
+		if (job.jobType == EJobType::JT_ExtractMesh)
+		{
+			// Calculate Chunk index
+			FVector2D ChunkIndex = FVector2D(floor(round(job.Position.X) / (ChunkSize * VoxelSize)), floor(round(job.Position.Y) / (ChunkSize * VoxelSize)));
+
+			AChunk* NChunk = World.FindRef(ChunkIndex);
+			if (NChunk)
+			{
+				NChunk->FinishRendering(job.Mesh);
+				NChunk->bNeedUpdate = job.NeedUpdate;
+			}
+
+		}
+		else if (job.jobType == EJobType::JT_AddMaterial)
+		{
+			UE_LOG(Mat_Loader, Warning, TEXT("Added transition meterial with index: %s"), *job.matIdx);
+
+			UMaterialInstanceDynamic* DynMat;
+
+			DynMat = UMaterialInstanceDynamic::Create(TransitionMat, this);
+
+			DynMat->SetTextureParameterValue(FName("BaseColor_1"), Voxels[job.id1].BaseColor);
+			DynMat->SetTextureParameterValue(FName("Normal_1"), Voxels[job.id1].NormalMap);
+
+			DynMat->SetTextureParameterValue(FName("BaseColor_2"), Voxels[job.id2].BaseColor);
+			DynMat->SetTextureParameterValue(FName("Normal_2"), Voxels[job.id2].NormalMap);
+
+			DynMat->SetTextureParameterValue(FName("BaseColor_3"), Voxels[job.id3].BaseColor);
+			DynMat->SetTextureParameterValue(FName("Normal_3"), Voxels[job.id3].NormalMap);
+
+			int32 idx = DynamicMatChache.Num() + Voxels.Num();
+
+			FDynamicMaterial mat;
+
+			mat.Mat = DynMat;
+			mat.index = idx;
+
+			DynamicMatChache.Add(job.matIdx, mat);
+				
+		}
 	}
 }

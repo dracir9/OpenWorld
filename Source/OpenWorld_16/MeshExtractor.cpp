@@ -62,8 +62,9 @@ uint32 FMeshExtractor::Run()
 		{
 			FJob Job;
 
-			if (GameMode->Jobs.Dequeue(Job))
+			if (GameMode->Jobs.Peek(Job))
 			{
+				if (Job.jobType == EJobType::JT_ExtractMesh) GameMode->Jobs.Dequeue(Job);
 				ExtractMesh(Job.Density, Job.Position);
 			}
 		}
@@ -134,7 +135,6 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 	{
 		if ((*Density).Num() != ChunkSize * ChunkSize * ChunkSize)
 		{
-			UE_LOG(Mesh_Extractor, Error, TEXT("Denisty array not full. This shouldn't hapen! Chunk pos: %s"), *Position.ToString());
 			return;
 		}
 
@@ -145,6 +145,8 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 		UE_LOG(Mesh_Extractor, Error, TEXT("Bad pointer!"));
 		return;
 	}
+
+	FJob finishedJob;
 
 	TArray<POINT> points;
 	points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
@@ -207,6 +209,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 					point.p = p;
 					point.val = 255;
 					point.mat = 0;
+					finishedJob.NeedUpdate = true;
 				}
 
 				// If is terrain
@@ -287,7 +290,8 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 					int32 id2 = triangles[a].mat[1];
 					int32 id3 = triangles[a].mat[2];
 
-					FDynamicMaterial mat = GameMode->GetDynMat(id1, id2, id3);
+					FDynamicMaterial mat;
+					mat = GameMode->GetDynMat(id1, id2, id3);
 
 					ID = mat.index;
 					if (!meshSections.IsValidIndex(ID))
@@ -336,9 +340,8 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 		}// for (int8 j = 0; j < ChunkSize; j++)
 	} // for (int8 i = 0; i < ChunkSize; i++)
 
-	FJob finishedJob;
-
 	finishedJob.Mesh = meshSections;
+	finishedJob.Position = Position;
 
 	GameMode->FinishedJobs.Enqueue(finishedJob);
 }

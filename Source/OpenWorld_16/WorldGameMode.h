@@ -77,10 +77,20 @@ struct FVoxelS
 
 };
 
+UENUM(BlueprintType)
+enum class EJobType : uint8
+{
+	JT_ExtractMesh,
+	JT_AddMaterial
+};
+
 USTRUCT()
 struct FJob
 {
 	GENERATED_BODY()
+
+	/** job type */
+	EJobType jobType;
 
 	/** Chunk density data pointer */
 	TArray<uint16>* Density = NULL;
@@ -90,6 +100,14 @@ struct FJob
 
 	/** Chunk Position */
 	FVector Position;
+
+	bool NeedUpdate;
+
+	int32 id1;
+	int32 id2;
+	int32 id3;
+
+	FString matIdx;
 };
 
 /**
@@ -115,6 +133,8 @@ public:
 
 
 //########  Properties  ########//
+
+	FCriticalSection locker;
 
 	//Chunk to spawn
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
@@ -163,8 +183,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
 		TMap<FVector2D, AChunk*> World;
 
-	UPROPERTY()
-		FTimerHandle CountdownTimerHandle;
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
+		FTimerHandle AsynkThreadCountTH;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////******      MULTYTHREADING      ******////////////////////////////////////////////////////////////////////////////////
@@ -281,5 +302,8 @@ public:
 	/** Returns a dynamic transition material with the specified matetial index*/
 	UFUNCTION(BlueprintCallable)
 		FDynamicMaterial GetDynMat(int32 &id1, int32 &id2, int32 &id3);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set voxel from world", Keywords = "block"), Category = Procedural)
+		void FinishJob();
 	
 };
