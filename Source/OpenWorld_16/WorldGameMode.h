@@ -77,37 +77,34 @@ struct FVoxelS
 
 };
 
-UENUM(BlueprintType)
-enum class EJobType : uint8
-{
-	JT_ExtractMesh,
-	JT_AddMaterial
-};
-
 USTRUCT()
-struct FJob
+struct FChunkData
 {
 	GENERATED_BODY()
-
-	/** job type */
-	EJobType jobType;
 
 	/** Chunk density data pointer */
 	TArray<uint16>* Density = NULL;
 
-	/** Mesh data array */
-	TArray<FMesh> Mesh;
-
 	/** Chunk Position */
-	FVector Position;
+	UPROPERTY()
+		FVector Position;
+};
 
+USTRUCT()
+struct FSurfaceData
+{
+	GENERATED_BODY()
+
+	/** Mesh data array */
+	UPROPERTY()
+		TArray<FMesh> Mesh;
+
+	/** Should be marked to be updated in next chunk load?*/
 	bool NeedUpdate;
 
-	int32 id1;
-	int32 id2;
-	int32 id3;
-
-	FString matIdx;
+	/** Chunk Position */
+	UPROPERTY()
+		FVector Position;
 };
 
 /**
@@ -133,8 +130,6 @@ public:
 
 
 //########  Properties  ########//
-
-	FCriticalSection locker;
 
 	//Chunk to spawn
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
@@ -168,9 +163,6 @@ public:
 //////*****     WORLD VARIABLES    *****///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// Backgrund thread
-	FMeshExtractor* BackThread;
-
 	// Stores dynamic material instances
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Variables")
 		TMap<FString, FDynamicMaterial> DynamicMatChache;
@@ -183,20 +175,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
 		TMap<FVector2D, AChunk*> World;
 
-	//
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
-		FTimerHandle AsynkThreadCountTH;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////******      MULTYTHREADING      ******////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	// Backgrund thread
+		FMeshExtractor* BackThread;
+
 	// Queue for jobs to be runed on a background thread
-		TQueue<FJob> Jobs;
+		TQueue<FChunkData> QueuedMeshs;
 
-	// Queue for finished jobs that must be finished in the game thread.
-		TQueue<FJob> FinishedJobs;
+	// Queue for finished jobs that must be finished in the game thread
+		TQueue<FSurfaceData> FinishedMeshs;
 
+	// Queue for new Dynamic materials to be added
+		TQueue<FIntVector>RequestedMaterials;
+
+	// Time Handler for the timer that checks for finished jobs from background thread
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
+		FTimerHandle AsynkThreadCountTH;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////*****     DEBUG SETTINGS    *****////////////////////////////////////////////////////////////////////////////////////

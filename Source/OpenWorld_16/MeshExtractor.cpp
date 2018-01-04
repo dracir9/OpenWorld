@@ -60,12 +60,12 @@ uint32 FMeshExtractor::Run()
 	{
 		if (GameMode)
 		{
-			FJob Job;
+			FChunkData Data;
 
-			if (GameMode->Jobs.Peek(Job))
+			if (GameMode->QueuedMeshs.Dequeue(Data))
 			{
-				if (Job.jobType == EJobType::JT_ExtractMesh) GameMode->Jobs.Dequeue(Job);
-				ExtractMesh(Job.Density, Job.Position);
+				
+				ExtractMesh(Data.Density, Data.Position);
 			}
 		}
 		FPlatformProcess::Sleep(0.01);
@@ -146,7 +146,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 		return;
 	}
 
-	FJob finishedJob;
+	FSurfaceData FinishedMesh;
 
 	TArray<POINT> points;
 	points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
@@ -209,7 +209,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 					point.p = p;
 					point.val = 255;
 					point.mat = 0;
-					finishedJob.NeedUpdate = true;
+					FinishedMesh.NeedUpdate = true;
 				}
 
 				// If is terrain
@@ -340,8 +340,8 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 		}// for (int8 j = 0; j < ChunkSize; j++)
 	} // for (int8 i = 0; i < ChunkSize; i++)
 
-	finishedJob.Mesh = meshSections;
-	finishedJob.Position = Position;
+	FinishedMesh.Mesh = meshSections;
+	FinishedMesh.Position = Position;
 
-	GameMode->FinishedJobs.Enqueue(finishedJob);
+	GameMode->FinishedMeshs.Enqueue(FinishedMesh);
 }
