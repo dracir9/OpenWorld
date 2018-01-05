@@ -23,20 +23,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveChunk();
 
-	/** Enables using RuntimeMesh */
-	UFUNCTION(BlueprintCallable)
-	void EnableRuntime()
-	{ 
-		bRuntimeEnabled = true; 
-	};
-	
-	/** Check if we can use RuntimeMesh*/
-	UFUNCTION(BlueprintCallable)
-	bool CanUseRuntime()
-	{
-		return bRuntimeEnabled;
-	};
-
 	/** Returns the voxel density of a given location*/
 	int32 GetVoxelDensity(int32 index) 
 	{ 
@@ -119,14 +105,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		bool bNeedUpdate = false;
 
+	/// Can we use RuntimeMeshComponent plugin?
+	FThreadSafeBool bRuntimeEnabled = true;
+
 private:
 
 	// Stores the voxel IDs of the chunk
 	UPROPERTY()
 		TArray<uint16> ChunkDensity;
-
-	/// Can we use RuntimeMeshComponent plugin?
-	
-		FThreadSafeBool bRuntimeEnabled = true;
 
 };

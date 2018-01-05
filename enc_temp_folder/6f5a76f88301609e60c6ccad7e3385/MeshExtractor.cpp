@@ -62,12 +62,13 @@ uint32 FMeshExtractor::Run()
 		{
 			FChunkData Data;
 
-			if (GameMode->QueuedMeshs.Dequeue(Data))
+			while (GameMode->QueuedMeshs.Dequeue(Data))
 			{
 				ExtractMesh(Data.Density, Data.Position);
+				FPlatformProcess::Sleep(0.01);
 			}
 		}
-		FPlatformProcess::Sleep(0.01);
+		FPlatformProcess::Sleep(0.5);
 	}
 	return 0;
 }

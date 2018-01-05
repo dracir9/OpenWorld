@@ -275,6 +275,10 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Check Range", Keywords = "Range"), Category = Procedural)
 		bool InRange(const int32& x, const int32& y, const FVector2D& Center, const int32& Range);
 
+	//Cheks if a chunk is in the render range
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Check Local Range", Keywords = "Range"), Category = Procedural)
+		bool InLocalRange(const int32& x, const int32& y, const int32& Range);
+
 	//Delete chunks
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Unload map", Keywords = "Unload"), Category = Procedural)
 		void UnloadMap();

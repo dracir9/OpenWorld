@@ -86,6 +86,14 @@ bool AWorldGameMode::InRange(const int32& x, const int32& y, const FVector2D& Ce
 	return false;
 }
 
+bool AWorldGameMode::InLocalRange(const int32 & x, const int32 & y, const int32 & Range)
+{
+	if (FVector2D(x, y).Size() < Range) {
+		return true;
+	}
+	return false;
+}
+
 void AWorldGameMode::UnloadMap()
 {
 	double start = FPlatformTime::Seconds();
@@ -115,11 +123,10 @@ void AWorldGameMode::LoadMap()
 	int x, y, dx, dy;
 	x = y = dx = 0;
 	dy = -1;
-	int t = X;
-	int maxI = t*t;
-	for (int i = 0; i < maxI; i++) 
+	int t;
+	for (int i = 0; i < X * Y; i++) 
 	{
-		if ((-X / 2 <= x) && (x <= X / 2) && (-Y / 2 <= y) && (y <= Y / 2)) 
+		if (InLocalRange(x, y, RenderRange))
 		{
 			FActorSpawnParameters SpawnParameters;
 			FVector SpawnLocation = FVector((x + ChunkCenter.X) * ChunkSize * VoxelSize, (y + ChunkCenter.Y) * ChunkSize * VoxelSize, 0);
@@ -132,7 +139,7 @@ void AWorldGameMode::LoadMap()
 				NChunk->Noise = Noise;
 				NChunk->VoxelSize = VoxelSize;
 				NChunk->ChunkSize = ChunkSize;
-				if (UseRuntime) NChunk->EnableRuntime();
+				NChunk->bRuntimeEnabled = UseRuntime;
 
 				UGameplayStatics::FinishSpawningActor(NChunk, SpawnTransform);
 				World.Add(FVector2D(x + ChunkCenter.X, y + ChunkCenter.Y), NChunk);
@@ -149,34 +156,6 @@ void AWorldGameMode::LoadMap()
 		x += dx;
 		y += dy;
 	}
-
-	//for (int32 x = -RenderRange; x < RenderRange; x++) 
-	//{
-	//	for (int32 y = -RenderRange; y < RenderRange; y++)
-	//	{
-	//		if (InRange(x + ChunkCenter.X, y + ChunkCenter.Y, ChunkCenter, RenderRange)) 
-	//		{
-	//			FActorSpawnParameters SpawnParameters;
-	//			FVector SpawnLocation = FVector((x + ChunkCenter.X) * ChunkSize * VoxelSize, (y + ChunkCenter.Y) * ChunkSize * VoxelSize, 0);
-	//			FTransform SpawnTransform(FRotator(0, 0, 0), SpawnLocation, FVector(1, 1, 1));
-	//			AChunk* NChunk = World.FindRef(FVector2D(x + ChunkCenter.X, y + ChunkCenter.Y));
-	//			if (!NChunk) 
-	//			{
-	//				NChunk = GetWorld()->SpawnActorDeferred<AChunk>(Chunk, SpawnTransform);
-	//				///NChunk->SetActorLabel(*FString::Printf(TEXT("Chunk_%d_%d"), x + FMath::RoundToInt(ChunkCenter.X), y + FMath::RoundToInt(ChunkCenter.Y)));
-	//				NChunk->Noise = Noise;
-	//				NChunk->VoxelSize = VoxelSize;
-	//				NChunk->ChunkSize = ChunkSize;
-	//				if (UseRuntime) NChunk->EnableRuntime();
-	//				
-	//				UGameplayStatics::FinishSpawningActor(NChunk, SpawnTransform);
-	//				World.Add(FVector2D(x + ChunkCenter.X, y + ChunkCenter.Y), NChunk);
-	//				
-	//				Update = true;
-	//			}
-	//		}
-	//	}
-	//}
 
 	if (Update)
 	{

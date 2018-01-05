@@ -32,6 +32,7 @@ void AChunk::BeginPlay()
 	GameMode = (AWorldGameMode*)GetWorld()->GetAuthGameMode();
 
 	InitializeChunk();
+	RenderChunk();
 }
 
 // Called every frame
@@ -131,15 +132,24 @@ void AChunk::FinishRendering(const TArray<FMesh>& meshSections)
 	{
 		if (meshSections[s].Vertices.Num() == 0) continue;
 
-		if (TerrainMesh->DoesSectionExist(s))
+		if (bRuntimeEnabled)
 		{
-			TerrainMesh->UpdateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents);
+
+			if (TerrainMesh->DoesSectionExist(s))
+			{
+				TerrainMesh->UpdateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents);
+			}
+			else
+			{
+				TerrainMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents, true, EUpdateFrequency::Average);
+			}
+			TerrainMesh->SetMaterial(s, meshSections[s].Mat);
 		}
 		else
 		{
-			TerrainMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents, true, EUpdateFrequency::Average);
+			ChunkMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].Tangents, true);
+			ChunkMesh->SetMaterial(s, meshSections[s].Mat);
 		}
-		TerrainMesh->SetMaterial(s, meshSections[s].Mat);
 	}
 }
 
