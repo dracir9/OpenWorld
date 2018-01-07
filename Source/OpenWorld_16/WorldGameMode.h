@@ -87,7 +87,7 @@ struct FChunkData
 
 	/** Chunk Position */
 	UPROPERTY()
-		FVector Position;
+		FVector2D Position;
 };
 
 USTRUCT()
@@ -104,7 +104,7 @@ struct FSurfaceData
 
 	/** Chunk Position */
 	UPROPERTY()
-		FVector Position;
+		FVector2D Position;
 };
 
 /**
@@ -145,7 +145,7 @@ public:
 
 	//Sets the number of voxels per line that the chunk will contain.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
-		int32 ChunkSize = 10;
+		int32 ChunkSize = 16;
 
 	//Size of the voxels in UUs.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
@@ -157,7 +157,7 @@ public:
 
 	// Can we use RuntimeMeshComponent plugin?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
-		bool UseRuntime = false;
+		bool UseRuntime = true;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////*****     WORLD VARIABLES    *****///////////////////////////////////////////////////////////////////////////////////
@@ -167,13 +167,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Variables")
 		TMap<FString, FDynamicMaterial> DynamicMatChache;
 
-	//Point used to calculate the rendered chunks
+	// Point used to calculate the rendered chunks
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
 		FVector2D ChunkCenter;
 
-	//Stores the generated chunks
+	// Stores the generated chunks
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
 		TMap<FVector2D, AChunk*> World;
+
+	// Noise object for terrain generation
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
+		UUFNNoiseGenerator* Noise;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////******      MULTYTHREADING      ******////////////////////////////////////////////////////////////////////////////////
@@ -183,13 +187,16 @@ public:
 		FMeshExtractor* BackThread;
 
 	// Queue for jobs to be runed on a background thread
-		TQueue<FChunkData> QueuedMeshs;
+		TQueue<FChunkData, EQueueMode::Mpsc> QueuedMeshs;
 
 	// Queue for finished jobs that must be finished in the game thread
-		TQueue<FSurfaceData> FinishedMeshs;
+		TQueue<FSurfaceData, EQueueMode::Spsc> FinishedMeshs;
+
+	// Queue for meshes that need to be updated in the next map load
+		TQueue<FVector2D, EQueueMode::Spsc> MeshsToUpdate;
 
 	// Queue for new Dynamic materials to be added
-		TQueue<FIntVector>RequestedMaterials;
+		TQueue<FIntVector, EQueueMode::Mpsc>RequestedMaterials;
 
 	// Time Handler for the timer that checks for finished jobs from background thread
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
@@ -226,84 +233,58 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Debug Variables")
 		FString SDensitySize;
 	
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////*****     NOISE SETTINGS    *****////////////////////////////////////////////////////////////////////////////////////
+//#####################   FUNCTIONS   #####################################################################################
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		UUFNNoiseGenerator* Noise;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		ENoiseType NoiseType = ENoiseType::Simplex;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		ECellularDistanceFunction CellularDistanceFunction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		ECellularReturnType CellularReturnType;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		EFractalType FractalType;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		EInterp Interpolation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		int32 seed = 1234;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		int32 Octaves = 4;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		float Frequency = 0.001f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		float Lacunarity = 2.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
-		float FractialGain = 0.5f;
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//#####################   FUNCTIONS   #####################################################################################
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//Stores the player position
+	/** Stores the player position */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Update Position", Keywords = "Update"), Category = Procedural)
 		bool UpdatePosition();
 
-	//Cheks if a chunk is in the render range
+	/** Cheks if a chunk is in the render range */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Check Range", Keywords = "Range"), Category = Procedural)
 		bool InRange(const int32& x, const int32& y, const FVector2D& Center, const int32& Range);
 
-	//Cheks if a chunk is in the render range
+	/** Cheks if the given position is inside the given range */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Check Local Range", Keywords = "Range"), Category = Procedural)
 		bool InLocalRange(const int32& x, const int32& y, const int32& Range);
 
-	//Delete chunks
+	/** Generates the noise used to calculate the map */
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "Generate Noise", Keywords = "Noise"), Category = Procedural)
+		UUFNNoiseGenerator* CalculateNoise();
+		virtual UUFNNoiseGenerator* CalculateNoise_Implementation();
+
+	/** Delete chunks */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Unload map", Keywords = "Unload"), Category = Procedural)
 		void UnloadMap();
 
-	//Add chunks
+	/** Add chunks */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Load Map", Keywords = "Load"), Category = Procedural)
 		void LoadMap();
 
+	/** Returns the density ID of a voxel in a given location */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Voxel from world", Keywords = "block"), Category = Procedural)
 		int32 GetVoxelFromWorld(const FVector& Location);
 
+	/** Sets the donsity ID of a voxel at a given location */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set voxel from world", Keywords = "block"), Category = Procedural)
 		bool SetVoxelFromWorld(FVector Location, int32 value);
 
+	/** Generates a mesh for a grid of 8 points*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Add triangles"), Category = "Procedural")
 		void AddTriangles(TArray<FVector> &Vertex, TArray<int32> &Triangles, TArray<uint8> values);
 
-	/** Gives the index for a given group of material ID's*/
+	/** Gives the index for a given group of material ID's */
 	UFUNCTION(BlueprintCallable)
 		FString CalcMatIndex(int32 &id1, int32 &id2, int32 &id3);
 
-	/** Returns a dynamic transition material with the specified matetial index*/
+	/** Returns a dynamic transition material with the specified matetial index */
 	UFUNCTION(BlueprintCallable)
-		FDynamicMaterial GetDynMat(int32 &id1, int32 &id2, int32 &id3);
+		bool GetDynMat(int32 & id1, int32 & id2, int32 & id3, FDynamicMaterial & mat);
 
+	/** Timer function that finishes background thread calculations*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set voxel from world", Keywords = "block"), Category = Procedural)
 		void FinishJob();
 	

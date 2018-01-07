@@ -87,6 +87,11 @@ void FMeshExtractor::EnsureCompletion()
 
 FMeshExtractor * FMeshExtractor::JoyInit(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, UUFNNoiseGenerator* noise)
 {
+	if (!noise)
+	{
+		UE_LOG(Mesh_Extractor, Error, TEXT("Noise object pointer not valid"));
+		return nullptr;
+	}
 	//Create new instance of thread if it does not exist
 	//		and the platform supports multi threading!
 	if (!Runnable && FPlatformProcess::SupportsMultithreading())
@@ -122,11 +127,14 @@ bool FMeshExtractor::IsThreadFinished()
 	return true;
 }
 
-void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
-{
-	//Debug Log
-	//UE_LOG(Mesh_Extractor, Warning, TEXT("Start Background calculations at %s"), *Position.ToString());
-	
+void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
+{	
+	static bool init;
+	if (!init)
+	{
+		UE_LOG(Mesh_Extractor, Warning, TEXT("Calculations started!"));
+	}
+
 	TArray<uint16> ChunkDensity;
 	
 	// Initial checks for safety
@@ -173,7 +181,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 				else if (p.X >= ChunkSize || p.X < 0 || p.Y >= ChunkSize || p.Y < 0)
 				{
 					p *= VoxelSize;
-					FVector pos = FVector(Position.X + p.X, Position.Y + p.Y, Position.Z + p.Z);
+					FVector pos = FVector(Position.X + p.X, Position.Y + p.Y, p.Z);
 						ID = GameMode->GetVoxelFromWorld(pos);
 
 				}
@@ -204,11 +212,11 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 				// If there is no neighbour chunk mark this chunk to be updated.
 				else if (ID == -1)
 				{
-					//bNeedUpdate = true;
 					point.p = p;
 					point.val = 255;
 					point.mat = 0;
-					FinishedMesh.NeedUpdate = true;
+					//FinishedMesh.NeedUpdate = true;
+					GameMode->MeshsToUpdate.Enqueue(Position);
 				}
 
 				// If is terrain
@@ -230,6 +238,10 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 		} // Close y for loop
 	} // Close x for loop
 
+	if (!init)
+	{
+		UE_LOG(Mesh_Extractor, Warning, TEXT("First loop done!"));
+	}
 
 	//                 v7______________________v6
 	//                  /|                    /|
@@ -289,8 +301,9 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 					int32 id2 = triangles[a].mat[1];
 					int32 id3 = triangles[a].mat[2];
 
+					// Request material for the mesh. If not created properly avoid.
 					FDynamicMaterial mat;
-					mat = GameMode->GetDynMat(id1, id2, id3);
+					if (!GameMode->GetDynMat(id1, id2, id3, mat)) return;
 
 					ID = mat.index;
 					if (!meshSections.IsValidIndex(ID))
@@ -338,6 +351,15 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector Position)
 			}// for (int8 k = 0; k < ChunkSize; k++)
 		}// for (int8 j = 0; j < ChunkSize; j++)
 	} // for (int8 i = 0; i < ChunkSize; i++)
+
+	if (!init)
+	{
+		UE_LOG(Mesh_Extractor, Warning, TEXT("First calculation completed!"));
+		init = true;
+	}
+
+	points.Empty();
+	ChunkDensity.Empty();
 
 	FinishedMesh.Mesh = meshSections;
 	FinishedMesh.Position = Position;

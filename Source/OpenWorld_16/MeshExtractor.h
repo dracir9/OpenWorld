@@ -40,7 +40,7 @@ class FMeshExtractor : public FRunnable
 	FThreadSafeCounter StopTaskCounter;
 
 	/** The surface mesh calculation*/
-	void ExtractMesh(TArray<uint16>* TheArray, FVector Position);
+	void ExtractMesh(TArray<uint16>* TheArray, FVector2D Position);
 
 public:
 

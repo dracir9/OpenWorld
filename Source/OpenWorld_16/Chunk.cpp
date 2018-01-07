@@ -32,7 +32,6 @@ void AChunk::BeginPlay()
 	GameMode = (AWorldGameMode*)GetWorld()->GetAuthGameMode();
 
 	InitializeChunk();
-	RenderChunk();
 }
 
 // Called every frame
@@ -114,7 +113,7 @@ void AChunk::RenderChunk()
 
 	FChunkData Data;
 	Data.Density = &ChunkDensity;
-	Data.Position = GetActorLocation();
+	Data.Position = FVector2D(GetActorLocation().X, GetActorLocation().Y);
 	GameMode->QueuedMeshs.Enqueue(Data);
 }
 
