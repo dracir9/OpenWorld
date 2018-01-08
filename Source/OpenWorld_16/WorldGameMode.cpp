@@ -114,7 +114,7 @@ void AWorldGameMode::UnloadMap()
 	}
 	
 	double end = FPlatformTime::Seconds();
-	removetime = FString::FromInt((end - start) * 1000);
+	removetime = FString::SanitizeFloat((end - start) * 1000);
 }
 
 void AWorldGameMode::LoadMap()
@@ -165,39 +165,25 @@ void AWorldGameMode::LoadMap()
 
 	if (Update)
 	{
-		/*for (auto elem = World.CreateIterator(); elem; ++elem)
+		for (auto& pos : MeshsToUp)
 		{
-			if (InRange(elem.Key().X, elem.Key().Y, ChunkCenter, RenderRange - 1))
+			AChunk* Chunk = World.FindRef(pos);
+			if (Chunk)
 			{
-				if (elem.Value()->bNeedUpdate)
-				{
-					elem.Value()->bNeedUpdate = false;
-					elem.Value()->RenderChunk();
-				}
+				UE_LOG(LogTemp, Warning, TEXT("Run"));
+				Chunk->RenderChunk();
+				MeshsToUp.Remove(pos);
+				Update = false;
 			}
-		}*/
-		while (!MeshsToUpdate.IsEmpty())
+		}
+		if (!Update)
 		{
-			FVector2D pos;
-			MeshsToUpdate.Peek(pos);
-
-			/// Calculate Chunk index
-			FVector2D ChunkIndex = FVector2D(floor(round(pos.X) / (ChunkSize * VoxelSize)), floor(round(pos.Y) / (ChunkSize * VoxelSize)));
-
-			if (InRange(ChunkIndex.X, ChunkIndex.Y, ChunkCenter, RenderRange - 1))
-			{
-				MeshsToUpdate.Dequeue(pos);
-				AChunk* Chunk = World.FindRef(ChunkIndex);
-				if (Chunk)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Run"));
-					Chunk->RenderChunk();
-				}
-			}
+			MeshsToUp.Compact();
+			MeshsToUp.Shrink();
 		}
 	}
 	double end = FPlatformTime::Seconds();
-	addtime = FString::FromInt((end - start) * 1000);
+	addtime = FString::SanitizeFloat((end - start) * 1000);
 }
 
 int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
@@ -433,7 +419,7 @@ void AWorldGameMode::FinishJob()
 			if (NChunk)
 			{
 				NChunk->FinishRendering(job.Mesh);
-				NChunk->bNeedUpdate = job.NeedUpdate;
+				if (job.NeedUpdate) MeshsToUp.Emplace(ChunkIndex);
 			}
 			job.Mesh.Empty();
 		}

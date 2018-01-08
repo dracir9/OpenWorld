@@ -194,6 +194,7 @@ public:
 
 	// Queue for meshes that need to be updated in the next map load
 		TQueue<FVector2D, EQueueMode::Spsc> MeshsToUpdate;
+		TSet<FVector2D> MeshsToUp;
 
 	// Queue for new Dynamic materials to be added
 		TQueue<FIntVector, EQueueMode::Mpsc>RequestedMaterials;

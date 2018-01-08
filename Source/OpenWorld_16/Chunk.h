@@ -101,10 +101,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		UUFNNoiseGenerator* Noise;
 
-	// Sets the chunk to be updated in the next load world cicle
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		bool bNeedUpdate = false;
-
 	/// Can we use RuntimeMeshComponent plugin?
 	FThreadSafeBool bRuntimeEnabled = true;
 

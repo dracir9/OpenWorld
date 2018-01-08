@@ -215,8 +215,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 					point.p = p;
 					point.val = 255;
 					point.mat = 0;
-					//FinishedMesh.NeedUpdate = true;
-					GameMode->MeshsToUpdate.Enqueue(Position);
+					FinishedMesh.NeedUpdate = true;
 				}
 
 				// If is terrain
