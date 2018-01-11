@@ -33,10 +33,8 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
 
 #define FOREACH_ENUM_ERUNTIMEMESHCOLLISIONCOOKINGMODE(op) \
-	op(ERuntimeMeshCollisionCookingMode::CollisionPerformance) \
-	op(ERuntimeMeshCollisionCookingMode::CookingPerformance) 
+	op(ERuntimeMeshCollisionCookingMode::CollisionPerformance) 
 #define FOREACH_ENUM_EUPDATEFREQUENCY(op) \
 	op(EUpdateFrequency::Average) \
-	op(EUpdateFrequency::Frequent) \
-	op(EUpdateFrequency::Infrequent) 
+	op(EUpdateFrequency::Frequent) 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

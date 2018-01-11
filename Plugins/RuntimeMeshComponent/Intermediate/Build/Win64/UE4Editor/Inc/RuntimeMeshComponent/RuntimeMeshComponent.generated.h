@@ -24,7 +24,14 @@ enum class EUpdateFrequency : uint8;
 	typedef FTickFunction Super;
 
 
-#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_RPC_WRAPPERS \
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_1199_DELEGATE \
+static inline void FRuntimeMeshCollisionUpdatedDelegate_DelegateWrapper(const FMulticastScriptDelegate& RuntimeMeshCollisionUpdatedDelegate) \
+{ \
+	RuntimeMeshCollisionUpdatedDelegate.ProcessMulticastDelegate<UObject>(NULL); \
+}
+
+
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_RPC_WRAPPERS \
  \
 	DECLARE_FUNCTION(execCookCollisionNow) \
 	{ \
@@ -252,7 +259,7 @@ enum class EUpdateFrequency : uint8;
 	}
 
 
-#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_RPC_WRAPPERS_NO_PURE_DECLS \
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_RPC_WRAPPERS_NO_PURE_DECLS \
  \
 	DECLARE_FUNCTION(execCookCollisionNow) \
 	{ \
@@ -480,7 +487,7 @@ enum class EUpdateFrequency : uint8;
 	}
 
 
-#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_INCLASS_NO_PURE_DECLS \
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesURuntimeMeshComponent(); \
 	friend RUNTIMEMESHCOMPONENT_API class UClass* Z_Construct_UClass_URuntimeMeshComponent(); \
@@ -491,7 +498,7 @@ public: \
 	virtual UObject* _getUObject() const override { return const_cast<URuntimeMeshComponent*>(this); }
 
 
-#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_INCLASS \
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_INCLASS \
 private: \
 	static void StaticRegisterNativesURuntimeMeshComponent(); \
 	friend RUNTIMEMESHCOMPONENT_API class UClass* Z_Construct_UClass_URuntimeMeshComponent(); \
@@ -502,7 +509,7 @@ public: \
 	virtual UObject* _getUObject() const override { return const_cast<URuntimeMeshComponent*>(this); }
 
 
-#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_STANDARD_CONSTRUCTORS \
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_STANDARD_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API URuntimeMeshComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(URuntimeMeshComponent) \
@@ -515,7 +522,7 @@ private: \
 public:
 
 
-#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_ENHANCED_CONSTRUCTORS \
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_ENHANCED_CONSTRUCTORS \
 private: \
 	/** Private move- and copy-constructors, should never be used */ \
 	NO_API URuntimeMeshComponent(URuntimeMeshComponent&&); \
@@ -526,32 +533,33 @@ DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(URuntimeMeshComponent); \
 	DEFINE_DEFAULT_OBJECT_INITIALIZER_CONSTRUCTOR_CALL(URuntimeMeshComponent)
 
 
-#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_PRIVATE_PROPERTY_OFFSET \
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_PRIVATE_PROPERTY_OFFSET \
 	FORCEINLINE static uint32 __PPO__MeshCollisionSections() { return STRUCT_OFFSET(URuntimeMeshComponent, MeshCollisionSections); } \
 	FORCEINLINE static uint32 __PPO__ConvexCollisionSections() { return STRUCT_OFFSET(URuntimeMeshComponent, ConvexCollisionSections); } \
 	FORCEINLINE static uint32 __PPO__LocalBounds() { return STRUCT_OFFSET(URuntimeMeshComponent, LocalBounds); } \
-	FORCEINLINE static uint32 __PPO__PrePhysicsTick() { return STRUCT_OFFSET(URuntimeMeshComponent, PrePhysicsTick); }
+	FORCEINLINE static uint32 __PPO__PrePhysicsTick() { return STRUCT_OFFSET(URuntimeMeshComponent, PrePhysicsTick); } \
+	FORCEINLINE static uint32 __PPO__AsyncBodySetupQueue() { return STRUCT_OFFSET(URuntimeMeshComponent, AsyncBodySetupQueue); }
 
 
-#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_87_PROLOG
-#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_GENERATED_BODY_LEGACY \
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_PROLOG
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_GENERATED_BODY_LEGACY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_PRIVATE_PROPERTY_OFFSET \
-	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_RPC_WRAPPERS \
-	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_INCLASS \
-	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_STANDARD_CONSTRUCTORS \
+	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_PRIVATE_PROPERTY_OFFSET \
+	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_RPC_WRAPPERS \
+	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_INCLASS \
+	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_STANDARD_CONSTRUCTORS \
 public: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
 
-#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_GENERATED_BODY \
+#define OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_PRIVATE_PROPERTY_OFFSET \
-	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_RPC_WRAPPERS_NO_PURE_DECLS \
-	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_INCLASS_NO_PURE_DECLS \
-	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_90_ENHANCED_CONSTRUCTORS \
+	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_PRIVATE_PROPERTY_OFFSET \
+	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_RPC_WRAPPERS_NO_PURE_DECLS \
+	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_INCLASS_NO_PURE_DECLS \
+	OpenWorld_Plugins_RuntimeMeshComponent_Source_RuntimeMeshComponent_Public_RuntimeMeshComponent_h_93_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

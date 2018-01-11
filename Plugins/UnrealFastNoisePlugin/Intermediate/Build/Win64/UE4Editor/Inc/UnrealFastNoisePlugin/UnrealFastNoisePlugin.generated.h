@@ -18,6 +18,5 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
 
 #define FOREACH_ENUM_EWARPITERATIONS(op) \
-	op(EWarpIterations::One) \
-	op(EWarpIterations::Two) 
+	op(EWarpIterations::One) 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

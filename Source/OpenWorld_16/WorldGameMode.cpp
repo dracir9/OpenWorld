@@ -165,8 +165,9 @@ void AWorldGameMode::LoadMap()
 
 	if (Update)
 	{
-		for (auto& pos : MeshsToUp)
+		for (int32 a = 0; a < MeshsToUp.Num(); a++)
 		{
+			FVector2D& pos = MeshsToUp[a];
 			AChunk* Chunk = World.FindRef(pos);
 			if (Chunk)
 			{

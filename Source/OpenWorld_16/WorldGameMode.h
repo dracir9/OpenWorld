@@ -14,7 +14,7 @@
 class AChunk;
 class FMeshExtractor;
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FMesh 
 {
 	GENERATED_BODY()
@@ -45,7 +45,7 @@ struct FMesh
 		UMaterialInstance* Mat;
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FDynamicMaterial 
 {
 	GENERATED_BODY()
@@ -57,7 +57,7 @@ struct FDynamicMaterial
 		int32 index;
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FVoxelS 
 {
 	GENERATED_BODY()
@@ -193,8 +193,8 @@ public:
 		TQueue<FSurfaceData, EQueueMode::Spsc> FinishedMeshs;
 
 	// Queue for meshes that need to be updated in the next map load
-		TQueue<FVector2D, EQueueMode::Spsc> MeshsToUpdate;
-		TSet<FVector2D> MeshsToUp;
+		TCircularQueue<FVector2D> MeshsToUpdate;
+		TArray<FVector2D> MeshsToUp;
 
 	// Queue for new Dynamic materials to be added
 		TQueue<FIntVector, EQueueMode::Mpsc>RequestedMaterials;

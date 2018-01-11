@@ -6,6 +6,7 @@
 #include "RuntimeMeshGenericVertex.h"
 #include "RuntimeMeshVersion.h"
 #include "PhysicsEngine/PhysicsSettings.h"
+#include "Physics/IPhysXCookingModule.h"
 
 
 /** Runtime mesh scene proxy */
@@ -425,6 +426,7 @@ void ConvertLinearColorToFColor(const TArray<FLinearColor>& LinearColors, TArray
 URuntimeMeshComponent::URuntimeMeshComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 	, bUseComplexAsSimpleCollision(true)
+	, bUseAsyncCooking(false)
 	, bShouldSerializeMeshData(true)
 	, bCollisionDirty(true)
 	, CollisionMode(ERuntimeMeshCollisionCookingMode::CookingPerformance)
@@ -1733,15 +1735,23 @@ bool URuntimeMeshComponent::GetPhysicsTriMeshData(struct FTriMeshCollisionData* 
  }
 
 
+ /** Helper to create new body setup objects */
+ UBodySetup* URuntimeMeshComponent::CreateBodySetupHelper()
+ {
+	 UBodySetup* BodySetup = NewObject<UBodySetup>(this, NAME_None, (IsTemplate() ? RF_Public : RF_NoFlags));
+	 BodySetup->BodySetupGuid = FGuid::NewGuid();
+
+	 BodySetup->bGenerateMirroredCollision = false;
+	 BodySetup->bDoubleSidedGeometry = true;
+	 BodySetup->CollisionTraceFlag = bUseComplexAsSimpleCollision ? CTF_UseComplexAsSimple : CTF_UseDefault;
+
+	 return BodySetup;
+}
 void URuntimeMeshComponent::EnsureBodySetupCreated()
 {
 	if (BodySetup == nullptr)
 	{
-		BodySetup = NewObject<UBodySetup>(this, NAME_None, (IsTemplate() ? RF_Public : RF_NoFlags));
-		BodySetup->BodySetupGuid = FGuid::NewGuid();
-
-		BodySetup->bGenerateMirroredCollision = false;
-		BodySetup->bDoubleSidedGeometry = true;
+		BodySetup = CreateBodySetupHelper();
 	}
 }
 
@@ -1749,17 +1759,21 @@ void URuntimeMeshComponent::UpdateCollision()
 {
 	SCOPE_CYCLE_COUNTER(STAT_RuntimeMesh_UpdateCollision);
 
-	bool NeedsNewPhysicsState = false;
+	UWorld* World = GetWorld();
+	const bool bUseAsyncCook = World && World->IsGameWorld() && bUseAsyncCooking;
 
-	// Destroy physics state if it exists
-	if (bPhysicsStateCreated)
+	if (bUseAsyncCook)
 	{
-		DestroyPhysicsState();
-		NeedsNewPhysicsState = true;
+		AsyncBodySetupQueue.Add(CreateBodySetupHelper());
+	}
+	else
+	{
+		AsyncBodySetupQueue.Empty();
+		EnsureBodySetupCreated();
 	}
 
-	// Ensure we have a BodySetup
-	EnsureBodySetupCreated();
+	UBodySetup* CurrentBodySetup = bUseAsyncCook ? AsyncBodySetupQueue.Last() : BodySetup;
+
 
 	// Fill in simple collision convex elements
 	BodySetup->AggGeom.ConvexElems.SetNum(ConvexCollisionSections.Num());
@@ -1769,35 +1783,103 @@ void URuntimeMeshComponent::UpdateCollision()
 
 		NewConvexElem.VertexData = ConvexCollisionSections[Index].VertexBuffer;
 		NewConvexElem.ElemBox = FBox(NewConvexElem.VertexData);
-	} 
-
-	// Set trace flag
-	BodySetup->CollisionTraceFlag = bUseComplexAsSimpleCollision ? CTF_UseComplexAsSimple : CTF_UseDefault;
-
-	// New GUID as collision has changed
-	BodySetup->BodySetupGuid = FGuid::NewGuid();
-
-
-#if WITH_RUNTIME_PHYSICS_COOKING || WITH_EDITOR
-	// Clear current mesh data
-	BodySetup->InvalidatePhysicsData();
-	// Create new mesh data
-	BodySetup->CreatePhysicsMeshes();
-#endif // WITH_RUNTIME_PHYSICS_COOKING || WITH_EDITOR
-
-	// Recreate physics state if necessary
-	if (NeedsNewPhysicsState)
-	{
-		CreatePhysicsState();
 	}
 
-	UpdateNavigation();
+
+	CurrentBodySetup->CollisionTraceFlag = bUseComplexAsSimpleCollision ? CTF_UseComplexAsSimple : CTF_UseDefault;
+
+
+	if (bUseAsyncCook)
+	{
+		CurrentBodySetup->CreatePhysicsMeshesAsync(FOnAsyncPhysicsCookFinished::CreateUObject(this, &URuntimeMeshComponent::FinishPhysicsAsyncCook, CurrentBodySetup));
+	}
+	else
+	{
+		// Change body setup guid 
+		CurrentBodySetup->BodySetupGuid = FGuid::NewGuid();
+
+		// Update meshes
+		CurrentBodySetup->bHasCookedCollisionData = true;
+		CurrentBodySetup->InvalidatePhysicsData();
+		CurrentBodySetup->CreatePhysicsMeshes();
+		RecreatePhysicsState();
+
+		// Update navigation
+		UpdateNavigation();
+
+		// Call user event to notify of collision updated.
+		if (CollisionUpdated.IsBound())
+		{
+			CollisionUpdated.Broadcast();
+		}
+	}
+}
+
+void URuntimeMeshComponent::FinishPhysicsAsyncCook(UBodySetup* FinishedBodySetup)
+{
+	TArray<UBodySetup*> NewQueue;
+	NewQueue.Reserve(AsyncBodySetupQueue.Num());
+
+	int32 FoundIdx;
+	if (AsyncBodySetupQueue.Find(FinishedBodySetup, FoundIdx))
+	{
+		// The new body was found in the array meaning it's newer so use it
+		BodySetup = FinishedBodySetup;
+		RecreatePhysicsState();
+
+		// Update navigation
+		UpdateNavigation();
+
+		// Remove any async body setups that were requested before this one
+		for (int32 AsyncIdx = FoundIdx + 1; AsyncIdx < AsyncBodySetupQueue.Num(); ++AsyncIdx)
+		{
+			NewQueue.Add(AsyncBodySetupQueue[AsyncIdx]);
+		}
+
+		AsyncBodySetupQueue = NewQueue;
+
+		// Call user event to notify of collision updated.
+		if (CollisionUpdated.IsBound())
+		{
+			CollisionUpdated.Broadcast();
+		}
+	}
 }
 
 UBodySetup* URuntimeMeshComponent::GetBodySetup()
 {
 	EnsureBodySetupCreated();
 	return BodySetup;
+}
+
+UMaterialInterface* URuntimeMeshComponent::GetMaterialFromCollisionFaceIndex(int32 FaceIndex, int32& SectionIndex) const
+{
+	UMaterialInterface* Result = nullptr;
+	SectionIndex = 0;
+
+	// Look for element that corresponds to the supplied face
+	int32 TotalFaceCount = 0;
+
+	for (int32 SectionIdx = 0; SectionIdx < MeshSections.Num(); SectionIdx++)
+	{
+		const RuntimeMeshSectionPtr& Section = MeshSections[SectionIdx];
+
+		if (Section.IsValid() && Section->CollisionEnabled)
+		{
+			int32 NumFaces = Section->IndexBuffer.Num() / 3;
+			TotalFaceCount += NumFaces;
+
+			if (FaceIndex < TotalFaceCount)
+			{
+				// Grab the material
+				Result = GetMaterial(SectionIdx);
+				SectionIndex = SectionIdx;
+				break;
+			}
+		}
+	}
+
+	return Result;
 }
 
 void URuntimeMeshComponent::MarkCollisionDirty()
