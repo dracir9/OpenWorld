@@ -14,7 +14,7 @@ public class OpenWorld_16 : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
         PublicDependencyModuleNames.AddRange(new string[] { "ShaderCore", "RenderCore", "RHI", "RuntimeMeshComponent" });
 
-        PrivateIncludePaths.Add("../Plugins/Marketplace/RuntimeMeshComponent");
+        PrivateIncludePaths.Add("../Plugins/RuntimeMeshComponent");
         //PrivateIncludePaths.Add("../Plugins/Marketplace/RuntimeMeshComponent/Source/RuntimeMeshComponent");
         //PrivateIncludePaths.Add("../Plugins/Marketplace/RuntimeMeshComponent/Source/RuntimeMeshComponentEditor");
         //PrivateIncludePaths.Add("../Plugins/Marketplace/RuntimeMeshComponent/Source/RuntimeMeshComponentSlicer");

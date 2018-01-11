@@ -1,0 +1,10 @@
+{
+	"Changelist" : 3452394,
+	"BuildId" : "9bd2ff28-33aa-4c45-a360-24922ff1beaa",
+	"Modules" : 
+	{
+		"RuntimeMeshComponent" : "UE4Editor-RuntimeMeshComponent.dylib",
+		"RuntimeMeshComponentEditor" : "UE4Editor-RuntimeMeshComponentEditor.dylib",
+		"RuntimeMeshComponentSlicer" : "UE4Editor-RuntimeMeshComponentSlicer.dylib"
+	}
+}

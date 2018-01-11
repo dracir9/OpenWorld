@@ -1,0 +1,13 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-RuntimeMeshComponentEditor.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Intermediate\Build\Win64\UE4Editor\Development\UnrealEd\SharedPCH.UnrealEd.h.obj"
+"C:\Users\Admin\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Intermediate\Build\Win64\UE4Editor\Development\RuntimeMeshComponentEditor\Module.RuntimeMeshComponentEditor.cpp.obj"
+"C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Intermediate\Build\Win64\UE4Editor\Development\RuntimeMeshComponentEditor\PCLaunch.rc.res"
+"C:\Program Files (x86)\Epic Games\UE_4.16\Engine\Intermediate\Build\Win64\UE4Editor\Development\ModuleVersionResource.rc.inl.res"
+/OUT:"C:\Users\Admin\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-RuntimeMeshComponentEditor.lib"
