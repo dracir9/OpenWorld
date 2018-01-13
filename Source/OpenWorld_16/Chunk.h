@@ -26,6 +26,7 @@ public:
 	/** Returns the voxel density of a given location*/
 	int32 GetVoxelDensity(int32 index) 
 	{ 
+		if (index > ChunkDensity.Num()) return 0;
 		return ChunkDensity[index]; 
 	};
 

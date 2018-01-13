@@ -20,6 +20,7 @@ void AWorldGameMode::BeginPlay()
 	double start = FPlatformTime::Seconds();
 	Super::BeginPlay();
 
+
 	/// Generate noise used for terrain
 	Noise = CalculateNoise();
 
@@ -165,22 +166,23 @@ void AWorldGameMode::LoadMap()
 
 	if (Update)
 	{
-		for (int32 a = 0; a < MeshsToUp.Num(); a++)
+		for (uint32 b = 0; b < MeshsToUpdate.Count(); b++)
 		{
-			FVector2D& pos = MeshsToUp[a];
-			AChunk* Chunk = World.FindRef(pos);
-			if (Chunk)
+			FIntVector pos;
+			if (MeshsToUpdate.Dequeue(pos))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Run"));
-				Chunk->RenderChunk();
-				MeshsToUp.Remove(pos);
-				Update = false;
+				FVector2D ChunkIndex = FVector2D(floor(round(pos.X) / (ChunkSize * VoxelSize)), floor(round(pos.Y) / (ChunkSize * VoxelSize)));
+
+				AChunk* Chunk = World.FindRef(ChunkIndex);
+				if (Chunk)
+				{
+					Chunk->RenderChunk();
+				}
+				else if (pos.Z < 4)
+				{
+					MeshsToUpdate.Enqueue(pos + FIntVector(0,0,1));
+				}
 			}
-		}
-		if (!Update)
-		{
-			MeshsToUp.Compact();
-			MeshsToUp.Shrink();
 		}
 	}
 	double end = FPlatformTime::Seconds();
@@ -420,7 +422,6 @@ void AWorldGameMode::FinishJob()
 			if (NChunk)
 			{
 				NChunk->FinishRendering(job.Mesh);
-				if (job.NeedUpdate) MeshsToUp.Emplace(ChunkIndex);
 			}
 			job.Mesh.Empty();
 		}

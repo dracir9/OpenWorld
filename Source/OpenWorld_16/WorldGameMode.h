@@ -99,9 +99,6 @@ struct FSurfaceData
 	UPROPERTY()
 		TArray<FMesh> Mesh;
 
-	/** Should be marked to be updated in next chunk load?*/
-	bool NeedUpdate;
-
 	/** Chunk Position */
 	UPROPERTY()
 		FVector2D Position;
@@ -193,8 +190,7 @@ public:
 		TQueue<FSurfaceData, EQueueMode::Spsc> FinishedMeshs;
 
 	// Queue for meshes that need to be updated in the next map load
-		TCircularQueue<FVector2D> MeshsToUpdate;
-		TArray<FVector2D> MeshsToUp;
+		TCircularQueue<FIntVector> MeshsToUpdate = TCircularQueue<FIntVector>(512);
 
 	// Queue for new Dynamic materials to be added
 		TQueue<FIntVector, EQueueMode::Mpsc>RequestedMaterials;

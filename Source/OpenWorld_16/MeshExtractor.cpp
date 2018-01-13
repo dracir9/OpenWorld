@@ -153,7 +153,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 		return;
 	}
 
-	FSurfaceData FinishedMesh;
+	bool NeedUpdate;
 
 	TArray<POINT> points;
 	points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
@@ -215,7 +215,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 					point.p = p;
 					point.val = 255;
 					point.mat = 0;
-					FinishedMesh.NeedUpdate = true;
+					NeedUpdate = true;
 				}
 
 				// If is terrain
@@ -360,8 +360,14 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 	points.Empty();
 	ChunkDensity.Empty();
 
+	FSurfaceData FinishedMesh;
 	FinishedMesh.Mesh = meshSections;
 	FinishedMesh.Position = Position;
+
+	if (NeedUpdate)
+	{
+		if (!GameMode->MeshsToUpdate.Enqueue(FIntVector(Position.X, Position.Y, 0))) UE_LOG(Mesh_Extractor, Warning, TEXT("Full! %d"), GameMode->MeshsToUpdate.Count());
+	}
 
 	GameMode->FinishedMeshs.Enqueue(FinishedMesh);
 }
