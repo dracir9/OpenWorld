@@ -43,30 +43,101 @@ void AChunk::Tick(float DeltaTime)
 
 void AChunk::InitializeChunk()
 {
-	ChunkDensity.SetNum(ChunkSize * ChunkSize * ChunkSize);
-	float heigh;
-	if (Noise)
+	if (!Noise) return;
+
+	ChunkDensity.SetNumZeroed(ChunkSize * ChunkSize * ChunkSize);
+	Density.SetNum(16);
+
+	//int32
+	double height = 0.0f;
+
+	TArray<int8> pending;
+	int8 current = 0;
+
+	int8 tmp = 0;
+	int32 i = 0;
+	for (int8 x = 0; x < ChunkSize; x++)
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString("Yes"));
+		for (int8 y = 0; y < ChunkSize; y++)
+		{
+			height = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
+			//heigh = (heigh * 127.5 + 127.5) * 100;
+			height = (height * 5 + 5) * 100;
+
+			tmp = floor(height / (ChunkSize * VoxelSize));
+			if (tmp != current && (x != 0 || y != 0))
+			{
+				if (!pending.Contains(tmp))
+				pending.Add(tmp);
+			}
+			else
+			{
+				current = tmp;
+			}
+
+			if (!Density[current].isActive)
+			{
+				Density[current].Density.SetNumZeroed(ChunkSize * ChunkSize * ChunkSize);
+				Density[current].isActive = true;
+			}
+
+			for (int8 z = 0; z < ChunkSize; z++)
+			{
+				//i = x + (y * ChunkSize) + (z * ChunkSize * ChunkSize);
+
+				int32 k = (z + current * ChunkSize) * VoxelSize;
+
+
+				if (k < height)
+				{
+					if (k < 500)
+					{
+						Density[current].Density[i] = 1;
+						ChunkDensity[i] = 1;
+					}
+					else if (k < 700)
+					{
+						Density[current].Density[i] = 2;
+						ChunkDensity[i] = 2;
+					}
+					else
+					{
+						Density[current].Density[i] = 3;
+						ChunkDensity[i] = 3;
+					}
+				}
+				else
+				{
+					Density[current].Density[i] = 0;
+					ChunkDensity[i] = 0;
+				}
+				i++;
+			}
+		}
+	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("pending %d"), pending.Num());
+	/*if (Noise)
+	{
 		for (int8 x = 0; x < ChunkSize; x++)
 		{
 			for (int8 y = 0; y < ChunkSize; y++)
 			{
+				heigh = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
+				heigh = (heigh * 5 + 5) * 100;
 				for (int8 z = 0; z < ChunkSize; z++)
 				{
 					int32 i = x + (y * ChunkSize) + (z * ChunkSize * ChunkSize);
-					heigh = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
-					heigh = (heigh * 5 + 5) * 100;
-
+					
 					int32 k = z* VoxelSize;
 
-					if (k < heigh) 
+					if (k < heigh)
 					{
-						if (k < 500) 
+						if (k < 500)
 						{
 							ChunkDensity[i] = 1;
 						}
-						else if (k < 700) 
+						else if (k < 700)
 						{
 							ChunkDensity[i] = 2;
 						}
@@ -75,14 +146,14 @@ void AChunk::InitializeChunk()
 							ChunkDensity[i] = 3;
 						}
 					}
-					else 
+					else
 					{
 						ChunkDensity[i] = 0;
 					}
 				}
 			}
 		}
-	}
+	}*/
 
 	// Optimize memory
 	ChunkDensity.Shrink();
@@ -112,7 +183,8 @@ void AChunk::RenderChunk()
 	}
 
 	FChunkData Data;
-	Data.Density = &ChunkDensity;
+	Data.ChunkDensity = &ChunkDensity;
+	Data.Density = &Density;
 	Data.Position = FVector2D(GetActorLocation().X, GetActorLocation().Y);
 	GameMode->QueuedMeshs.Enqueue(Data);
 }

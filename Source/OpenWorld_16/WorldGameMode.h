@@ -14,6 +14,18 @@
 class AChunk;
 class FMeshExtractor;
 
+USTRUCT()
+struct FDensity
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+		TArray<uint16> Density;
+
+	UPROPERTY()
+		bool isActive = false;
+};
+
 USTRUCT(BlueprintType)
 struct FMesh 
 {
@@ -83,7 +95,10 @@ struct FChunkData
 	GENERATED_BODY()
 
 	/** Chunk density data pointer */
-	TArray<uint16>* Density = NULL;
+	TArray<uint16>* ChunkDensity = NULL;
+
+	/** */
+	TArray<FDensity>* Density;
 
 	/** Chunk Position */
 	UPROPERTY()

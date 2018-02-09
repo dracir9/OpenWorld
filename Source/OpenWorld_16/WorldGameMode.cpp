@@ -197,7 +197,7 @@ int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 	// Calculate local coordinates of the voxel so it can be found inside chunk
 	const FVector LocalBlockPos = FVector((Location.X / VoxelSize - (ChunkIndex.X * ChunkSize)) , (Location.Y / VoxelSize - (ChunkIndex.Y * ChunkSize)), Location.Z / VoxelSize);
 
-	const int32 Idx = LocalBlockPos.X + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z * ChunkSize * ChunkSize;
+	const int32 Idx = LocalBlockPos.X * ChunkSize * ChunkSize + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z;
 
 	// Check if local coordinates are inside the actual chunk, it should always be inside!
 	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize) {
@@ -222,7 +222,7 @@ bool AWorldGameMode::SetVoxelFromWorld(FVector Location, int32 value)
 	// Calculate local coordinates of the voxel so it can be found inside chunk
 	FVector LocalBlockPos = FVector((Location.X - (ChunkIndex.X * ChunkSize * VoxelSize)) / VoxelSize, (Location.Y - (ChunkIndex.Y * ChunkSize * VoxelSize)) / VoxelSize, Location.Z / VoxelSize);
 
-	const int32 Idx = LocalBlockPos.X + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z * ChunkSize * ChunkSize;
+	const int32 Idx = LocalBlockPos.X  * ChunkSize * ChunkSize + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z;
 
 	// Check if local coordinates are inside the actual chunk, it should always be inside!
 	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize) {

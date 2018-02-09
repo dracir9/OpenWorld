@@ -24,7 +24,7 @@ public:
 	void RemoveChunk();
 
 	/** Returns the voxel density of a given location*/
-	int32 GetVoxelDensity(int32 index) 
+	int32 GetVoxelDensity(const int32& index) 
 	{ 
 		if (index > ChunkDensity.Num()) return 0;
 		return ChunkDensity[index]; 
@@ -34,7 +34,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetVoxelDensity(const int32& x, const int32& y, const int32& z) const
 	{ 
-		int32 idx = x + y * ChunkSize + z * ChunkSize * ChunkSize; 
+		int32 idx = x * ChunkSize * ChunkSize + y * ChunkSize + z;
 		return ChunkDensity[idx];
 	};
 
@@ -110,5 +110,8 @@ private:
 	// Stores the voxel IDs of the chunk
 	UPROPERTY()
 		TArray<uint16> ChunkDensity;
+
+	UPROPERTY()
+		TArray<FDensity> Density;
 
 };

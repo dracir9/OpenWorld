@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OpenWorld_16.h"
 
 /**
  * 
@@ -29,6 +30,14 @@ class FMeshExtractor : public FRunnable
 
 	/** Size of the grid and its voxels */
 	int32 VoxelSize;
+
+	/** Array to temporally store Chunk density data
+	* Declared here to avoid creation of this heavy variable in a local scope
+	* and avoid allocating and deallocating memory constantly ???????? */
+	TArray<uint16> ChunkDensity;
+
+	/** Array to temporally store chunk's point cloud*/
+	TArray<POINT> points;
 
 	/** Pointer to the noise object used to calculate terrain */
 	UUFNNoiseGenerator* Noise;

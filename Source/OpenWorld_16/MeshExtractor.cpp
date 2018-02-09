@@ -64,7 +64,7 @@ uint32 FMeshExtractor::Run()
 
 			if (GameMode->QueuedMeshs.Dequeue(Data))
 			{
-				ExtractMesh(Data.Density, Data.Position);
+				ExtractMesh(Data.ChunkDensity, Data.Position);
 			}
 		}
 		FPlatformProcess::Sleep(0.01);
@@ -129,13 +129,15 @@ bool FMeshExtractor::IsThreadFinished()
 
 void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 {	
+	/*********************/
+	TArray<FDensity> Densitym;
+	/*********************/
 	static bool init;
 	if (!init)
 	{
 		UE_LOG(Mesh_Extractor, Warning, TEXT("Calculations started!"));
 	}
-
-	TArray<uint16> ChunkDensity;
+	Densitym.SetNum(1);
 	
 	// Initial checks for safety
 	if (Density)
@@ -153,9 +155,8 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 		return;
 	}
 
-	bool NeedUpdate;
-
-	TArray<POINT> points;
+	int32 i = 0;
+	bool NeedUpdate = false;
 	points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
 	for (int8 x = 0; x < ChunkSize + 1; x++)
 	{
@@ -189,7 +190,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 				// If point is inside the chunk get the value directly from ChunkDensity array
 				else
 				{
-					int32 idx = p.X + (p.Y * ChunkSize) + (p.Z * ChunkSize * ChunkSize);
+					int32 idx = (p.X * ChunkSize * ChunkSize) + (p.Y * ChunkSize) + p.Z;
 					ID = ChunkDensity[idx];
 					p *= VoxelSize;
 				}
@@ -228,11 +229,12 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), heigh));
 					point.mat = --ID;
 				}
-
+				
 				p /= VoxelSize;
-				int32 idx = p.X + (p.Y * (ChunkSize + 1)) + (p.Z * (ChunkSize + 1) * (ChunkSize + 1));
-				points[idx] = point;
+				//int32 idx = p.X + (p.Y * (ChunkSize + 1)) + (p.Z * (ChunkSize + 1) * (ChunkSize + 1));
+				points[i] = point;
 
+				i++;
 			} // Close z for loop
 		} // Close y for loop
 	} // Close x for loop
@@ -336,11 +338,11 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 
 					// Add vertex index (create triangle)
 					meshSections[ID].Triangles.Add(oldVertCount);
-					meshSections[ID].Triangles.Add(oldVertCount + 1);
 					meshSections[ID].Triangles.Add(oldVertCount + 2);
+					meshSections[ID].Triangles.Add(oldVertCount + 1);
 
 					// Calculate Normals
-					FVector Normal = CalcNormals(triangles[a].p[0], triangles[a].p[1], triangles[a].p[2]);
+					FVector Normal = CalcNormals(triangles[a].p[0], triangles[a].p[2], triangles[a].p[1]);
 					meshSections[ID].Normals.Add(Normal);
 					meshSections[ID].Normals.Add(Normal);
 					meshSections[ID].Normals.Add(Normal);
@@ -364,9 +366,10 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 	FinishedMesh.Mesh = meshSections;
 	FinishedMesh.Position = Position;
 
-	if (NeedUpdate)
+
+	if (NeedUpdate && !GameMode->MeshsToUpdate.Enqueue(FIntVector(Position.X, Position.Y, 0)))
 	{
-		if (!GameMode->MeshsToUpdate.Enqueue(FIntVector(Position.X, Position.Y, 0))) UE_LOG(Mesh_Extractor, Warning, TEXT("Full! %d"), GameMode->MeshsToUpdate.Count());
+		UE_LOG(Mesh_Extractor, Warning, TEXT("Full! %d"), GameMode->MeshsToUpdate.Count());
 	}
 
 	GameMode->FinishedMeshs.Enqueue(FinishedMesh);
