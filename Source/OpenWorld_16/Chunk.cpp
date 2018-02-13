@@ -70,7 +70,7 @@ void AChunk::InitializeChunk()
 				if (!pending.Contains(tmp))
 				pending.Add(tmp);
 			}
-			else
+			else if (tmp != current)
 			{
 				current = tmp;
 			}
@@ -116,45 +116,48 @@ void AChunk::InitializeChunk()
 		}
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("pending %d"), pending.Num());
-	/*if (Noise)
+	for (int8& h : pending)
 	{
+		if (!Density[h].isActive)
+		{
+			Density[h].Density.SetNumZeroed(ChunkSize * ChunkSize * ChunkSize);
+			Density[h].isActive = true;
+		}
+
 		for (int8 x = 0; x < ChunkSize; x++)
 		{
 			for (int8 y = 0; y < ChunkSize; y++)
 			{
-				heigh = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
-				heigh = (heigh * 5 + 5) * 100;
 				for (int8 z = 0; z < ChunkSize; z++)
 				{
-					int32 i = x + (y * ChunkSize) + (z * ChunkSize * ChunkSize);
-					
-					int32 k = z* VoxelSize;
+					int32 k = (z + h * ChunkSize) * VoxelSize;
 
-					if (k < heigh)
+					if (k < height)
 					{
 						if (k < 500)
 						{
-							ChunkDensity[i] = 1;
+							Density[h].Density[i] = 1;
 						}
 						else if (k < 700)
 						{
-							ChunkDensity[i] = 2;
+							Density[h].Density[i] = 2;
 						}
 						else
 						{
-							ChunkDensity[i] = 3;
+							Density[h].Density[i] = 3;
 						}
 					}
 					else
 					{
-						ChunkDensity[i] = 0;
+						Density[h].Density[i] = 0;
 					}
+					i++;
 				}
 			}
 		}
-	}*/
+	}
 
+	//UE_LOG(LogTemp, Warning, TEXT("pending %d"), pending.Num());
 	// Optimize memory
 	ChunkDensity.Shrink();
 

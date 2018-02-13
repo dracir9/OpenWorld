@@ -58,16 +58,22 @@ uint32 FMeshExtractor::Run()
 
 	while (StopTaskCounter.GetValue() == 0 && !IsFinished)
 	{
-		if (GameMode)
-		{
-			FChunkData Data;
-
-			if (GameMode->QueuedMeshs.Dequeue(Data))
-			{
-				ExtractMesh(Data.ChunkDensity, Data.Position);
-			}
-		}
 		FPlatformProcess::Sleep(0.01);
+
+		if (!GameMode) return 0;
+
+		double start = FPlatformTime::Seconds();
+
+		FChunkData Data;
+
+		if (GameMode->QueuedMeshs.Dequeue(Data))
+		{
+			ExtractMesh(Data.ChunkDensity, Data.Position);
+		}
+
+		double end = FPlatformTime::Seconds();
+		GameMode->AvTime.Add(FMath::FloorToInt((end - start) * 1000000));
+		GameMode->ExtractedMeshs.Increment();
 	}
 	return 0;
 }
@@ -135,7 +141,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 	static bool init;
 	if (!init)
 	{
-		UE_LOG(Mesh_Extractor, Warning, TEXT("Calculations started!"));
+		UE_LOG(Mesh_Extractor, Warning, TEXT("Mesh extractor started!"));
 	}
 	Densitym.SetNum(1);
 	
@@ -174,17 +180,14 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 				// If point is over or under the chunk's limit set it as air.
 				if (p.Z >= ChunkSize || p.Z < 0)
 				{
-					p *= VoxelSize;
 					ID = 0;
 				}
 
 				//If point is outside the chunk get the value from world
 				else if (p.X >= ChunkSize || p.X < 0 || p.Y >= ChunkSize || p.Y < 0)
 				{
-					p *= VoxelSize;
-					FVector pos = FVector(Position.X + p.X, Position.Y + p.Y, p.Z);
-						ID = GameMode->GetVoxelFromWorld(pos);
-
+					FVector pos = (p * VoxelSize) + FVector(Position.X, Position.Y, 0);
+					ID = GameMode->GetVoxelFromWorld(pos);
 				}
 
 				// If point is inside the chunk get the value directly from ChunkDensity array
@@ -192,20 +195,20 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 				{
 					int32 idx = (p.X * ChunkSize * ChunkSize) + (p.Y * ChunkSize) + p.Z;
 					ID = ChunkDensity[idx];
-					p *= VoxelSize;
 				}
 
 				///*/////////////////////////////
 				// Set position, isovalue and material for vertex
 				///*/////////////////////////////
 				POINT point;
+				p *= VoxelSize;
+
+				float heigh = Noise->GetNoise2D(p.X + Position.X, p.Y + Position.Y);
+				heigh = (heigh * 5 + 5) * 100;
+				heigh -= p.Z;
 
 				if (ID == 0)
 				{
-					point.p = p;
-					float heigh = Noise->GetNoise2D(p.X + Position.X, p.Y + Position.Y);
-					heigh = (heigh * 5 + 5) * 100;
-					heigh -= p.Z;
 					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), heigh));
 					point.mat = 0;
 				}
@@ -213,8 +216,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 				// If there is no neighbour chunk mark this chunk to be updated.
 				else if (ID == -1)
 				{
-					point.p = p;
-					point.val = 255;
+					point.val = heigh >= VoxelSize ? 0 : 255;
 					point.mat = 0;
 					NeedUpdate = true;
 				}
@@ -222,16 +224,11 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 				// If is terrain
 				else
 				{
-					point.p = p;
-					float heigh = Noise->GetNoise2D(p.X + Position.X, p.Y + Position.Y);
-					heigh = (heigh * 5 + 5) * 100;
-					heigh -= p.Z;
 					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), heigh));
 					point.mat = --ID;
 				}
 				
-				p /= VoxelSize;
-				//int32 idx = p.X + (p.Y * (ChunkSize + 1)) + (p.Z * (ChunkSize + 1) * (ChunkSize + 1));
+
 				points[i] = point;
 
 				i++;
@@ -281,9 +278,9 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 				{
 					FVector mask = grid[a];
 					FVector p = FVector(i, j, k) + mask;
-					int32 idx = p.X + (p.Y * (ChunkSize + 1)) + (p.Z * (ChunkSize + 1) * (ChunkSize + 1));
+					int32 idx = (p.X * (ChunkSize + 1) * (ChunkSize + 1)) + (p.Y * (ChunkSize + 1)) + p.Z;
 
-					cell.p[a] = points[idx].p;
+					cell.p[a] = p * VoxelSize;
 					cell.val[a] = points[idx].val;
 					cell.mat[a] = points[idx].mat;
 				}
@@ -338,11 +335,11 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 
 					// Add vertex index (create triangle)
 					meshSections[ID].Triangles.Add(oldVertCount);
-					meshSections[ID].Triangles.Add(oldVertCount + 2);
 					meshSections[ID].Triangles.Add(oldVertCount + 1);
+					meshSections[ID].Triangles.Add(oldVertCount + 2);
 
 					// Calculate Normals
-					FVector Normal = CalcNormals(triangles[a].p[0], triangles[a].p[2], triangles[a].p[1]);
+					FVector Normal = CalcNormals(triangles[a].p[0], triangles[a].p[1], triangles[a].p[2]);
 					meshSections[ID].Normals.Add(Normal);
 					meshSections[ID].Normals.Add(Normal);
 					meshSections[ID].Normals.Add(Normal);

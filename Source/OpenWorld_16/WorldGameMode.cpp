@@ -336,7 +336,7 @@ FString AWorldGameMode::CalcMatIndex(int32 & id1, int32 & id2, int32 & id3)
 	return FString(FString::FromInt(id1) + "-" + FString::FromInt(id2) + "-" + FString::FromInt(id3));
 }
 
-bool AWorldGameMode::GetDynMat(int32 & id1, int32 & id2, int32 & id3, FDynamicMaterial & mat)
+bool AWorldGameMode::GetDynMat(int32 & id1, int32 & id2, int32 & id3, FDynamicMaterial & mat = FDynamicMaterial)
 {
 	if (id1 == id2 && id2 == id3)
 	{
@@ -431,7 +431,9 @@ void AWorldGameMode::FinishJob()
 			FIntVector indexes;
 			RequestedMaterials.Dequeue(indexes);
 
-			FString matIdx = CalcMatIndex(indexes.X, indexes.Y, indexes.Z);
+			GetDynMat(indexes.X, indexes.Y, indexes.Z,);
+
+			/*FString matIdx = CalcMatIndex(indexes.X, indexes.Y, indexes.Z);
 
 			UE_LOG(Mat_Loader, Warning, TEXT("Added transition meterial with index: %s"), *matIdx);
 
@@ -455,7 +457,7 @@ void AWorldGameMode::FinishJob()
 			mat.Mat = DynMat;
 			mat.index = idx;
 
-			DynamicMatChache.Add(matIdx, mat);
+			DynamicMatChache.Add(matIdx, mat);*/
 		}
 	}
 }

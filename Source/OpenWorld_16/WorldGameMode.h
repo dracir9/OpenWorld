@@ -218,13 +218,6 @@ public:
 //////*****     DEBUG SETTINGS    *****////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug Variables")
-		int32 iterations = 1;
-
-	// Global loop count
-	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		int32 count = 0;
-
 	// Add chunk time
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
 		FString addtime;
@@ -233,13 +226,13 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
 		FString removetime;
 
-	//
+	// Average time needed for mesh extraction
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		FString SMeshSizeMax;
+		FString MeshExtractTime;
 
 	//
-	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		FString SMeshSizeMin = "999999";
+		FThreadSafeCounter64 AvTime;
+		FThreadSafeCounter ExtractedMeshs;
 
 	//
 	UPROPERTY(EditAnywhere, Category = "Debug Variables")

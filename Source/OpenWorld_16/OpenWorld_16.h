@@ -53,7 +53,6 @@ struct  TRIANGLE
 
 typedef struct 
 {
-	FVector p;
 	unsigned char val;
 	uint16 mat;
 } POINT;
