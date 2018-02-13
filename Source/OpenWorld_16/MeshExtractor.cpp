@@ -62,18 +62,20 @@ uint32 FMeshExtractor::Run()
 
 		if (!GameMode) return 0;
 
-		double start = FPlatformTime::Seconds();
-
 		FChunkData Data;
 
 		if (GameMode->QueuedMeshs.Dequeue(Data))
 		{
+			double start = FPlatformTime::Seconds();
+
 			ExtractMesh(Data.ChunkDensity, Data.Position);
+
+			double end = FPlatformTime::Seconds();
+			GameMode->AvTime.Add(FMath::FloorToInt((end - start) * 1000000));
+			GameMode->ExtractedMeshs.Increment();
 		}
 
-		double end = FPlatformTime::Seconds();
-		GameMode->AvTime.Add(FMath::FloorToInt((end - start) * 1000000));
-		GameMode->ExtractedMeshs.Increment();
+
 	}
 	return 0;
 }

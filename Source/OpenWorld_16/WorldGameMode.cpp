@@ -444,7 +444,12 @@ void AWorldGameMode::FinishJob()
 			RequestedMaterials.Dequeue(indexes);
 
 			CreateDynMaterial(indexes.X, indexes.Y, indexes.Z);
-
 		}
+	}
+	if (ExtractedMeshs.GetValue() > 64)
+	{
+		MeshExtractTime = FString::SanitizeFloat((double)AvTime.GetValue() / ((double)ExtractedMeshs.GetValue() * 1000.0f));
+		AvTime.Reset();
+		ExtractedMeshs.Reset();
 	}
 }
