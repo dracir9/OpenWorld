@@ -285,9 +285,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FString CalcMatIndex(int32 &id1, int32 &id2, int32 &id3);
 
+	/** Gives a material based on face caracteristics */
+	UFUNCTION(BlueprintCallable)
+		bool GetMaterial(int32 & id1, int32 & id2, int32 & id3, FDynamicMaterial & mat);
+
 	/** Returns a dynamic transition material with the specified matetial index */
 	UFUNCTION(BlueprintCallable)
-		bool GetDynMat(int32 & id1, int32 & id2, int32 & id3, FDynamicMaterial & mat);
+		FDynamicMaterial CreateDynMaterial(int32 & id1, int32 & id2, int32 & id3);
 
 	/** Timer function that finishes background thread calculations*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set voxel from world", Keywords = "block"), Category = Procedural)

@@ -332,11 +332,11 @@ FString AWorldGameMode::CalcMatIndex(int32 & id1, int32 & id2, int32 & id3)
 		}
 	}
 
-	// Finally construct the material index
+	// Finally construct the material index in string format
 	return FString(FString::FromInt(id1) + "-" + FString::FromInt(id2) + "-" + FString::FromInt(id3));
 }
 
-bool AWorldGameMode::GetDynMat(int32 & id1, int32 & id2, int32 & id3, FDynamicMaterial & mat = FDynamicMaterial)
+bool AWorldGameMode::GetMaterial(int32 & id1, int32 & id2, int32 & id3, FDynamicMaterial & mat)
 {
 	if (id1 == id2 && id2 == id3)
 	{
@@ -347,6 +347,7 @@ bool AWorldGameMode::GetDynMat(int32 & id1, int32 & id2, int32 & id3, FDynamicMa
 	
 	FString matIdx = CalcMatIndex(id1, id2, id3);
 
+	/// Check if the material alredy exists
 	if (DynamicMatChache.Contains(matIdx)) 
 	{
 		mat = DynamicMatChache.FindRef(matIdx);
@@ -355,29 +356,10 @@ bool AWorldGameMode::GetDynMat(int32 & id1, int32 & id2, int32 & id3, FDynamicMa
 	/// If it is called from the game thread create the material directly
 	else if (IsInGameThread())
 	{
-		UE_LOG(Mat_Loader, Warning, TEXT("GT:Added transition meterial with index: %s"), *matIdx);
-
-		UMaterialInstanceDynamic* DynMat;
-
-		DynMat = UMaterialInstanceDynamic::Create(TransitionMat, this);
-
-		DynMat->SetTextureParameterValue(FName("BaseColor_1"), Voxels[id1].BaseColor);
-		DynMat->SetTextureParameterValue(FName("Normal_1"), Voxels[id1].NormalMap);
-
-		DynMat->SetTextureParameterValue(FName("BaseColor_2"), Voxels[id2].BaseColor);
-		DynMat->SetTextureParameterValue(FName("Normal_2"), Voxels[id2].NormalMap);
-
-		DynMat->SetTextureParameterValue(FName("BaseColor_3"), Voxels[id3].BaseColor);
-		DynMat->SetTextureParameterValue(FName("Normal_3"), Voxels[id3].NormalMap);
-
-		int32 idx = DynamicMatChache.Num() + Voxels.Num();
-
-		mat.Mat = DynMat;
-		mat.index = idx;
-
-		DynamicMatChache.Add(matIdx, mat);
+		mat = CreateDynMaterial(id1, id2, id3);
 		return true;
 	}
+	/// If it is called from outside game thread queue its creation
 	else 
 	{
 		RequestedMaterials.Enqueue(FIntVector(id1, id2, id3));
@@ -398,6 +380,36 @@ bool AWorldGameMode::GetDynMat(int32 & id1, int32 & id2, int32 & id3, FDynamicMa
 	}
 	mat = DynamicMatChache.FindRef(matIdx);
 	return true;
+}
+
+FDynamicMaterial AWorldGameMode::CreateDynMaterial(int32 & id1, int32 & id2, int32 & id3)
+{
+	FString matIdx = CalcMatIndex(id1, id2, id3);
+
+	UE_LOG(Mat_Loader, Warning, TEXT("GT:Added transition meterial with index: %s"), *matIdx);
+
+	UMaterialInstanceDynamic* DynMat;
+
+	DynMat = UMaterialInstanceDynamic::Create(TransitionMat, this);
+
+	DynMat->SetTextureParameterValue(FName("BaseColor_1"), Voxels[id1].BaseColor);
+	DynMat->SetTextureParameterValue(FName("Normal_1"), Voxels[id1].NormalMap);
+
+	DynMat->SetTextureParameterValue(FName("BaseColor_2"), Voxels[id2].BaseColor);
+	DynMat->SetTextureParameterValue(FName("Normal_2"), Voxels[id2].NormalMap);
+
+	DynMat->SetTextureParameterValue(FName("BaseColor_3"), Voxels[id3].BaseColor);
+	DynMat->SetTextureParameterValue(FName("Normal_3"), Voxels[id3].NormalMap);
+
+	int32 idx = DynamicMatChache.Num() + Voxels.Num();
+
+	FDynamicMaterial mat;
+
+	mat.Mat = DynMat;
+	mat.index = idx;
+
+	DynamicMatChache.Add(matIdx, mat);
+	return mat;
 }
 
 void AWorldGameMode::FinishJob()
@@ -431,33 +443,8 @@ void AWorldGameMode::FinishJob()
 			FIntVector indexes;
 			RequestedMaterials.Dequeue(indexes);
 
-			GetDynMat(indexes.X, indexes.Y, indexes.Z,);
+			CreateDynMaterial(indexes.X, indexes.Y, indexes.Z);
 
-			/*FString matIdx = CalcMatIndex(indexes.X, indexes.Y, indexes.Z);
-
-			UE_LOG(Mat_Loader, Warning, TEXT("Added transition meterial with index: %s"), *matIdx);
-
-			UMaterialInstanceDynamic* DynMat;
-
-			DynMat = UMaterialInstanceDynamic::Create(TransitionMat, this);
-
-			DynMat->SetTextureParameterValue(FName("BaseColor_1"), Voxels[indexes.X].BaseColor);
-			DynMat->SetTextureParameterValue(FName("Normal_1"), Voxels[indexes.X].NormalMap);
-
-			DynMat->SetTextureParameterValue(FName("BaseColor_2"), Voxels[indexes.Y].BaseColor);
-			DynMat->SetTextureParameterValue(FName("Normal_2"), Voxels[indexes.Y].NormalMap);
-
-			DynMat->SetTextureParameterValue(FName("BaseColor_3"), Voxels[indexes.Z].BaseColor);
-			DynMat->SetTextureParameterValue(FName("Normal_3"), Voxels[indexes.Z].NormalMap);
-
-			int32 idx = DynamicMatChache.Num() + Voxels.Num();
-
-			FDynamicMaterial mat;
-
-			mat.Mat = DynMat;
-			mat.index = idx;
-
-			DynamicMatChache.Add(matIdx, mat);*/
 		}
 	}
 }

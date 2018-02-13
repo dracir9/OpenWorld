@@ -301,7 +301,7 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 
 					// Request material for the mesh. If not created properly avoid.
 					FDynamicMaterial mat;
-					if (!GameMode->GetDynMat(id1, id2, id3, mat)) return;
+					if (!GameMode->GetMaterial(id1, id2, id3, mat)) return;
 
 					ID = mat.index;
 					if (!meshSections.IsValidIndex(ID))
