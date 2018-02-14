@@ -45,7 +45,6 @@ void AChunk::InitializeChunk()
 {
 	if (!Noise) return;
 
-	ChunkDensity.SetNumZeroed(ChunkSize * ChunkSize * ChunkSize);
 	Density.SetNum(16);
 
 	//int32
@@ -62,7 +61,7 @@ void AChunk::InitializeChunk()
 		{
 			height = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
 			//heigh = (heigh * 127.5 + 127.5) * 100;
-			height = (height * 5 + 5) * 100;
+			height = height * (MaxHeight/2) + MaxHeight/2;
 
 			tmp = floor(height / (ChunkSize * VoxelSize));
 			if (tmp != current && (x != 0 || y != 0))
@@ -93,23 +92,19 @@ void AChunk::InitializeChunk()
 					if (k < 500)
 					{
 						Density[current].Density[i] = 1;
-						ChunkDensity[i] = 1;
 					}
 					else if (k < 700)
 					{
 						Density[current].Density[i] = 2;
-						ChunkDensity[i] = 2;
 					}
 					else
 					{
 						Density[current].Density[i] = 3;
-						ChunkDensity[i] = 3;
 					}
 				}
 				else
 				{
 					Density[current].Density[i] = 0;
-					ChunkDensity[i] = 0;
 				}
 				i++;
 			}
@@ -124,6 +119,7 @@ void AChunk::InitializeChunk()
 			Density[h].isActive = true;
 		}
 
+		i = 0;
 		for (int8 x = 0; x < ChunkSize; x++)
 		{
 			for (int8 y = 0; y < ChunkSize; y++)
@@ -157,12 +153,15 @@ void AChunk::InitializeChunk()
 		}
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("pending %d"), pending.Num());
 	// Optimize memory
-	ChunkDensity.Shrink();
+	for (uint8 a = 0; a < Density.Num(); a++)
+	{
+		Density[a].Density.Shrink();
+	}
+	Density.Shrink();
 
 	// Set debug variables to be displayed. Get allocated memory of ChunkDenity array
-	GameMode->SDensitySize = FString::FromInt(ChunkDensity.GetAllocatedSize());
+	GameMode->SDensitySize = FString::FromInt(Density.GetAllocatedSize());
 }
 
 
@@ -186,7 +185,6 @@ void AChunk::RenderChunk()
 	}
 
 	FChunkData Data;
-	Data.ChunkDensity = &ChunkDensity;
 	Data.Density = &Density;
 	Data.Position = FVector2D(GetActorLocation().X, GetActorLocation().Y);
 	GameMode->QueuedMeshs.Enqueue(Data);
@@ -240,7 +238,11 @@ FVector AChunk::CalcNormal(const FVector & p1, const FVector & p2, const FVector
 
 void AChunk::RemoveChunk()
 {
-	ChunkDensity.Empty();
-	ChunkDensity.~TArray();
+	for (uint8 a = 0; a < Density.Num(); a++)
+	{
+		Density[a].Density.Empty();
+	}
+	Density.Empty();
+	Density.~TArray();
 	Destroy();
 }

@@ -146,6 +146,7 @@ void AWorldGameMode::LoadMap()
 				NChunk->Noise = Noise;
 				NChunk->VoxelSize = VoxelSize;
 				NChunk->ChunkSize = ChunkSize;
+				NChunk->MaxHeight = MaxHeight;
 				NChunk->bRuntimeEnabled = UseRuntime;
 
 				UGameplayStatics::FinishSpawningActor(NChunk, SpawnTransform);
@@ -197,8 +198,6 @@ int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 	// Calculate local coordinates of the voxel so it can be found inside chunk
 	const FVector LocalBlockPos = FVector((Location.X / VoxelSize - (ChunkIndex.X * ChunkSize)) , (Location.Y / VoxelSize - (ChunkIndex.Y * ChunkSize)), Location.Z / VoxelSize);
 
-	const int32 Idx = LocalBlockPos.X * ChunkSize * ChunkSize + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z;
-
 	// Check if local coordinates are inside the actual chunk, it should always be inside!
 	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize) {
 		UE_LOG(RenderTerrain, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
@@ -208,7 +207,7 @@ int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 	// Finally get the voxel ID
 	AChunk* NChunk = World.FindRef(ChunkIndex);
 	if (NChunk) {		
-		return NChunk->GetVoxelDensity(Idx);
+		return NChunk->GetVoxelDensity(LocalBlockPos.X, LocalBlockPos.Y, LocalBlockPos.Z);
 	}
 	//*****************  If some chunks not found:
 	return int32(-1);
@@ -222,8 +221,6 @@ bool AWorldGameMode::SetVoxelFromWorld(FVector Location, int32 value)
 	// Calculate local coordinates of the voxel so it can be found inside chunk
 	FVector LocalBlockPos = FVector((Location.X - (ChunkIndex.X * ChunkSize * VoxelSize)) / VoxelSize, (Location.Y - (ChunkIndex.Y * ChunkSize * VoxelSize)) / VoxelSize, Location.Z / VoxelSize);
 
-	const int32 Idx = LocalBlockPos.X  * ChunkSize * ChunkSize + LocalBlockPos.Y * ChunkSize + LocalBlockPos.Z;
-
 	// Check if local coordinates are inside the actual chunk, it should always be inside!
 	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize) {
 		UE_LOG(RenderTerrain, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
@@ -232,19 +229,24 @@ bool AWorldGameMode::SetVoxelFromWorld(FVector Location, int32 value)
 
 	// Finally change the value
 	AChunk* NChunk;
-	if (LocalBlockPos.X == ChunkSize - 1)
-	{
-		ChunkIndex += FVector2D(1, 0);
-	}
 
 	NChunk = World.FindRef(ChunkIndex);
 	if (NChunk) {
-		if (!NChunk->SetVoxelDensity(Idx, value)) return true;
+		if (!NChunk->SetVoxelDensity(LocalBlockPos, value)) return true;
 		NChunk->RenderChunk();
 		return true;
 	}
 
-	//*****************  If chunk not found:
+	if (LocalBlockPos.X == ChunkSize - 1)
+	{
+		ChunkIndex += FVector2D(1, 0);
+	}
+	else if (LocalBlockPos.X == 0)
+	{
+		ChunkIndex += FVector2D(-1, 0);
+	}
+
+	//*****************  If something went wrong:
 	return false;
 }
 

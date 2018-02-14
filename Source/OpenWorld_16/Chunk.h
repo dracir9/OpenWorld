@@ -23,31 +23,27 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveChunk();
 
-	/** Returns the voxel density of a given location*/
-	int32 GetVoxelDensity(const int32& index) 
-	{ 
-		if (index > ChunkDensity.Num()) return 0;
-		return ChunkDensity[index]; 
-	};
-
 	/**Returns the voxel density of a given location*/
 	UFUNCTION(BlueprintCallable)
 	int32 GetVoxelDensity(const int32& x, const int32& y, const int32& z) const
 	{ 
-		int32 idx = x * ChunkSize * ChunkSize + y * ChunkSize + z;
-		return ChunkDensity[idx];
+		uint8 section = z / 16;
+		int32 idx = x * ChunkSize * ChunkSize + y * ChunkSize + (z - 16 * section);
+		return Density[section].Density[idx];
 	};
 
 	/** Set the voxel density at given location*/
 	UFUNCTION(BlueprintCallable)
-	bool SetVoxelDensity(const int32& index, const int32& value) 
+	bool SetVoxelDensity(const FVector& idx, const int32& value) 
 	{
-		if (index >= 0 && index < ChunkDensity.Num()) 
+		uint8 section = FMath::FloorToInt(idx.Z / 16);
+		int32 i = idx.X * ChunkSize * ChunkSize + idx.Y * ChunkSize + (idx.Z - 16 * section);
+		if (i >= 0 && i < Density[section].Density.Num()) 
 		{
 			// If the voxel alredy has this value there is no need to change it
-			if (ChunkDensity[index] == value) return false;
+			if (Density[section].Density[i] == value) return false;
 
-			ChunkDensity[index] = value;
+			Density[section].Density[i] = value;
 			return true;
 		}
 		else return false;
@@ -98,6 +94,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		int32 ChunkSize;
 
+	// Stores maximum terrain height
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int32 MaxHeight;
+
 	// Stores the reference to the noise used to generate terrain
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		UUFNNoiseGenerator* Noise;
@@ -108,9 +108,6 @@ public:
 private:
 
 	// Stores the voxel IDs of the chunk
-	UPROPERTY()
-		TArray<uint16> ChunkDensity;
-
 	UPROPERTY()
 		TArray<FDensity> Density;
 

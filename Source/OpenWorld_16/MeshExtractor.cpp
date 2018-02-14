@@ -68,14 +68,12 @@ uint32 FMeshExtractor::Run()
 		{
 			double start = FPlatformTime::Seconds();
 
-			ExtractMesh(Data.ChunkDensity, Data.Position);
+			ExtractMesh(Data.Density, Data.Position);
 
 			double end = FPlatformTime::Seconds();
 			GameMode->AvTime.Add(FMath::FloorToInt((end - start) * 1000000));
 			GameMode->ExtractedMeshs.Increment();
 		}
-
-
 	}
 	return 0;
 }
@@ -135,22 +133,18 @@ bool FMeshExtractor::IsThreadFinished()
 	return true;
 }
 
-void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
+void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 {	
-	/*********************/
-	TArray<FDensity> Densitym;
-	/*********************/
 	static bool init;
 	if (!init)
 	{
 		UE_LOG(Mesh_Extractor, Warning, TEXT("Mesh extractor started!"));
 	}
-	Densitym.SetNum(1);
 	
 	// Initial checks for safety
 	if (Density)
 	{
-		if ((*Density).Num() != ChunkSize * ChunkSize * ChunkSize)
+		if ((*Density).Num() != 16)
 		{
 			return;
 		}
@@ -163,80 +157,87 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 		return;
 	}
 
-	int32 i = 0;
 	bool NeedUpdate = false;
-	points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
-	for (int8 x = 0; x < ChunkSize + 1; x++)
+	TPoints.SetNum(ChunkDensity.Num());
+	for (uint8 a = 0; a < TPoints.Num(); a++)
 	{
-		for (int8 y = 0; y < ChunkSize + 1; y++)
+		if (!ChunkDensity[a].isActive) continue;
+		TPoints[a].isActive = true;
+		TPoints[a].points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
+
+		int32 i = 0;
+		for (uint8 x = 0; x < ChunkSize + 1; x++)
 		{
-			for (int8 z = 0; z < ChunkSize + 1; z++)
+			for (uint8 y = 0; y < ChunkSize + 1; y++)
 			{
-				int16 ID = 0;
-				FVector p = FVector(x, y, z);
-
-				///*/////////////////////
-				// Get ID of the vertex
-				///*/////////////////////
-
-				// If point is over or under the chunk's limit set it as air.
-				if (p.Z >= ChunkSize || p.Z < 0)
+				for (uint8 z = 0; z < ChunkSize + 1; z++)
 				{
-					ID = 0;
-				}
+					int16 ID = 0;
+					FVector p = FVector(x, y, z);
 
-				//If point is outside the chunk get the value from world
-				else if (p.X >= ChunkSize || p.X < 0 || p.Y >= ChunkSize || p.Y < 0)
-				{
-					FVector pos = (p * VoxelSize) + FVector(Position.X, Position.Y, 0);
-					ID = GameMode->GetVoxelFromWorld(pos);
-				}
+					///*/////////////////////
+					// Get ID of the vertex
+					///*/////////////////////
 
-				// If point is inside the chunk get the value directly from ChunkDensity array
-				else
-				{
-					int32 idx = (p.X * ChunkSize * ChunkSize) + (p.Y * ChunkSize) + p.Z;
-					ID = ChunkDensity[idx];
-				}
+					// If point is over or under the chunk's limit set it as air.
+					if (p.Z >= ChunkSize || p.Z < 0)
+					{
+						ID = 0;
+					}
 
-				///*/////////////////////////////
-				// Set position, isovalue and material for vertex
-				///*/////////////////////////////
-				POINT point;
-				p *= VoxelSize;
+					//If point is outside the chunk get the value from world
+					else if (p.X >= ChunkSize || p.X < 0 || p.Y >= ChunkSize || p.Y < 0)
+					{
+						FVector pos = (p * VoxelSize) + FVector(Position.X, Position.Y, 0);
+						ID = GameMode->GetVoxelFromWorld(pos);
+					}
 
-				float heigh = Noise->GetNoise2D(p.X + Position.X, p.Y + Position.Y);
-				heigh = (heigh * 5 + 5) * 100;
-				heigh -= p.Z;
+					// If point is inside the chunk get the value directly from ChunkDensity array
+					else
+					{
+						int32 idx = (p.X * ChunkSize * ChunkSize) + (p.Y * ChunkSize) + p.Z;
+						ID = ChunkDensity[a].Density[idx];
+					}
 
-				if (ID == 0)
-				{
-					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), heigh));
-					point.mat = 0;
-				}
+					///*/////////////////////////////
+					// Set position, isovalue and material for vertex
+					///*/////////////////////////////
+					POINT point;
+					p *= VoxelSize;
 
-				// If there is no neighbour chunk mark this chunk to be updated.
-				else if (ID == -1)
-				{
-					point.val = heigh >= VoxelSize ? 0 : 255;
-					point.mat = 0;
-					NeedUpdate = true;
-				}
+					float heigh = Noise->GetNoise2D(p.X + Position.X, p.Y + Position.Y);
+					heigh = (heigh * 5 + 5) * 100;
+					heigh -= p.Z;
 
-				// If is terrain
-				else
-				{
-					point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), heigh));
-					point.mat = --ID;
-				}
-				
+					if (ID == 0)
+					{
+						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), heigh));
+						point.mat = 0;
+					}
 
-				points[i] = point;
+					// If there is no neighbour chunk mark this chunk to be updated.
+					else if (ID == -1)
+					{
+						point.val = heigh >= VoxelSize ? 0 : 255;
+						point.mat = 0;
+						NeedUpdate = true;
+					}
 
-				i++;
-			} // Close z for loop
-		} // Close y for loop
-	} // Close x for loop
+					// If is terrain
+					else
+					{
+						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), heigh));
+						point.mat = --ID;
+					}
+
+
+					TPoints[a].points[i] = point;
+
+					i++;
+				} // Close z for loop
+			} // Close y for loop
+		} // Close x for loop
+	}// for (uint8 a = 0; a < TPoints.Num(); a++)
 
 	if (!init)
 	{
@@ -268,89 +269,96 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 		FVector(0, 0, 1), FVector(1, 0, 1), FVector(1, 1, 1), FVector(0, 1, 1)
 	};
 
-	for (int8 i = 0; i < ChunkSize; i++)
+	for (uint8 b = 0; b < TPoints.Num(); b++)
 	{
-		for (int8 j = 0; j < ChunkSize; j++)
+		if (!TPoints[b].isActive) continue;
+
+		for (int8 i = 0; i < ChunkSize; i++)
 		{
-			for (int8 k = 0; k < ChunkSize; k++)
+			for (int8 j = 0; j < ChunkSize; j++)
 			{
-				GRIDCELL cell;
-				// Fills the grid used to calculate the surface
-				for (int8 a = 0; a < 8; a++)
+				for (int8 k = 0; k < ChunkSize; k++)
 				{
-					FVector mask = grid[a];
-					FVector p = FVector(i, j, k) + mask;
-					int32 idx = (p.X * (ChunkSize + 1) * (ChunkSize + 1)) + (p.Y * (ChunkSize + 1)) + p.Z;
-
-					cell.p[a] = p * VoxelSize;
-					cell.val[a] = points[idx].val;
-					cell.mat[a] = points[idx].mat;
-				}
-
-				TArray<TRIANGLE> triangles;
-
-				// Calculate shape using Marching Cubes algorithm
-				if (!Polygonise(cell, 128, triangles)) continue;
-
-				int16 ID = 0;
-
-				for (int8 a = 0; a < triangles.Num(); a++)
-				{
-
-					int32 id1 = triangles[a].mat[0];
-					int32 id2 = triangles[a].mat[1];
-					int32 id3 = triangles[a].mat[2];
-
-					// Request material for the mesh. If not created properly avoid.
-					FDynamicMaterial mat;
-					if (!GameMode->GetMaterial(id1, id2, id3, mat)) return;
-
-					ID = mat.index;
-					if (!meshSections.IsValidIndex(ID))
+					GRIDCELL cell;
+					// Fills the grid used to calculate the surface
+					for (int8 a = 0; a < 8; a++)
 					{
-						meshSections.SetNum(ID + 1);
-					}
-					meshSections[ID].Mat = mat.Mat;
+						FVector mask = grid[a];
+						FVector p = FVector(i, j, k) + mask;
+						int32 idx = (p.X * (ChunkSize + 1) * (ChunkSize + 1)) + (p.Y * (ChunkSize + 1)) + p.Z;
 
-
-					for (char p = 0; p < 3; p++)
-					{
-						if (triangles[a].mat[p] == id1)
-						{
-							meshSections[ID].VertexColors.Add(FColor(255, 0, 0, 0));
-						}
-						else if (triangles[a].mat[p] == id2)
-						{
-							meshSections[ID].VertexColors.Add(FColor(0, 255, 0, 0));
-						}
-						else
-						{
-							meshSections[ID].VertexColors.Add(FColor(0, 0, 255, 0));
-						}
+						cell.p[a] = p * VoxelSize;
+						cell.val[a] = TPoints[b].points[idx].val;
+						cell.mat[a] = TPoints[b].points[idx].mat;
 					}
 
-					// Add vertices
-					int32 oldVertCount = meshSections[ID].Vertices.Num();
-					meshSections[ID].Vertices.Add(triangles[a].p[0]);
-					meshSections[ID].Vertices.Add(triangles[a].p[1]);
-					meshSections[ID].Vertices.Add(triangles[a].p[2]);
+					TArray<TRIANGLE> triangles;
 
-					// Add vertex index (create triangle)
-					meshSections[ID].Triangles.Add(oldVertCount);
-					meshSections[ID].Triangles.Add(oldVertCount + 1);
-					meshSections[ID].Triangles.Add(oldVertCount + 2);
+					// Calculate shape using Marching Cubes algorithm
+					if (!Polygonise(cell, 128, triangles)) continue;
 
-					// Calculate Normals
-					FVector Normal = CalcNormals(triangles[a].p[0], triangles[a].p[1], triangles[a].p[2]);
-					meshSections[ID].Normals.Add(Normal);
-					meshSections[ID].Normals.Add(Normal);
-					meshSections[ID].Normals.Add(Normal);
-					
-				}// for (int8 a = 0; a < triangles.Num(); a++)
+					int16 ID = 0;
 
-			}// for (int8 k = 0; k < ChunkSize; k++)
-		}// for (int8 j = 0; j < ChunkSize; j++)
-	} // for (int8 i = 0; i < ChunkSize; i++)
+					for (int8 a = 0; a < triangles.Num(); a++)
+					{
+
+						int32 id1 = triangles[a].mat[0];
+						int32 id2 = triangles[a].mat[1];
+						int32 id3 = triangles[a].mat[2];
+
+						// Request material for the mesh. If not created properly avoid.
+						FDynamicMaterial mat;
+						if (!GameMode->GetMaterial(id1, id2, id3, mat)) return;
+
+						ID = mat.index;
+						if (!meshSections.IsValidIndex(ID))
+						{
+							meshSections.SetNum(ID + 1);
+						}
+						meshSections[ID].Mat = mat.Mat;
+
+
+						for (uint8 p = 0; p < 3; p++)
+						{
+							if (triangles[a].mat[p] == id1)
+							{
+								meshSections[ID].VertexColors.Add(FColor(255, 0, 0, 0));
+							}
+							else if (triangles[a].mat[p] == id2)
+							{
+								meshSections[ID].VertexColors.Add(FColor(0, 255, 0, 0));
+							}
+							else
+							{
+								meshSections[ID].VertexColors.Add(FColor(0, 0, 255, 0));
+							}
+						}
+
+						// Add vertices
+						int32 oldVertCount = meshSections[ID].Vertices.Num();
+						meshSections[ID].Vertices.Add(triangles[a].p[0]);
+						meshSections[ID].Vertices.Add(triangles[a].p[1]);
+						meshSections[ID].Vertices.Add(triangles[a].p[2]);
+
+						// Add vertex index (create triangle)
+						meshSections[ID].Triangles.Add(oldVertCount);
+						meshSections[ID].Triangles.Add(oldVertCount + 1);
+						meshSections[ID].Triangles.Add(oldVertCount + 2);
+
+						// Calculate Normals
+						FVector Normal = CalcNormals(triangles[a].p[0], triangles[a].p[1], triangles[a].p[2]);
+						meshSections[ID].Normals.Add(Normal);
+						meshSections[ID].Normals.Add(Normal);
+						meshSections[ID].Normals.Add(Normal);
+
+					}// for (int8 a = 0; a < triangles.Num(); a++)
+				}// for (int8 k = 0; k < ChunkSize; k++)
+			}// for (int8 j = 0; j < ChunkSize; j++)
+		} // for (int8 i = 0; i < ChunkSize; i++)
+
+		TPoints[b].isActive = false;
+		TPoints[b].points.Empty();
+	}
 
 	if (!init)
 	{
@@ -358,8 +366,8 @@ void FMeshExtractor::ExtractMesh(TArray<uint16>* Density, FVector2D Position)
 		init = true;
 	}
 
-	points.Empty();
 	ChunkDensity.Empty();
+	TPoints.Empty();
 
 	FSurfaceData FinishedMesh;
 	FinishedMesh.Mesh = meshSections;

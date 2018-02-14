@@ -95,10 +95,7 @@ struct FChunkData
 	GENERATED_BODY()
 
 	/** Chunk density data pointer */
-	TArray<uint16>* ChunkDensity = NULL;
-
-	/** */
-	TArray<FDensity>* Density;
+	TArray<FDensity>* Density = nullptr;
 
 	/** Chunk Position */
 	UPROPERTY()
@@ -141,7 +138,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
-//########  Properties  ########//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////*****     WORLD SETTINGS     *****///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//Chunk to spawn
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
@@ -155,13 +154,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
 		TArray<FVoxelS> Voxels;
 
-	//Sets the number of voxels per line that the chunk will contain.
+	// Sets the number of voxels per line that the chunk will contain.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
 		int32 ChunkSize = 16;
 
-	//Size of the voxels in UUs.
+	// Size of the voxels in UUs.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
 		int32 VoxelSize = 100;
+
+	// Maximum terrain height
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+		int32 MaxHeight = 20000;
 
 	//Used to calculte the chunks that will be generated
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
@@ -220,15 +223,15 @@ public:
 
 	// Add chunk time
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		FString addtime;
+		FString addtime = "0.000";
 
 	// Remove chunk time
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		FString removetime;
+		FString removetime = "0.000";
 
 	// Average time needed for mesh extraction
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		FString MeshExtractTime;
+		FString MeshExtractTime = "0.000";
 
 	//
 		FThreadSafeCounter64 AvTime;
@@ -236,7 +239,7 @@ public:
 
 	//
 	UPROPERTY(EditAnywhere, Category = "Debug Variables")
-		FString SDensitySize;
+		FString SDensitySize = "0";
 	
 
 

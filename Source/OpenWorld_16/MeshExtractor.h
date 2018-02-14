@@ -13,6 +13,13 @@ DECLARE_LOG_CATEGORY_EXTERN(Mesh_Extractor, Log, All);
 class AWorldGameMode;
 class UUFNNoiseGenerator;
 struct FMesh;
+struct FDensity;
+
+struct FPoints
+{
+	TArray<POINT> points;
+	bool isActive = false;
+};
 
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ///////////// MULTI-THREADING //////////////
@@ -34,10 +41,10 @@ class FMeshExtractor : public FRunnable
 	/** Array to temporally store Chunk density data
 	* Declared here to avoid creation of this heavy variable in a local scope
 	* and avoid allocating and deallocating memory constantly ???????? */
-	TArray<uint16> ChunkDensity;
+	TArray<FDensity> ChunkDensity;
 
-	/** Array to temporally store chunk's point cloud*/
-	TArray<POINT> points;
+	/** Total Points. Array to temporally store chunk's point cloud*/
+	TArray<FPoints> TPoints;
 
 	/** Pointer to the noise object used to calculate terrain */
 	UUFNNoiseGenerator* Noise;
@@ -49,7 +56,7 @@ class FMeshExtractor : public FRunnable
 	FThreadSafeCounter StopTaskCounter;
 
 	/** The surface mesh calculation*/
-	void ExtractMesh(TArray<uint16>* TheArray, FVector2D Position);
+	void ExtractMesh(TArray<FDensity>* TheArray, FVector2D Position);
 
 public:
 
