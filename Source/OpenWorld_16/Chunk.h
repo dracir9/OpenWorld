@@ -27,26 +27,46 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetVoxelDensity(const int32& x, const int32& y, const int32& z) const
 	{ 
-		uint8 section = z / 16;
-		int32 idx = x * ChunkSize * ChunkSize + y * ChunkSize + (z - 16 * section);
-		return Density[section].Density[idx];
+		uint8 section = z / ChunkSize;
+		if (Density[section].FillState == EFillState::FS_Mixt)
+		{
+			int32 idx = x * ChunkSize * ChunkSize + y * ChunkSize + (z - ChunkSize * section);
+			return Density[section].Density[idx];
+		}
+		else if (Density[section].FillState == EFillState::FS_Full)
+		{
+			return 0;
+		}
+		else
+		{
+			return 255;
+		}
 	};
 
 	/** Set the voxel density at given location*/
 	UFUNCTION(BlueprintCallable)
-	bool SetVoxelDensity(const FVector& idx, const int32& value) 
+	bool SetVoxelDensity(const FVector& pos, const int32& value) 
 	{
-		uint8 section = FMath::FloorToInt(idx.Z / 16);
-		int32 i = idx.X * ChunkSize * ChunkSize + idx.Y * ChunkSize + (idx.Z - 16 * section);
-		if (i >= 0 && i < Density[section].Density.Num()) 
-		{
-			// If the voxel alredy has this value there is no need to change it
-			if (Density[section].Density[i] == value) return false;
+		uint8 section = FMath::FloorToInt(pos.Z / ChunkSize);
+		int32 idx = pos.X * ChunkSize * ChunkSize + pos.Y * ChunkSize + (pos.Z - ChunkSize * section);
 
-			Density[section].Density[i] = value;
+		if (Density[section].FillState == EFillState::FS_Mixt)
+		{
+			if (Density[section].Density[idx] == value) return false;
+			Density[section].Density[idx] = value;
 			return true;
 		}
-		else return false;
+		else if (Density[section].FillState == EFillState::FS_Empty && value == 0)
+		{
+			return false;
+		}
+		else
+		{
+			Density[section].FillState = EFillState::FS_Mixt;
+			Density[section].Density[idx] = value;
+			return true;
+		}
+		return false;
 	};
 
 	/** Calculates all the block data */

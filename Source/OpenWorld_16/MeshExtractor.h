@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "OpenWorld_16.h"
+#include "MeshExtractor.generated.h"
 
 /**
  * 
@@ -12,13 +13,20 @@ DECLARE_LOG_CATEGORY_EXTERN(Mesh_Extractor, Log, All);
 
 class AWorldGameMode;
 class UUFNNoiseGenerator;
+enum class EFillState : uint8;
 struct FMesh;
 struct FDensity;
 
+USTRUCT()
 struct FPoints
 {
-	TArray<POINT> points;
-	bool isActive = false;
+	GENERATED_BODY()
+
+	UPROPERTY()
+		TArray<FPoint> points;
+
+	UPROPERTY()
+		EFillState FillState;
 };
 
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,6 +46,9 @@ class FMeshExtractor : public FRunnable
 	/** Size of the grid and its voxels */
 	int32 VoxelSize;
 
+	/** Max terraing height */
+	int32 MaxHeight;
+
 	/** Array to temporally store Chunk density data
 	* Declared here to avoid creation of this heavy variable in a local scope
 	* and avoid allocating and deallocating memory constantly ???????? */
@@ -45,6 +56,8 @@ class FMeshExtractor : public FRunnable
 
 	/** Total Points. Array to temporally store chunk's point cloud*/
 	TArray<FPoints> TPoints;
+	int16 PointRegister;
+	TArray<FPoint> PointCloud;
 
 	/** Pointer to the noise object used to calculate terrain */
 	UUFNNoiseGenerator* Noise;
@@ -58,13 +71,15 @@ class FMeshExtractor : public FRunnable
 	/** The surface mesh calculation*/
 	void ExtractMesh(TArray<FDensity>* TheArray, FVector2D Position);
 
+	FORCEINLINE FPoint GetPoint(const FVector& pos);
+
 public:
 
 	//Done?
 	bool IsFinished = false;
 
 	//Constructor / Destructor
-	FMeshExtractor(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, UUFNNoiseGenerator* noise);
+	FMeshExtractor(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, int32 height, UUFNNoiseGenerator* noise);
 	virtual ~FMeshExtractor();
 
 
@@ -88,7 +103,7 @@ public:
 	This code ensures only 1 Mesh Extractor thread will be able to run at a time.
 	This function returns a handle to the newly started instance.
 	*/
-	static FMeshExtractor* JoyInit(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, UUFNNoiseGenerator* noise);
+	static FMeshExtractor* JoyInit(AWorldGameMode* IN_GM, int32 Size, int32 VoxelSize, int32 Height, UUFNNoiseGenerator* Noise);
 
 
 	/** Helper function to calculate normal vector of a plane.*/

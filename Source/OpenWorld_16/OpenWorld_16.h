@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OpenWorld_16.generated.h"
 
 
 //Logging during terrain rendering
@@ -51,11 +52,20 @@ struct  TRIANGLE
 	}
 };
 
-typedef struct 
+USTRUCT()
+struct FPoint
 {
-	unsigned char val;
-	uint16 mat;
-} POINT;
+	GENERATED_BODY()
+
+	UPROPERTY()
+		uint8 val;
+
+	UPROPERTY()
+		uint16 mat;
+
+	FPoint(uint8 value = 0, uint16 material = 0) : val(value), mat(material)
+	{}
+};
 
 typedef struct 
 {

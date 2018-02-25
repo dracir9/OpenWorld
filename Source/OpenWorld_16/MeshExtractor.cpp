@@ -15,11 +15,12 @@ DEFINE_LOG_CATEGORY(Mesh_Extractor);
 FMeshExtractor* FMeshExtractor::Runnable = NULL;
 //***********************************************************
 
-FMeshExtractor::FMeshExtractor(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, UUFNNoiseGenerator* noise)
+FMeshExtractor::FMeshExtractor(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, int32 height, UUFNNoiseGenerator* noise)
 	: GameMode(IN_GM)
 {
 	ChunkSize = size;
 	VoxelSize = Voxelsize;
+	MaxHeight = height;
 	Noise = noise;
 
 	Thread = FRunnableThread::Create(this, TEXT("FMeshExtractor"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
@@ -91,9 +92,9 @@ void FMeshExtractor::EnsureCompletion()
 	UE_LOG(Mesh_Extractor, Warning, TEXT("Thread shutdown"));
 }
 
-FMeshExtractor * FMeshExtractor::JoyInit(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, UUFNNoiseGenerator* noise)
+FMeshExtractor* FMeshExtractor::JoyInit(AWorldGameMode* IN_GM, int32 Size, int32 VoxelSize, int32 Height, UUFNNoiseGenerator* Noise)
 {
-	if (!noise)
+	if (!Noise)
 	{
 		UE_LOG(Mesh_Extractor, Error, TEXT("Noise object pointer not valid"));
 		return nullptr;
@@ -102,7 +103,7 @@ FMeshExtractor * FMeshExtractor::JoyInit(AWorldGameMode* IN_GM, int32 size, int3
 	//		and the platform supports multi threading!
 	if (!Runnable && FPlatformProcess::SupportsMultithreading())
 	{
-		Runnable = new FMeshExtractor(IN_GM, size, Voxelsize, noise);
+		Runnable = new FMeshExtractor(IN_GM, Size, VoxelSize, Height, Noise);
 	}
 	return Runnable;
 }
@@ -135,19 +136,12 @@ bool FMeshExtractor::IsThreadFinished()
 
 void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 {	
-	static bool init;
-	if (!init)
-	{
-		UE_LOG(Mesh_Extractor, Warning, TEXT("Mesh extractor started!"));
-	}
-	
+
+	static bool bInit;
 	// Initial checks for safety
 	if (Density)
 	{
-		if ((*Density).Num() != 16)
-		{
-			return;
-		}
+		if ((*Density).Num() != 16) return;
 
 		ChunkDensity = *Density;
 	}
@@ -157,20 +151,31 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 		return;
 	}
 
-	bool NeedUpdate = false;
-	TPoints.SetNum(ChunkDensity.Num());
-	for (uint8 a = 0; a < TPoints.Num(); a++)
+	if (!bInit)
 	{
-		if (!ChunkDensity[a].isActive) continue;
-		TPoints[a].isActive = true;
-		TPoints[a].points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize + 1));
+		UE_LOG(Mesh_Extractor, Display, TEXT("[2/5] Mesh extractor started!"));
+	}
 
-		int32 i = 0;
+	bool bNeedUpdate = false;
+	TPoints.SetNum(ChunkDensity.Num());/******************/
+	PointCloud.SetNum(ChunkDensity.Num() * ChunkSize * ChunkSize * ChunkSize);
+
+	int32 i = 0;
+	for (uint8 a = 0; a < ChunkDensity.Num(); a++)
+	{
+		if (ChunkDensity[a].FillState != EFillState::FS_Mixt)
+		{
+			TPoints[a].FillState = ChunkDensity[a].FillState;
+			continue;
+		}
+		TPoints[a].FillState = EFillState::FS_Mixt;
+		TPoints[a].points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize));
+
 		for (uint8 x = 0; x < ChunkSize + 1; x++)
 		{
 			for (uint8 y = 0; y < ChunkSize + 1; y++)
 			{
-				for (uint8 z = 0; z < ChunkSize + 1; z++)
+				for (uint8 z = 0; z < ChunkSize; z++)
 				{
 					int16 ID = 0;
 					FVector p = FVector(x, y, z);
@@ -179,16 +184,10 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					// Get ID of the vertex
 					///*/////////////////////
 
-					// If point is over or under the chunk's limit set it as air.
-					if (p.Z >= ChunkSize || p.Z < 0)
-					{
-						ID = 0;
-					}
-
 					//If point is outside the chunk get the value from world
-					else if (p.X >= ChunkSize || p.X < 0 || p.Y >= ChunkSize || p.Y < 0)
+					if (p.X >= ChunkSize || p.X < 0 || p.Y >= ChunkSize || p.Y < 0)
 					{
-						FVector pos = (p * VoxelSize) + FVector(Position.X, Position.Y, 0);
+						FVector pos = (p * VoxelSize) + FVector(Position.X, Position.Y, a * VoxelSize * ChunkSize);
 						ID = GameMode->GetVoxelFromWorld(pos);
 					}
 
@@ -202,31 +201,31 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					///*/////////////////////////////
 					// Set position, isovalue and material for vertex
 					///*/////////////////////////////
-					POINT point;
+					FPoint point;
 					p *= VoxelSize;
 
-					float heigh = Noise->GetNoise2D(p.X + Position.X, p.Y + Position.Y);
-					heigh = (heigh * 5 + 5) * 100;
-					heigh -= p.Z;
+					float height = Noise->GetNoise2D(p.X + Position.X, p.Y + Position.Y);
+					height = height * (MaxHeight / 2) + MaxHeight / 2;
+					height -= p.Z;
 
 					if (ID == 0)
 					{
-						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), heigh));
+						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), height));
 						point.mat = 0;
 					}
 
 					// If there is no neighbour chunk mark this chunk to be updated.
 					else if (ID == -1)
 					{
-						point.val = heigh >= VoxelSize ? 0 : 255;
+						point.val = height >= VoxelSize ? 0 : 255;
 						point.mat = 0;
-						NeedUpdate = true;
+						bNeedUpdate = true;
 					}
 
 					// If is terrain
 					else
 					{
-						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), heigh));
+						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), height));
 						point.mat = --ID;
 					}
 
@@ -239,9 +238,9 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 		} // Close x for loop
 	}// for (uint8 a = 0; a < TPoints.Num(); a++)
 
-	if (!init)
+	if (!bInit)
 	{
-		UE_LOG(Mesh_Extractor, Warning, TEXT("First loop done!"));
+		UE_LOG(Mesh_Extractor, Display, TEXT("[3/5] Point cloud extracted!"));
 	}
 
 	//                 v7______________________v6
@@ -269,27 +268,41 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 		FVector(0, 0, 1), FVector(1, 0, 1), FVector(1, 1, 1), FVector(0, 1, 1)
 	};
 
+	uint8 k = 0;
 	for (uint8 b = 0; b < TPoints.Num(); b++)
 	{
-		if (!TPoints[b].isActive) continue;
+		if (TPoints[b].FillState != EFillState::FS_Mixt)
+		{
+			k += 15;
+		}
 
+		GRIDCELL cell;
+		FPoint point;
+		FVector p;
 		for (int8 i = 0; i < ChunkSize; i++)
 		{
 			for (int8 j = 0; j < ChunkSize; j++)
 			{
-				for (int8 k = 0; k < ChunkSize; k++)
+				for (;(k - b * ChunkSize) < ChunkSize; k++)
 				{
-					GRIDCELL cell;
+					
 					// Fills the grid used to calculate the surface
 					for (int8 a = 0; a < 8; a++)
 					{
-						FVector mask = grid[a];
-						FVector p = FVector(i, j, k) + mask;
-						int32 idx = (p.X * (ChunkSize + 1) * (ChunkSize + 1)) + (p.Y * (ChunkSize + 1)) + p.Z;
+						p = FVector(i, j, k) + grid[a];
+						
+						point = GetPoint(p);
 
 						cell.p[a] = p * VoxelSize;
-						cell.val[a] = TPoints[b].points[idx].val;
-						cell.mat[a] = TPoints[b].points[idx].mat;
+						cell.val[a] = point.val;
+						cell.mat[a] = point.mat;
+					}
+
+					static bool bGridDone;
+					if (!bGridDone)
+					{
+						UE_LOG(Mesh_Extractor, Display, TEXT("[3.1/5] First grid extracted!"));
+						bGridDone = true;
 					}
 
 					TArray<TRIANGLE> triangles;
@@ -301,7 +314,6 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 
 					for (int8 a = 0; a < triangles.Num(); a++)
 					{
-
 						int32 id1 = triangles[a].mat[0];
 						int32 id2 = triangles[a].mat[1];
 						int32 id3 = triangles[a].mat[2];
@@ -352,32 +364,54 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						meshSections[ID].Normals.Add(Normal);
 
 					}// for (int8 a = 0; a < triangles.Num(); a++)
-				}// for (int8 k = 0; k < ChunkSize; k++)
+					static bool bTriangleDone;
+					if (!bTriangleDone)
+					{
+						UE_LOG(Mesh_Extractor, Display, TEXT("[3.2/5] First triangle created!"));
+						bTriangleDone = true;
+					}
+				}// for (int8 w = 0; w < ChunkSize; w++)
 			}// for (int8 j = 0; j < ChunkSize; j++)
 		} // for (int8 i = 0; i < ChunkSize; i++)
-
-		TPoints[b].isActive = false;
-		TPoints[b].points.Empty();
 	}
 
-	if (!init)
+	if (!bInit)
 	{
-		UE_LOG(Mesh_Extractor, Warning, TEXT("First calculation completed!"));
-		init = true;
+		UE_LOG(Mesh_Extractor, Display, TEXT("[4/5] First calculation completed!"));
+		bInit = true;
 	}
 
 	ChunkDensity.Empty();
-	TPoints.Empty();
 
 	FSurfaceData FinishedMesh;
 	FinishedMesh.Mesh = meshSections;
 	FinishedMesh.Position = Position;
 
 
-	if (NeedUpdate && !GameMode->MeshsToUpdate.Enqueue(FIntVector(Position.X, Position.Y, 0)))
+	if (bNeedUpdate && !GameMode->MeshsToUpdate.Enqueue(FIntVector(Position.X, Position.Y, 0)))
 	{
 		UE_LOG(Mesh_Extractor, Warning, TEXT("Full! %d"), GameMode->MeshsToUpdate.Count());
 	}
 
 	GameMode->FinishedMeshs.Enqueue(FinishedMesh);
+}
+
+FPoint FMeshExtractor::GetPoint(const FVector& pos)
+{
+	uint8 section = pos.Z / ChunkSize;
+
+	if (section >= TPoints.Num()) return FPoint();
+	if (TPoints[section].FillState == EFillState::FS_Mixt)
+	{
+		int32 idx = pos.X * ChunkSize * ChunkSize + pos.Y * ChunkSize + (pos.Z - ChunkSize * section);
+		return TPoints[section].points[idx];
+	}
+	else if (TPoints[section].FillState == EFillState::FS_Full)
+	{
+		return FPoint();
+	}
+	else
+	{
+		return FPoint(255);
+	}
 }

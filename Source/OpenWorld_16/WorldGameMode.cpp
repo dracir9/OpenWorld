@@ -12,6 +12,8 @@ AWorldGameMode::AWorldGameMode()
 {
 	/// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	MaxHeight = FMath::Clamp(MaxHeight, 0, 16 * ChunkSize * VoxelSize);
 }
 
 // Called when the game starts or when spawned
@@ -28,7 +30,7 @@ void AWorldGameMode::BeginPlay()
 	if (Voxels.Num() <= 0) Voxels.SetNum(5);
 	
 	/// Start Background for mesh calculations
-	BackThread = FMeshExtractor::JoyInit(this, ChunkSize, VoxelSize, Noise);
+	BackThread = FMeshExtractor::JoyInit(this, ChunkSize, VoxelSize, MaxHeight, Noise);
 
 	/// Start timer to finish jobs from background thread
 	GetWorldTimerManager().SetTimer(AsynkThreadCountTH, this, &AWorldGameMode::FinishJob, 0.1f, true, 1.0f);
@@ -115,13 +117,13 @@ void AWorldGameMode::UnloadMap()
 	}
 	
 	double end = FPlatformTime::Seconds();
-	removetime = FString::SanitizeFloat((end - start) * 1000);
+	RemoveTime = FString::SanitizeFloat((end - start) * 1000);
 }
 
 void AWorldGameMode::LoadMap()
 {
 	double start = FPlatformTime::Seconds();
-	bool Update = false;
+	bool bUpdate = false;
 
 	int32 X = RenderRange * 2;
 	int32 Y = RenderRange * 2;
@@ -147,12 +149,12 @@ void AWorldGameMode::LoadMap()
 				NChunk->VoxelSize = VoxelSize;
 				NChunk->ChunkSize = ChunkSize;
 				NChunk->MaxHeight = MaxHeight;
-				NChunk->bRuntimeEnabled = UseRuntime;
+				NChunk->bRuntimeEnabled = bUseRuntime;
 
 				UGameplayStatics::FinishSpawningActor(NChunk, SpawnTransform);
 				World.Add(FVector2D(x + ChunkCenter.X, y + ChunkCenter.Y), NChunk);
 
-				Update = true;
+				bUpdate = true;
 			}
 		}
 		if ((x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1 - y))) 
@@ -165,7 +167,7 @@ void AWorldGameMode::LoadMap()
 		y += dy;
 	}
 
-	if (Update)
+	if (bUpdate)
 	{
 		for (uint32 b = 0; b < MeshsToUpdate.Count(); b++)
 		{
@@ -187,7 +189,7 @@ void AWorldGameMode::LoadMap()
 		}
 	}
 	double end = FPlatformTime::Seconds();
-	addtime = FString::SanitizeFloat((end - start) * 1000);
+	AddTime = FString::SanitizeFloat((end - start) * 1000);
 }
 
 int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
@@ -199,7 +201,7 @@ int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 	const FVector LocalBlockPos = FVector((Location.X / VoxelSize - (ChunkIndex.X * ChunkSize)) , (Location.Y / VoxelSize - (ChunkIndex.Y * ChunkSize)), Location.Z / VoxelSize);
 
 	// Check if local coordinates are inside the actual chunk, it should always be inside!
-	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize) {
+	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize * 16) {
 		UE_LOG(RenderTerrain, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
 		return int32(0);
 	}

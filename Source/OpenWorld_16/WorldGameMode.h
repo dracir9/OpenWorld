@@ -14,6 +14,14 @@
 class AChunk;
 class FMeshExtractor;
 
+UENUM(BlueprintType)
+enum class EFillState : uint8
+{
+	FS_Full		UMETA(DisplayName = "Full"),
+	FS_Empty	UMETA(DisplayName = "Empty"),
+	FS_Mixt		UMETA(DisplayName = "Mixed")
+};
+
 USTRUCT()
 struct FDensity
 {
@@ -23,7 +31,7 @@ struct FDensity
 		TArray<uint16> Density;
 
 	UPROPERTY()
-		bool isActive = false;
+		EFillState FillState = EFillState::FS_Empty;
 };
 
 USTRUCT(BlueprintType)
@@ -172,7 +180,7 @@ public:
 
 	// Can we use RuntimeMeshComponent plugin?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
-		bool UseRuntime = true;
+		bool bUseRuntime = true;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////*****     WORLD VARIABLES    *****///////////////////////////////////////////////////////////////////////////////////
@@ -223,11 +231,11 @@ public:
 
 	// Add chunk time
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		FString addtime = "0.000";
+		FString AddTime = "0.000";
 
 	// Remove chunk time
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
-		FString removetime = "0.000";
+		FString RemoveTime = "0.000";
 
 	// Average time needed for mesh extraction
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")

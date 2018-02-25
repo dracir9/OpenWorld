@@ -74,10 +74,10 @@ void AChunk::InitializeChunk()
 				current = tmp;
 			}
 
-			if (!Density[current].isActive)
+			if (Density[current].FillState != EFillState::FS_Mixt)
 			{
 				Density[current].Density.SetNumZeroed(ChunkSize * ChunkSize * ChunkSize);
-				Density[current].isActive = true;
+				Density[current].FillState = EFillState::FS_Mixt;
 			}
 
 			for (int8 z = 0; z < ChunkSize; z++)
@@ -113,10 +113,10 @@ void AChunk::InitializeChunk()
 
 	for (int8& h : pending)
 	{
-		if (!Density[h].isActive)
+		if (Density[h].FillState != EFillState::FS_Mixt)
 		{
 			Density[h].Density.SetNumZeroed(ChunkSize * ChunkSize * ChunkSize);
-			Density[h].isActive = true;
+			Density[h].FillState = EFillState::FS_Mixt;
 		}
 
 		i = 0;
@@ -153,10 +153,23 @@ void AChunk::InitializeChunk()
 		}
 	}
 
+	bool bIsOver = false;
 	// Optimize memory
 	for (uint8 a = 0; a < Density.Num(); a++)
 	{
 		Density[a].Density.Shrink();
+		if (Density[a].FillState == EFillState::FS_Mixt)
+		{
+			bIsOver = true;
+		}
+		else if(bIsOver)
+		{
+			Density[a].FillState = EFillState::FS_Full;
+		}
+		else
+		{
+			Density[a].FillState = EFillState::FS_Empty;
+		}
 	}
 	Density.Shrink();
 
@@ -167,7 +180,7 @@ void AChunk::InitializeChunk()
 
 void AChunk::RenderChunk()
 {
-	static bool haStarted;
+	static bool bHaStarted;
 	if (!TerrainMesh || !ChunkMesh) {
 		UE_LOG(RenderTerrain, Error, TEXT("Components not created properly"));
 		return;
@@ -178,10 +191,10 @@ void AChunk::RenderChunk()
 		return;
 	}
 
-	if (!haStarted)
+	if (!bHaStarted)
 	{
-		UE_LOG(RenderTerrain, Warning, TEXT("Render Started!"));
-		haStarted = true;
+		UE_LOG(RenderTerrain, Display, TEXT("[1/5] Render Started!"));
+		bHaStarted = true;
 	}
 
 	FChunkData Data;
@@ -192,12 +205,12 @@ void AChunk::RenderChunk()
 
 void AChunk::FinishRendering(const TArray<FMesh>& meshSections)
 {
-	static bool hasRendered;
+	static bool bHasRendered;
 
-	if (!hasRendered)
+	if (!bHasRendered)
 	{
-		UE_LOG(RenderTerrain, Warning, TEXT("Finish Render!"));
-		hasRendered = true;
+		UE_LOG(RenderTerrain, Warning, TEXT("[5/5] Finish Render!"));
+		bHasRendered = true;
 	}
 
 	for (int16 s = 0; s < meshSections.Num(); s++)
