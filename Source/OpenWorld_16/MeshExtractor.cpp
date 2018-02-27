@@ -205,18 +205,18 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 
 					float height = Noise->GetNoise2D(p.X + Position.X, p.Y + Position.Y);
 					height = height * (MaxHeight / 2) + MaxHeight / 2;
-					height -= p.Z;
+					height -= p.Z + a * VoxelSize * ChunkSize;
 
 					if (ID == 0)
 					{
-						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), height));
+						point.val = 255;// FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), height));
 						point.mat = 0;
 					}
 
 					// If there is no neighbour chunk mark this chunk to be updated.
 					else if (ID == -1)
 					{
-						point.val = height >= VoxelSize ? 0 : 255;
+						point.val = 255;// height >= VoxelSize ? 0 : 255;
 						point.mat = 0;
 						bNeedUpdate = true;
 					}
@@ -224,7 +224,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					// If is terrain
 					else
 					{
-						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), height));
+						point.val = 0;// FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), height));
 						point.mat = --ID;
 					}
 
@@ -269,11 +269,11 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	uint16 k = 0;
 	for (uint8 b = 0; b < TPoints.Num(); b++)
 	{
-		if (TPoints[b].FillState != EFillState::FS_Mixt)
-		{
-			k += 15;
-		}
-		for (uint8 w = k - b * ChunkSize; w < ChunkSize; w++)
+		//if (TPoints[b].FillState != EFillState::FS_Mixt)
+		//{
+		//	k += 15;
+		//}
+		for (; k - b * ChunkSize < ChunkSize; k++)
 		{
 			for (uint8 j = 0; j < ChunkSize; j++)
 			{
@@ -368,7 +368,6 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					}
 				}// for (int8 w = 0; w < ChunkSize; w++)
 			}// for (int8 j = 0; j < ChunkSize; j++)
-			k++;
 		} // for (int8 i = 0; i < ChunkSize; i++)
 	}
 
@@ -397,7 +396,7 @@ FPoint FMeshExtractor::GetPoint(const FVector& pos)
 {
 	int32 section = FMath::FloorToInt(pos.Z / ChunkSize);
 
-	if (section >= TPoints.Num()) return FPoint();
+	if (section >= TPoints.Num()) return FPoint(255);
 	if (TPoints[section].FillState == EFillState::FS_Mixt)
 	{
 		int32 idx = pos.X * (ChunkSize + 1) * ChunkSize + pos.Y * ChunkSize + (pos.Z - ChunkSize * section);

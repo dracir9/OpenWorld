@@ -12,8 +12,6 @@ AWorldGameMode::AWorldGameMode()
 {
 	/// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	MaxHeight = FMath::Clamp(MaxHeight, 0, 16 * ChunkSize * VoxelSize);
 }
 
 // Called when the game starts or when spawned

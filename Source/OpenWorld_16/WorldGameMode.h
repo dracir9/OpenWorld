@@ -171,7 +171,8 @@ public:
 		int32 VoxelSize = 100;
 
 	// Maximum terrain height
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings", 
+		meta = (ClampMin = "0.0", ClampMax = "25000.0", UIMin = "0.0", UIMax = "25000.0"))
 		int32 MaxHeight = 20000;
 
 	//Used to calculte the chunks that will be generated

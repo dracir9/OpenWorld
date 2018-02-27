@@ -27,7 +27,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetVoxelDensity(const int32& x, const int32& y, const int32& z) const
 	{ 
-		uint8 section = z / ChunkSize;
+		int32 section = z / ChunkSize;
 		if (Density[section].FillState == EFillState::FS_Mixt)
 		{
 			int32 idx = x * ChunkSize * ChunkSize + y * ChunkSize + (z - ChunkSize * section);
@@ -83,7 +83,10 @@ public:
 
 	/** Helper function to calculate normal vector of a plane.*/
 	UFUNCTION(BlueprintCallable)
-	FVector CalcNormal(const FVector& p1, const FVector& p2, const FVector& p3);
+		FVector CalcNormal(const FVector& p1, const FVector& p2, const FVector& p3);
+
+	UFUNCTION(BlueprintCallable)
+		void Testheighmap(const int32 type, const int32 height = 0);
 
 
 protected:

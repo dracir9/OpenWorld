@@ -47,6 +47,7 @@ void AChunk::InitializeChunk()
 
 	Density.SetNum(16);
 
+	return;
 	double height = 0.0f;
 
 	TArray<int8> pending;
@@ -54,9 +55,9 @@ void AChunk::InitializeChunk()
 
 	int8 tmp = 0;
 	uint32 i = 0;
-	for (int8 x = 0; x < ChunkSize; x++)
+	for (uint8 x = 0; x < ChunkSize; x++)
 	{
-		for (int8 y = 0; y < ChunkSize; y++)
+		for (uint8 y = 0; y < ChunkSize; y++)
 		{
 			height = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
 			//heigh = (heigh * 127.5 + 127.5) * 100;
@@ -79,7 +80,7 @@ void AChunk::InitializeChunk()
 				Density[current].FillState = EFillState::FS_Mixt;
 			}
 
-			for (int8 z = 0; z < ChunkSize; z++)
+			for (uint8 z = 0; z < ChunkSize; z++)
 			{
 				//i = x + (y * ChunkSize) + (z * ChunkSize * ChunkSize);
 
@@ -119,11 +120,11 @@ void AChunk::InitializeChunk()
 		}
 
 		i = 0;
-		for (int8 x = 0; x < ChunkSize; x++)
+		for (uint8 x = 0; x < ChunkSize; x++)
 		{
-			for (int8 y = 0; y < ChunkSize; y++)
+			for (uint8 y = 0; y < ChunkSize; y++)
 			{
-				for (int8 z = 0; z < ChunkSize; z++)
+				for (uint8 z = 0; z < ChunkSize; z++)
 				{
 					int32 k = (z + h * ChunkSize) * VoxelSize;
 
@@ -247,6 +248,41 @@ FVector AChunk::CalcNormal(const FVector & p1, const FVector & p2, const FVector
 	return Norm;
 }
 
+void AChunk::Testheighmap(const int32 type, const int32 height)
+{
+	switch (type)
+	{
+	default:
+		break;
+	case 0:
+		for (uint8 a = 0; a < 16; a++)
+		{
+			Density[a].Density.SetNum(ChunkSize * ChunkSize * ChunkSize);
+			Density[a].FillState = EFillState::FS_Mixt;
+			for (uint8 x = 0; x < ChunkSize; x++)
+			{
+				for (uint8 y = 0; y < ChunkSize; y++)
+				{
+					for (uint8 z = 0; z < ChunkSize; z++)
+					{
+						uint32 i = x * ChunkSize * ChunkSize + y * ChunkSize + z;
+
+						if (z < 8)
+						{
+							Density[a].Density[i] = 1;
+						}
+						else
+						{
+							Density[a].Density[i] = 0;
+						}
+					}
+				}
+			}
+		}
+		break;
+	}
+}
+
 
 void AChunk::RemoveChunk()
 {
@@ -258,3 +294,5 @@ void AChunk::RemoveChunk()
 	Density.~TArray();
 	Destroy();
 }
+
+
