@@ -153,14 +153,12 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 
 	if (!bInit)
 	{
-		UE_LOG(Mesh_Extractor, Display, TEXT("[2/5] Mesh extractor started!"));
+		UE_LOG(Mesh_Extractor, Display, TEXT("[2/7] Mesh extractor started!"));
 	}
 
 	bool bNeedUpdate = false;
-	TPoints.SetNum(ChunkDensity.Num());/******************/
-	PointCloud.SetNum(ChunkDensity.Num() * ChunkSize * ChunkSize * ChunkSize);
-
-	int32 i = 0;
+	TPoints.SetNum(ChunkDensity.Num());
+	
 	for (uint8 a = 0; a < ChunkDensity.Num(); a++)
 	{
 		if (ChunkDensity[a].FillState != EFillState::FS_Mixt)
@@ -171,6 +169,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 		TPoints[a].FillState = EFillState::FS_Mixt;
 		TPoints[a].points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize));
 
+		int32 i = 0;
 		for (uint8 x = 0; x < ChunkSize + 1; x++)
 		{
 			for (uint8 y = 0; y < ChunkSize + 1; y++)
@@ -229,7 +228,6 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						point.mat = --ID;
 					}
 
-
 					TPoints[a].points[i] = point;
 
 					i++;
@@ -240,7 +238,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 
 	if (!bInit)
 	{
-		UE_LOG(Mesh_Extractor, Display, TEXT("[3/5] Point cloud extracted!"));
+		UE_LOG(Mesh_Extractor, Display, TEXT("[3/7] Point cloud extracted!"));
 	}
 
 	//                 v7______________________v6
@@ -268,27 +266,25 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 		FVector(0, 0, 1), FVector(1, 0, 1), FVector(1, 1, 1), FVector(0, 1, 1)
 	};
 
-	uint8 k = 0;
+	uint16 k = 0;
 	for (uint8 b = 0; b < TPoints.Num(); b++)
 	{
 		if (TPoints[b].FillState != EFillState::FS_Mixt)
 		{
 			k += 15;
 		}
-
-		GRIDCELL cell;
-		FPoint point;
-		FVector p;
-		for (int8 i = 0; i < ChunkSize; i++)
+		for (uint8 w = k - b * ChunkSize; w < ChunkSize; w++)
 		{
-			for (int8 j = 0; j < ChunkSize; j++)
+			for (uint8 j = 0; j < ChunkSize; j++)
 			{
-				for (;(k - b * ChunkSize) < ChunkSize; k++)
+				for (uint8 i = 0; i < ChunkSize; i++)
 				{
-					
+					GRIDCELL cell;
 					// Fills the grid used to calculate the surface
 					for (int8 a = 0; a < 8; a++)
 					{
+						FPoint point;
+						FVector p;
 						p = FVector(i, j, k) + grid[a];
 						
 						point = GetPoint(p);
@@ -297,18 +293,17 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						cell.val[a] = point.val;
 						cell.mat[a] = point.mat;
 					}
-
 					static bool bGridDone;
 					if (!bGridDone)
 					{
-						UE_LOG(Mesh_Extractor, Display, TEXT("[3.1/5] First grid extracted!"));
+						UE_LOG(Mesh_Extractor, Display, TEXT("[4/7] First grid extracted!"));
 						bGridDone = true;
 					}
-
 					TArray<TRIANGLE> triangles;
-
+					
 					// Calculate shape using Marching Cubes algorithm
 					if (!Polygonise(cell, 128, triangles)) continue;
+
 
 					int16 ID = 0;
 
@@ -321,6 +316,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						// Request material for the mesh. If not created properly avoid.
 						FDynamicMaterial mat;
 						if (!GameMode->GetMaterial(id1, id2, id3, mat)) return;
+						
 
 						ID = mat.index;
 						if (!meshSections.IsValidIndex(ID))
@@ -367,17 +363,18 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					static bool bTriangleDone;
 					if (!bTriangleDone)
 					{
-						UE_LOG(Mesh_Extractor, Display, TEXT("[3.2/5] First triangle created!"));
+						UE_LOG(Mesh_Extractor, Display, TEXT("[5/7] First triangle created!"));
 						bTriangleDone = true;
 					}
 				}// for (int8 w = 0; w < ChunkSize; w++)
 			}// for (int8 j = 0; j < ChunkSize; j++)
+			k++;
 		} // for (int8 i = 0; i < ChunkSize; i++)
 	}
 
 	if (!bInit)
 	{
-		UE_LOG(Mesh_Extractor, Display, TEXT("[4/5] First calculation completed!"));
+		UE_LOG(Mesh_Extractor, Display, TEXT("[6/7] First calculation completed!"));
 		bInit = true;
 	}
 
@@ -398,12 +395,12 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 
 FPoint FMeshExtractor::GetPoint(const FVector& pos)
 {
-	uint8 section = pos.Z / ChunkSize;
+	int32 section = FMath::FloorToInt(pos.Z / ChunkSize);
 
 	if (section >= TPoints.Num()) return FPoint();
 	if (TPoints[section].FillState == EFillState::FS_Mixt)
 	{
-		int32 idx = pos.X * ChunkSize * ChunkSize + pos.Y * ChunkSize + (pos.Z - ChunkSize * section);
+		int32 idx = pos.X * (ChunkSize + 1) * ChunkSize + pos.Y * ChunkSize + (pos.Z - ChunkSize * section);
 		return TPoints[section].points[idx];
 	}
 	else if (TPoints[section].FillState == EFillState::FS_Full)

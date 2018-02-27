@@ -40,7 +40,7 @@ class FMeshExtractor : public FRunnable
 	/** Thread to run the worker FRunnable on */
 	FRunnableThread* Thread;
 
-	/** Total size of the chunks passes to mesh extractor thread */
+	/** Total size of the chunks passed to mesh extractor thread */
 	int32 ChunkSize;
 
 	/** Size of the grid and its voxels */
@@ -56,8 +56,6 @@ class FMeshExtractor : public FRunnable
 
 	/** Total Points. Array to temporally store chunk's point cloud*/
 	TArray<FPoints> TPoints;
-	int16 PointRegister;
-	TArray<FPoint> PointCloud;
 
 	/** Pointer to the noise object used to calculate terrain */
 	UUFNNoiseGenerator* Noise;

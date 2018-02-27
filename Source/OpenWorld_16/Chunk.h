@@ -35,11 +35,11 @@ public:
 		}
 		else if (Density[section].FillState == EFillState::FS_Full)
 		{
-			return 0;
+			return 1;
 		}
 		else
 		{
-			return 255;
+			return 0;
 		}
 	};
 

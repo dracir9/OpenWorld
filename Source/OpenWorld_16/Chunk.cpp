@@ -47,14 +47,13 @@ void AChunk::InitializeChunk()
 
 	Density.SetNum(16);
 
-	//int32
 	double height = 0.0f;
 
 	TArray<int8> pending;
 	int8 current = 0;
 
 	int8 tmp = 0;
-	int32 i = 0;
+	uint32 i = 0;
 	for (int8 x = 0; x < ChunkSize; x++)
 	{
 		for (int8 y = 0; y < ChunkSize; y++)
@@ -157,21 +156,21 @@ void AChunk::InitializeChunk()
 	// Optimize memory
 	for (uint8 a = 0; a < Density.Num(); a++)
 	{
-		Density[a].Density.Shrink();
+		//Density[a].Density.Shrink();
 		if (Density[a].FillState == EFillState::FS_Mixt)
 		{
 			bIsOver = true;
 		}
 		else if(bIsOver)
 		{
-			Density[a].FillState = EFillState::FS_Full;
+			Density[a].FillState = EFillState::FS_Empty;
 		}
 		else
 		{
-			Density[a].FillState = EFillState::FS_Empty;
+			Density[a].FillState = EFillState::FS_Full;
 		}
 	}
-	Density.Shrink();
+	//Density.Shrink();
 
 	// Set debug variables to be displayed. Get allocated memory of ChunkDenity array
 	GameMode->SDensitySize = FString::FromInt(Density.GetAllocatedSize());
@@ -193,7 +192,7 @@ void AChunk::RenderChunk()
 
 	if (!bHaStarted)
 	{
-		UE_LOG(RenderTerrain, Display, TEXT("[1/5] Render Started!"));
+		UE_LOG(RenderTerrain, Display, TEXT("[1/7] Render Started!"));
 		bHaStarted = true;
 	}
 
@@ -209,7 +208,7 @@ void AChunk::FinishRendering(const TArray<FMesh>& meshSections)
 
 	if (!bHasRendered)
 	{
-		UE_LOG(RenderTerrain, Warning, TEXT("[5/5] Finish Render!"));
+		UE_LOG(RenderTerrain, Display, TEXT("[7/7] Finish Render!"));
 		bHasRendered = true;
 	}
 
