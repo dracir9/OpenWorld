@@ -22,6 +22,13 @@ enum class EFillState : uint8
 	FS_Mixt		UMETA(DisplayName = "Mixed")
 };
 
+UENUM(BlueprintType)
+enum class EMapType : uint8
+{
+	MT_Laminated	UMETA(DisplayName = "Laminated"),
+	MT_Ramp			UMETA(DisplayName = "Ramp")
+};
+
 USTRUCT()
 struct FDensity
 {
@@ -182,6 +189,18 @@ public:
 	// Can we use RuntimeMeshComponent plugin?
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
 		bool bUseRuntime = true;
+
+	/** Are we using a special type of height map?
+	* Use when debugging.
+	* Skips height map generation based on noise and uses a preset function */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+		bool bUseTestHeightmaps;
+
+	/** Defines the type of debugging height map
+	* Works when bUseTestHeightmaps is true
+	* It defines the function used to generate the heightmap */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings", meta = (EditCondition = "bUseTestHeightmaps"))
+		EMapType MapType;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////*****     WORLD VARIABLES    *****///////////////////////////////////////////////////////////////////////////////////

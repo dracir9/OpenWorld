@@ -193,7 +193,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					// If point is inside the chunk get the value directly from ChunkDensity array
 					else
 					{
-						int32 idx = (p.X * ChunkSize * ChunkSize) + (p.Y * ChunkSize) + p.Z;
+						int32 idx = p.X + p.Y * ChunkSize + p.Z * ChunkSize * ChunkSize;
 						ID = ChunkDensity[a].Density[idx];
 					}
 
@@ -209,14 +209,14 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 
 					if (ID == 0)
 					{
-						point.val = 255;// FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), height));
+						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), height));
 						point.mat = 0;
 					}
 
 					// If there is no neighbour chunk mark this chunk to be updated.
 					else if (ID == -1)
 					{
-						point.val = 255;// height >= VoxelSize ? 0 : 255;
+						point.val = height >= VoxelSize ? 0 : 255;
 						point.mat = 0;
 						bNeedUpdate = true;
 					}
@@ -224,7 +224,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					// If is terrain
 					else
 					{
-						point.val = 0;// FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), height));
+						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), height));
 						point.mat = --ID;
 					}
 

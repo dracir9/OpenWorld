@@ -142,12 +142,13 @@ void AWorldGameMode::LoadMap()
 			if (!NChunk)
 			{
 				NChunk = GetWorld()->SpawnActorDeferred<AChunk>(Chunk, SpawnTransform);
-				///NChunk->SetActorLabel(*FString::Printf(TEXT("Chunk_%d_%d"), x + FMath::RoundToInt(ChunkCenter.X), y + FMath::RoundToInt(ChunkCenter.Y)));
 				NChunk->Noise = Noise;
 				NChunk->VoxelSize = VoxelSize;
 				NChunk->ChunkSize = ChunkSize;
 				NChunk->MaxHeight = MaxHeight;
 				NChunk->bRuntimeEnabled = bUseRuntime;
+				NChunk->bUseTestHeightmaps = bUseTestHeightmaps;
+				NChunk->MapType = MapType;
 
 				UGameplayStatics::FinishSpawningActor(NChunk, SpawnTransform);
 				World.Add(FVector2D(x + ChunkCenter.X, y + ChunkCenter.Y), NChunk);

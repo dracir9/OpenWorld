@@ -47,131 +47,78 @@ void AChunk::InitializeChunk()
 
 	Density.SetNum(16);
 
-	return;
+	if (bUseTestHeightmaps)
+	{
+		TestHeighmap(MapType);
+		return;
+	}
+	
 	double height = 0.0f;
 
-	TArray<int8> pending;
-	int8 current = 0;
+	uint16 z = 0;
 
-	int8 tmp = 0;
-	uint32 i = 0;
-	for (uint8 x = 0; x < ChunkSize; x++)
+	bool bSolid;
+	bool bAir;
+
+	for (uint8 section = 0; section < 16; section++)
 	{
-		for (uint8 y = 0; y < ChunkSize; y++)
+		Density[section].Density.SetNum(ChunkSize * ChunkSize * ChunkSize);
+		int32 i = 0;
+
+		for (; z - section * ChunkSize < ChunkSize; z++)
 		{
-			height = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
-			//heigh = (heigh * 127.5 + 127.5) * 100;
-			height = height * (MaxHeight/2) + MaxHeight/2;
+			int32 k = z * VoxelSize;
 
-			tmp = floor(height / (ChunkSize * VoxelSize));
-			if (tmp != current && (x != 0 || y != 0))
-			{
-				if (!pending.Contains(tmp))
-				pending.Add(tmp);
-			}
-			else if (tmp != current)
-			{
-				current = tmp;
-			}
-
-			if (Density[current].FillState != EFillState::FS_Mixt)
-			{
-				Density[current].Density.SetNumZeroed(ChunkSize * ChunkSize * ChunkSize);
-				Density[current].FillState = EFillState::FS_Mixt;
-			}
-
-			for (uint8 z = 0; z < ChunkSize; z++)
-			{
-				//i = x + (y * ChunkSize) + (z * ChunkSize * ChunkSize);
-
-				int32 k = (z + current * ChunkSize) * VoxelSize;
-
-
-				if (k < height)
-				{
-					if (k < 500)
-					{
-						Density[current].Density[i] = 1;
-					}
-					else if (k < 700)
-					{
-						Density[current].Density[i] = 2;
-					}
-					else
-					{
-						Density[current].Density[i] = 3;
-					}
-				}
-				else
-				{
-					Density[current].Density[i] = 0;
-				}
-				i++;
-			}
-		}
-	}
-
-	for (int8& h : pending)
-	{
-		if (Density[h].FillState != EFillState::FS_Mixt)
-		{
-			Density[h].Density.SetNumZeroed(ChunkSize * ChunkSize * ChunkSize);
-			Density[h].FillState = EFillState::FS_Mixt;
-		}
-
-		i = 0;
-		for (uint8 x = 0; x < ChunkSize; x++)
-		{
 			for (uint8 y = 0; y < ChunkSize; y++)
 			{
-				for (uint8 z = 0; z < ChunkSize; z++)
+				for (uint8 x = 0; x < ChunkSize; x++)
 				{
-					int32 k = (z + h * ChunkSize) * VoxelSize;
+					height = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
+					height = height * (MaxHeight / 2) + MaxHeight / 2;
+
 
 					if (k < height)
 					{
 						if (k < 500)
 						{
-							Density[h].Density[i] = 1;
+							Density[section].Density[i] = 1;
 						}
 						else if (k < 700)
 						{
-							Density[h].Density[i] = 2;
+							Density[section].Density[i] = 2;
 						}
 						else
 						{
-							Density[h].Density[i] = 3;
+							Density[section].Density[i] = 3;
 						}
+						bSolid = true;
 					}
 					else
 					{
-						Density[h].Density[i] = 0;
+						Density[section].Density[i] = 0;
+						bAir = true;
 					}
 					i++;
 				}
 			}
 		}
-	}
-
-	bool bIsOver = false;
-	// Optimize memory
-	for (uint8 a = 0; a < Density.Num(); a++)
-	{
-		//Density[a].Density.Shrink();
-		if (Density[a].FillState == EFillState::FS_Mixt)
+		if (bSolid && bAir)
 		{
-			bIsOver = true;
+			Density[section].FillState = EFillState::FS_Mixt;
 		}
-		else if(bIsOver)
+		else if(bSolid)
 		{
-			Density[a].FillState = EFillState::FS_Empty;
+			Density[section].Density.Empty();
+			Density[section].FillState = EFillState::FS_Full;
 		}
 		else
 		{
-			Density[a].FillState = EFillState::FS_Full;
+			Density[section].Density.Empty();
+			Density[section].FillState = EFillState::FS_Empty;
 		}
 	}
-	//Density.Shrink();
+	
+	Density.Shrink();
 
 	// Set debug variables to be displayed. Get allocated memory of ChunkDenity array
 	GameMode->SDensitySize = FString::FromInt(Density.GetAllocatedSize());
@@ -248,13 +195,13 @@ FVector AChunk::CalcNormal(const FVector & p1, const FVector & p2, const FVector
 	return Norm;
 }
 
-void AChunk::Testheighmap(const int32 type, const int32 height)
+void AChunk::TestHeighmap(const EMapType& type)
 {
 	switch (type)
 	{
 	default:
 		break;
-	case 0:
+	case EMapType::MT_Laminated:
 		for (uint8 a = 0; a < 16; a++)
 		{
 			Density[a].Density.SetNum(ChunkSize * ChunkSize * ChunkSize);
@@ -268,6 +215,33 @@ void AChunk::Testheighmap(const int32 type, const int32 height)
 						uint32 i = x * ChunkSize * ChunkSize + y * ChunkSize + z;
 
 						if (z < 8)
+						{
+							Density[a].Density[i] = 1;
+						}
+						else
+						{
+							Density[a].Density[i] = 0;
+						}
+					}
+				}
+			}
+		}
+		break;
+
+	case EMapType::MT_Ramp:
+		for (uint8 a = 0; a < 16; a++)
+		{
+			Density[a].Density.SetNum(ChunkSize * ChunkSize * ChunkSize);
+			Density[a].FillState = EFillState::FS_Mixt;
+			for (uint8 x = 0; x < ChunkSize; x++)
+			{
+				for (uint8 y = 0; y < ChunkSize; y++)
+				{
+					for (uint8 z = 0; z < ChunkSize; z++)
+					{
+						uint32 i = x * ChunkSize * ChunkSize + y * ChunkSize + z;
+
+						if (z + a * ChunkSize < y + x * ChunkSize)
 						{
 							Density[a].Density[i] = 1;
 						}

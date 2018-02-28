@@ -30,7 +30,7 @@ public:
 		int32 section = z / ChunkSize;
 		if (Density[section].FillState == EFillState::FS_Mixt)
 		{
-			int32 idx = x * ChunkSize * ChunkSize + y * ChunkSize + (z - ChunkSize * section);
+			int32 idx = x + y * ChunkSize + (z - ChunkSize * section) * ChunkSize * ChunkSize;
 			return Density[section].Density[idx];
 		}
 		else if (Density[section].FillState == EFillState::FS_Full)
@@ -48,7 +48,7 @@ public:
 	bool SetVoxelDensity(const FVector& pos, const int32& value) 
 	{
 		uint8 section = FMath::FloorToInt(pos.Z / ChunkSize);
-		int32 idx = pos.X * ChunkSize * ChunkSize + pos.Y * ChunkSize + (pos.Z - ChunkSize * section);
+		int32 idx = pos.X + pos.Y * ChunkSize + (pos.Z - ChunkSize * section) * ChunkSize * ChunkSize;
 
 		if (Density[section].FillState == EFillState::FS_Mixt)
 		{
@@ -86,7 +86,7 @@ public:
 		FVector CalcNormal(const FVector& p1, const FVector& p2, const FVector& p3);
 
 	UFUNCTION(BlueprintCallable)
-		void Testheighmap(const int32 type, const int32 height = 0);
+		void TestHeighmap(const EMapType& type);
 
 
 protected:
@@ -125,13 +125,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		UUFNNoiseGenerator* Noise;
 
-	/// Can we use RuntimeMeshComponent plugin?
-	FThreadSafeBool bRuntimeEnabled = true;
+	/** Are we using a special type of height map?
+	* Use when debugging.
+	* Skips height map generation based on noise and uses a preset function */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		bool bUseTestHeightmaps;
+
+	/** Defines the type of debugging height map
+	* Works when bUseTestHeightmaps is true
+	* It defines the function used to generate the heightmap */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		EMapType MapType;
+
+	// Can we use RuntimeMeshComponent plugin?
+		FThreadSafeBool bRuntimeEnabled = true;
 
 private:
 
 	// Stores the voxel IDs of the chunk
 	UPROPERTY()
 		TArray<FDensity> Density;
+
+	UPROPERTY()
+		TArray<int32> HeightMap;
 
 };
