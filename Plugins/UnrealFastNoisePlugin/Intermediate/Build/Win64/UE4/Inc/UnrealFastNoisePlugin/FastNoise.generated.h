@@ -99,12 +99,10 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 	op(ESelectInterpType::ExponentialInOut) \
 	op(ESelectInterpType::SineIn) \
 	op(ESelectInterpType::SineOut) \
-	op(ESelectInterpType::SineInOut) \
-	op(ESelectInterpType::Step) 
+	op(ESelectInterpType::SineInOut) 
 #define FOREACH_ENUM_EPOSITIONWARPTYPE(op) \
 	op(EPositionWarpType::None) \
-	op(EPositionWarpType::Regular) \
-	op(EPositionWarpType::Fractal) 
+	op(EPositionWarpType::Regular) 
 #define FOREACH_ENUM_ECELLULARRETURNTYPE(op) \
 	op(ECellularReturnType::CellValue) \
 	op(ECellularReturnType::NoiseLookup) \
@@ -112,29 +110,23 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 	op(ECellularReturnType::Distance2) \
 	op(ECellularReturnType::Distance2Add) \
 	op(ECellularReturnType::Distance2Sub) \
-	op(ECellularReturnType::Distance2Mul) \
-	op(ECellularReturnType::Distance2Div) 
+	op(ECellularReturnType::Distance2Mul) 
 #define FOREACH_ENUM_ECELLULARDISTANCEFUNCTION(op) \
 	op(ECellularDistanceFunction::Euclidean) \
-	op(ECellularDistanceFunction::Manhattan) \
-	op(ECellularDistanceFunction::Natural) 
+	op(ECellularDistanceFunction::Manhattan) 
 #define FOREACH_ENUM_EFRACTALTYPE(op) \
 	op(EFractalType::FBM) \
-	op(EFractalType::Billow) \
-	op(EFractalType::RigidMulti) 
+	op(EFractalType::Billow) 
 #define FOREACH_ENUM_EINTERP(op) \
 	op(EInterp::InterpLinear) \
-	op(EInterp::InterpHermite) \
-	op(EInterp::InterpQuintic) 
+	op(EInterp::InterpHermite) 
 #define FOREACH_ENUM_EFRACTALNOISETYPE(op) \
 	op(EFractalNoiseType::FractalValue) \
-	op(EFractalNoiseType::FractalGradient) \
-	op(EFractalNoiseType::FractalSimplex) 
+	op(EFractalNoiseType::FractalGradient) 
 #define FOREACH_ENUM_ESIMPLENOISETYPE(op) \
 	op(ESimpleNoiseType::SimpleValue) \
 	op(ESimpleNoiseType::SimpleGradient) \
-	op(ESimpleNoiseType::SimpleSimplex) \
-	op(ESimpleNoiseType::SimpleWhiteNoise) 
+	op(ESimpleNoiseType::SimpleSimplex) 
 #define FOREACH_ENUM_ENOISETYPE(op) \
 	op(ENoiseType::Value) \
 	op(ENoiseType::ValueFractal) \
@@ -142,6 +134,5 @@ PRAGMA_ENABLE_DEPRECATION_WARNINGS
 	op(ENoiseType::GradientFractal) \
 	op(ENoiseType::Simplex) \
 	op(ENoiseType::SimplexFractal) \
-	op(ENoiseType::Cellular) \
-	op(ENoiseType::WhiteNoise) 
+	op(ENoiseType::Cellular) 
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

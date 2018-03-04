@@ -57,8 +57,8 @@ void AChunk::InitializeChunk()
 
 	uint16 z = 0;
 
-	bool bSolid;
-	bool bAir;
+	bool bSolid = false;
+	bool bAir = false;
 
 	for (uint8 section = 0; section < 16; section++)
 	{
@@ -79,11 +79,11 @@ void AChunk::InitializeChunk()
 
 					if (k < height)
 					{
-						if (k < 500)
+						if (k < MaxHeight/2)
 						{
 							Density[section].Density[i] = 1;
 						}
-						else if (k < 700)
+						else if (k < MaxHeight*0.7)
 						{
 							Density[section].Density[i] = 2;
 						}

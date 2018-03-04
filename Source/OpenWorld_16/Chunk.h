@@ -28,13 +28,18 @@ public:
 	int32 GetVoxelDensity(const int32& x, const int32& y, const int32& z) const
 	{ 
 		int32 section = z / ChunkSize;
+		uint8 k = z - ChunkSize * section;
 		if (Density[section].FillState == EFillState::FS_Mixt)
 		{
-			int32 idx = x + y * ChunkSize + (z - ChunkSize * section) * ChunkSize * ChunkSize;
+			int32 idx = x + y * ChunkSize + k * ChunkSize * ChunkSize;
 			return Density[section].Density[idx];
 		}
 		else if (Density[section].FillState == EFillState::FS_Full)
 		{
+			if (k == 15)
+			{
+				GetVoxelDensity(x, y, z + 1);
+			}
 			return 1;
 		}
 		else
@@ -145,8 +150,4 @@ private:
 	// Stores the voxel IDs of the chunk
 	UPROPERTY()
 		TArray<FDensity> Density;
-
-	UPROPERTY()
-		TArray<int32> HeightMap;
-
 };
