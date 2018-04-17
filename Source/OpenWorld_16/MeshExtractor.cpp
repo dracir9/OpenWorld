@@ -156,17 +156,23 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 		UE_LOG(Mesh_Extractor, Display, TEXT("[2/7] Mesh extractor started!"));
 	}
 
+	
 	bool bNeedUpdate = false;
 	TPoints.SetNum(ChunkDensity.Num());
 	
 	for (uint8 a = 0; a < ChunkDensity.Num(); a++)
 	{
-		if (ChunkDensity[a].FillState != EFillState::FS_Mixt)
+		bool bIsPerimeter = false;
+
+		TPoints[a].FillState = ChunkDensity[a].FillState;
+		if (ChunkDensity[a].FillState == EFillState::FS_Empty)
 		{
-			TPoints[a].FillState = ChunkDensity[a].FillState;
 			continue;
 		}
-		TPoints[a].FillState = EFillState::FS_Mixt;
+		else if (ChunkDensity[a].FillState == EFillState::FS_Full)
+		{
+			bIsPerimeter = true;
+		}
 		TPoints[a].points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize));
 
 		int32 i = 0;
@@ -193,8 +199,15 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					// If point is inside the chunk get the value directly from ChunkDensity array
 					else
 					{
-						int32 idx = p.X + p.Y * ChunkSize + p.Z * ChunkSize * ChunkSize;
-						ID = ChunkDensity[a].Density[idx];
+						if (bIsPerimeter)
+						{
+							ID = ChunkDensity[a].Density[PerimeterIndex(x, y, z)];
+						}
+						else
+						{
+							int32 idx = p.X + p.Y * ChunkSize + p.Z * ChunkSize * ChunkSize;
+							ID = ChunkDensity[a].Density[idx];
+						}
 					}
 
 					///*/////////////////////////////
@@ -269,10 +282,10 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	uint16 k = 0;
 	for (uint8 b = 0; b < TPoints.Num(); b++)
 	{
-		//if (TPoints[b].FillState != EFillState::FS_Mixt)
-		//{
-		//	k += 15;
-		//}
+		if (TPoints[b].FillState != EFillState::FS_Mixt)
+		{
+			k += 14;
+		}
 		for (; k - b * ChunkSize < ChunkSize; k++)
 		{
 			for (uint8 j = 0; j < ChunkSize; j++)
@@ -397,17 +410,46 @@ FPoint FMeshExtractor::GetPoint(const FVector& pos)
 	int32 section = FMath::FloorToInt(pos.Z / ChunkSize);
 
 	if (section >= TPoints.Num()) return FPoint(255);
-	if (TPoints[section].FillState == EFillState::FS_Mixt)
+	
+	
+	if (TPoints[section].FillState != EFillState::FS_Empty)
 	{
 		int32 idx = pos.X * (ChunkSize + 1) * ChunkSize + pos.Y * ChunkSize + (pos.Z - ChunkSize * section);
 		return TPoints[section].points[idx];
-	}
-	else if (TPoints[section].FillState == EFillState::FS_Full)
-	{
-		return FPoint();
 	}
 	else
 	{
 		return FPoint(255);
 	}
+}
+
+int32 FMeshExtractor::PerimeterIndex(const int32& x, const int32& y, const int32& z)
+{
+	int32 idx = x + y * ChunkSize + z * ChunkSize * ChunkSize;
+
+	if (z > 0 && z < ChunkSize - 1)
+	{
+		int8 k = z - 1;
+		if (y == 0)
+		{
+			idx -= k * (ChunkSize - 1)*(ChunkSize - 1);
+		}
+		else if (y == ChunkSize - 1)
+		{
+			k++;
+			idx -= k * (ChunkSize - 1)*(ChunkSize - 1);
+		}
+		else
+		{
+			int8 i = FMath::Clamp(x - 1, 0, ChunkSize - 1);
+			int8 j = y - 1;
+			idx -= i + j * (ChunkSize - 2) + k * (ChunkSize - 2)*(ChunkSize - 2);
+		}
+	}
+	else if (z == ChunkSize - 1)
+	{
+		idx -= pow(ChunkSize - 2, 3);
+	}
+
+	return idx;
 }

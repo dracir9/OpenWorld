@@ -24,11 +24,11 @@
 /wd4838
 /w44668
 /I "C:\Program Files\Epic Games\UE_4.18\Engine\Source"
-/I C:\Users\Admin\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Source\RuntimeMeshComponent\Private
-/I C:\Users\Admin\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Source
-/I C:\Users\Admin\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Source\RuntimeMeshComponent\Public
-/I C:\Users\Admin\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Intermediate\Build\Win64\UE4Editor\Inc\RuntimeMeshComponent
-/I C:\Users\Admin\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Source\RuntimeMeshComponent
+/I C:\Users\Ricard\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Source\RuntimeMeshComponent\Private
+/I C:\Users\Ricard\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Source
+/I C:\Users\Ricard\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Source\RuntimeMeshComponent\Public
+/I C:\Users\Ricard\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Intermediate\Build\Win64\UE4Editor\Inc\RuntimeMeshComponent
+/I C:\Users\Ricard\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Source\RuntimeMeshComponent
 /I "C:\Program Files\Epic Games\UE_4.18\Engine\Source\Runtime\Core\Public"
 /I "C:\Program Files\Epic Games\UE_4.18\Engine\Source\Runtime\Core\Public\Internationalization"
 /I "C:\Program Files\Epic Games\UE_4.18\Engine\Source\Runtime\Core\Public\Async"
@@ -361,9 +361,9 @@
 /FI"C:\Program Files\Epic Games\UE_4.18\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.h"
 /Yu"C:\Program Files\Epic Games\UE_4.18\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.h"
 /Fp"C:\Program Files\Epic Games\UE_4.18\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.h.pch"
-"C:\Users\Admin\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Intermediate\Build\Win64\UE4Editor\Development\RuntimeMeshComponent\Module.RuntimeMeshComponent.cpp"
-/FI"C:\Users\Admin\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Intermediate\Build\Win64\UE4Editor\Development\RuntimeMeshComponent\Definitions.RuntimeMeshComponent.h"
-/Fo"C:\Users\Admin\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Intermediate\Build\Win64\UE4Editor\Development\RuntimeMeshComponent\Module.RuntimeMeshComponent.cpp.obj"
+"C:\Users\Ricard\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Intermediate\Build\Win64\UE4Editor\Development\RuntimeMeshComponent\Module.RuntimeMeshComponent.cpp"
+/FI"C:\Users\Ricard\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Intermediate\Build\Win64\UE4Editor\Development\RuntimeMeshComponent\Definitions.RuntimeMeshComponent.h"
+/Fo"C:\Users\Ricard\Documents\GitHub\OpenWorld\Plugins\RuntimeMeshComponent\Intermediate\Build\Win64\UE4Editor\Development\RuntimeMeshComponent\Module.RuntimeMeshComponent.cpp.obj"
 /TP
 /GR-
 /W4

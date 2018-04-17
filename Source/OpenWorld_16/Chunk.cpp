@@ -2,6 +2,7 @@
 
 #include "Chunk.h"
 #include "ProceduralMeshComponent.h"
+#include "UFNBlueprintFunctionLibrary.h"
 
 
 AChunk::AChunk()
@@ -75,7 +76,7 @@ void AChunk::InitializeChunk()
 				{
 					height = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
 					height = height * (MaxHeight / 2) + MaxHeight / 2;
-
+					
 
 					if (k < height)
 					{
@@ -108,7 +109,19 @@ void AChunk::InitializeChunk()
 		}
 		else if(bSolid)
 		{
-			Density[section].Density.Empty();
+			uint16 i = ChunkSize * ChunkSize;
+			for (uint8 a = 1; a < ChunkSize; a++)
+			{
+				for (uint8 b = 0; b < ChunkSize; b++)
+				{
+					for (uint8 c = 0; c < ChunkSize; c++)
+					{
+						Density[section].Density[PerimeterIndex(c, b, a)] = Density[section].Density[i];
+						i++;
+					}
+				}
+			}
+			Density[section].Density.SetNum(pow(ChunkSize, 3) - pow(ChunkSize - 2, 3), true);
 			Density[section].FillState = EFillState::FS_Full;
 		}
 		else
@@ -255,6 +268,84 @@ void AChunk::TestHeighmap(const EMapType& type)
 		}
 		break;
 	}
+}
+
+int32 AChunk::GetVoxelDensity(const int32& x, const int32& y, const int32& z)
+{
+	{
+		int32 section = z / ChunkSize;
+		uint8 k = z - ChunkSize * section;
+		if (Density[section].FillState == EFillState::FS_Mixt)
+		{
+			int32 idx = x + y * ChunkSize + k * ChunkSize * ChunkSize;
+			return Density[section].Density[idx];
+		}
+		else if (Density[section].FillState == EFillState::FS_Full)
+		{
+			return Density[section].Density[PerimeterIndex(x, y, k)];
+		}
+		else
+		{
+			return 0;
+		}
+	}
+}
+
+bool AChunk::SetVoxelDensity(const FVector& pos, const int32& value)
+{
+	{
+		uint8 section = FMath::FloorToInt(pos.Z / ChunkSize);
+		int32 idx = pos.X + pos.Y * ChunkSize + (pos.Z - ChunkSize * section) * ChunkSize * ChunkSize;
+
+		if (Density[section].FillState == EFillState::FS_Mixt)
+		{
+			if (Density[section].Density[idx] == value) return false;
+			Density[section].Density[idx] = value;
+			return true;
+		}
+		else if (Density[section].FillState == EFillState::FS_Empty && value == 0)
+		{
+			return false;
+		}
+		else
+		{
+			Density[section].FillState = EFillState::FS_Mixt;
+			Density[section].Density[idx] = value;
+			return true;
+		}
+		return false;
+	}
+}
+
+int32 AChunk::PerimeterIndex(const int32& x, const int32& y, const int32& z)
+{
+	int32 idx = x + y * ChunkSize + z * ChunkSize * ChunkSize;
+
+	if (z > 0 && z < ChunkSize - 1)
+	{
+		int8 k = z - 1;
+		if (y == 0)
+		{
+			idx -= k * (ChunkSize - 1)*(ChunkSize - 1);
+		}
+		else if (y == ChunkSize - 1)
+		{
+			k++;
+			idx -= k * (ChunkSize - 1)*(ChunkSize - 1);
+		}
+		else
+		{
+			int8 i = FMath::Clamp(x - 1, 0, ChunkSize - 1);
+			int8 j = y - 1;
+			idx -= i + j * (ChunkSize - 2) + k * (ChunkSize - 2)*(ChunkSize - 2);
+		}
+	}
+	else if (z == ChunkSize - 1)
+	{
+		idx -= pow(ChunkSize - 2, 3);
+	}
+
+	return idx;
 }
 
 

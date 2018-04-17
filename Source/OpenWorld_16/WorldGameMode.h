@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "FastNoise/FastNoise.h"
+#include "UnrealFastNoisePlugin.h"
 #include "ProceduralMeshComponent.h"
 #include "RuntimeMeshComponent.h"
 #include "OpenWorld_16.h"
@@ -130,6 +130,7 @@ struct FSurfaceData
 	UPROPERTY()
 		FVector2D Position;
 };
+
 
 /**
  * 
@@ -314,17 +315,17 @@ public:
 
 	/** Gives the index for a given group of material ID's */
 	UFUNCTION(BlueprintCallable)
-		FString CalcMatIndex(int32 &id1, int32 &id2, int32 &id3);
+		FString CalcMatIndex(int32 & d1, int32 & d2, int32 & d3);
 
 	/** Gives a material based on face caracteristics */
 	UFUNCTION(BlueprintCallable)
-		bool GetMaterial(int32 & id1, int32 & id2, int32 & id3, FDynamicMaterial & mat);
+		bool GetMaterial(int32 & d1, int32 & d2, int32 & d3, FDynamicMaterial & mat);
 
 	/** Returns a dynamic transition material with the specified matetial index */
 	UFUNCTION(BlueprintCallable)
-		FDynamicMaterial CreateDynMaterial(int32 & id1, int32 & id2, int32 & id3);
+		FDynamicMaterial CreateDynMaterial(const int32 & d1,const int32 & d2,const int32 & d3);
 
-	/** Timer function that finishes background thread calculations*/
+	/** Timer function that finishes background thread calculations */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set voxel from world", Keywords = "block"), Category = Procedural)
 		void FinishJob();
 	

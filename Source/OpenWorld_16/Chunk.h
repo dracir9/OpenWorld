@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "UnrealFastNoisePlugin.h"
 #include "ProceduralMeshComponent.h"
 #include "RuntimeMeshComponent.h"
 #include "WorldGameMode.h"
@@ -16,77 +17,55 @@ class OPENWORLD_16_API AChunk : public AActor
 	GENERATED_BODY()
 	
 public:	
-	/** Sets default values for this actor's properties */
+	/**
+	* Sets default values for this actor's properties */
 	AChunk();
 	
-	/** Destroys the current chunk */
+	/**
+	* Destroys the current chunk */
 	UFUNCTION(BlueprintCallable)
 	void RemoveChunk();
 
-	/**Returns the voxel density of a given location*/
+	/**
+	* Returns the voxel density of a given location
+	* @param x,y,z Local coordinates of the voxel*/
 	UFUNCTION(BlueprintCallable)
-	int32 GetVoxelDensity(const int32& x, const int32& y, const int32& z) const
-	{ 
-		int32 section = z / ChunkSize;
-		uint8 k = z - ChunkSize * section;
-		if (Density[section].FillState == EFillState::FS_Mixt)
-		{
-			int32 idx = x + y * ChunkSize + k * ChunkSize * ChunkSize;
-			return Density[section].Density[idx];
-		}
-		else if (Density[section].FillState == EFillState::FS_Full)
-		{
-			if (k == 15)
-			{
-				GetVoxelDensity(x, y, z + 1);
-			}
-			return 1;
-		}
-		else
-		{
-			return 0;
-		}
-	};
+		int32 GetVoxelDensity(const int32& x, const int32& y, const int32& z);
 
-	/** Set the voxel density at given location*/
+	/**
+	* Set the voxel density at given location
+	* @param x,y,z Local coordinates of the voxel
+	*
+	* In order to get max speed we don't check for valid input!
+	* MAKE SURE COORDINATES ARE POSITIVE AND WITHIN CHUNK RANGE!*/
 	UFUNCTION(BlueprintCallable)
-	bool SetVoxelDensity(const FVector& pos, const int32& value) 
-	{
-		uint8 section = FMath::FloorToInt(pos.Z / ChunkSize);
-		int32 idx = pos.X + pos.Y * ChunkSize + (pos.Z - ChunkSize * section) * ChunkSize * ChunkSize;
+		bool SetVoxelDensity(const FVector& pos, const int32& value);
 
-		if (Density[section].FillState == EFillState::FS_Mixt)
-		{
-			if (Density[section].Density[idx] == value) return false;
-			Density[section].Density[idx] = value;
-			return true;
-		}
-		else if (Density[section].FillState == EFillState::FS_Empty && value == 0)
-		{
-			return false;
-		}
-		else
-		{
-			Density[section].FillState = EFillState::FS_Mixt;
-			Density[section].Density[idx] = value;
-			return true;
-		}
-		return false;
-	};
+	/**
+	* Returns the index of the voxels at the external chunk walls
+	*
+	* In order to get max speed we don't check for valid input!
+	* MAKE SURE COORDINATES ARE POSITIVE AND WITHIN CHUNK RANGE!*/
+	UFUNCTION(BlueprintCallable)
+		int32 PerimeterIndex(const int32& x, const int32& y, const int32& z);
 
-	/** Calculates all the block data */
+	/**
+	* Calculates all the block data */
 	UFUNCTION(BlueprintCallable)
 		void InitializeChunk();
 
-	/** Creates the mesh to be rendered */
+	/**
+	* Creates the mesh to be rendered */
 	UFUNCTION(BlueprintCallable)
 		void RenderChunk();
 
-	/** Add given mesh to component to be rendered */
+	/**
+	* Add given mesh to component to be rendered */
 	UFUNCTION(BlueprintCallable)
 		void FinishRendering(const TArray<FMesh>& meshSections);
 
-	/** Helper function to calculate normal vector of a plane.*/
+	/**
+	* Helper function to calculate normal vector of a plane.*/
 	UFUNCTION(BlueprintCallable)
 		FVector CalcNormal(const FVector& p1, const FVector& p2, const FVector& p3);
 

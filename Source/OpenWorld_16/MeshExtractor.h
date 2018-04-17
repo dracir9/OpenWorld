@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "OpenWorld_16.h"
+#include "UnrealFastNoisePlugin.h"
 #include "MeshExtractor.generated.h"
 
 /**
@@ -70,6 +71,8 @@ class FMeshExtractor : public FRunnable
 	void ExtractMesh(TArray<FDensity>* TheArray, FVector2D Position);
 
 	FORCEINLINE FPoint GetPoint(const FVector& pos);
+
+	int32 PerimeterIndex(const int32& x, const int32& y, const int32& z);
 
 public:
 
