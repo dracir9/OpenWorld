@@ -271,7 +271,8 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	//              v0    X                v1
 
 	//Initializes the variables used to store all the mesh data.
-	TArray<FMesh> meshSections;
+	TArray<TArray<FMesh>> meshSections;
+	meshSections.SetNum(16);
 
 	const FVector grid[] =
 	{
@@ -332,45 +333,45 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						
 
 						ID = mat.index;
-						if (!meshSections.IsValidIndex(ID))
+						if (!meshSections[b].IsValidIndex(ID))
 						{
-							meshSections.SetNum(ID + 1);
+							meshSections[b].SetNum(ID + 1);
 						}
-						meshSections[ID].Mat = mat.Mat;
+						meshSections[b][ID].Mat = mat.Mat;
 
 
 						for (uint8 p = 0; p < 3; p++)
 						{
 							if (triangles[a].mat[p] == id1)
 							{
-								meshSections[ID].VertexColors.Add(FColor(255, 0, 0, 0));
+								meshSections[b][ID].VertexColors.Add(FColor(255, 0, 0, 0));
 							}
 							else if (triangles[a].mat[p] == id2)
 							{
-								meshSections[ID].VertexColors.Add(FColor(0, 255, 0, 0));
+								meshSections[b][ID].VertexColors.Add(FColor(0, 255, 0, 0));
 							}
 							else
 							{
-								meshSections[ID].VertexColors.Add(FColor(0, 0, 255, 0));
+								meshSections[b][ID].VertexColors.Add(FColor(0, 0, 255, 0));
 							}
 						}
 
 						// Add vertices
-						int32 oldVertCount = meshSections[ID].Vertices.Num();
-						meshSections[ID].Vertices.Add(triangles[a].p[0]);
-						meshSections[ID].Vertices.Add(triangles[a].p[1]);
-						meshSections[ID].Vertices.Add(triangles[a].p[2]);
+						int32 oldVertCount = meshSections[b][ID].Vertices.Num();
+						meshSections[b][ID].Vertices.Add(triangles[a].p[0]);
+						meshSections[b][ID].Vertices.Add(triangles[a].p[1]);
+						meshSections[b][ID].Vertices.Add(triangles[a].p[2]);
 
 						// Add vertex index (create triangle)
-						meshSections[ID].Triangles.Add(oldVertCount);
-						meshSections[ID].Triangles.Add(oldVertCount + 1);
-						meshSections[ID].Triangles.Add(oldVertCount + 2);
+						meshSections[b][ID].Triangles.Add(oldVertCount);
+						meshSections[b][ID].Triangles.Add(oldVertCount + 1);
+						meshSections[b][ID].Triangles.Add(oldVertCount + 2);
 
 						// Calculate Normals
 						FVector Normal = CalcNormals(triangles[a].p[0], triangles[a].p[1], triangles[a].p[2]);
-						meshSections[ID].Normals.Add(Normal);
-						meshSections[ID].Normals.Add(Normal);
-						meshSections[ID].Normals.Add(Normal);
+						meshSections[b][ID].Normals.Add(Normal);
+						meshSections[b][ID].Normals.Add(Normal);
+						meshSections[b][ID].Normals.Add(Normal);
 
 					}// for (int8 a = 0; a < triangles.Num(); a++)
 					static bool bTriangleDone;
@@ -393,9 +394,9 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	ChunkDensity.Empty();
 
 	FSurfaceData FinishedMesh;
-	FinishedMesh.Mesh = meshSections;
+	FinishedMesh.Gen = meshSections;
 	FinishedMesh.Position = Position;
-
+	
 
 	if (bNeedUpdate && !GameMode->MeshsToUpdate.Enqueue(FIntVector(Position.X, Position.Y, 0)))
 	{

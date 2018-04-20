@@ -3,6 +3,7 @@
 #include "Chunk.h"
 #include "ProceduralMeshComponent.h"
 #include "UFNBlueprintFunctionLibrary.h"
+#include "DrawDebugHelpers.h"
 
 
 AChunk::AChunk()
@@ -14,15 +15,15 @@ AChunk::AChunk()
 	UBillboardComponent* Root = CreateDefaultSubobject<UBillboardComponent>(TEXT("RootComponent"));
 	RootComponent = Root;
 	
-	TerrainMesh = CreateDefaultSubobject<URuntimeMeshComponent>(TEXT("Runtime Mesh"));
-	//TerrainMesh->RegisterComponent();
-	//TerrainMesh->UnregisterComponent();
-	if(TerrainMesh) TerrainMesh->SetupAttachment(RootComponent);
+	TerrainMesh.SetNum(16);
+	for (uint8 i = 0; i < 16; i++)
+	{
+		TerrainMesh[i] = CreateDefaultSubobject<URuntimeMeshComponent>(*FString("Runtime Mesh" + FString::FromInt(i)));
+		if (TerrainMesh[i]) TerrainMesh[i]->SetupAttachment(RootComponent);
+	}
 
 	
 	ChunkMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Procedural Mesh"));
-	//ChunkMesh->RegisterComponent();
-	//this->AddOwnedComponent(ChunkMesh);
 	if(ChunkMesh) ChunkMesh->SetupAttachment(RootComponent);
 }
 
@@ -141,7 +142,7 @@ void AChunk::InitializeChunk()
 void AChunk::RenderChunk()
 {
 	static bool bHaStarted;
-	if (!TerrainMesh || !ChunkMesh) {
+	if (!TerrainMesh[0] || !ChunkMesh) {
 		UE_LOG(RenderTerrain, Error, TEXT("Components not created properly"));
 		return;
 	}
@@ -163,7 +164,7 @@ void AChunk::RenderChunk()
 	GameMode->QueuedMeshs.Enqueue(Data);
 }
 
-void AChunk::FinishRendering(const TArray<FMesh>& meshSections)
+void AChunk::FinishRendering(const TArray<TArray<FMesh>>& meshSections)
 {
 	static bool bHasRendered;
 
@@ -173,27 +174,30 @@ void AChunk::FinishRendering(const TArray<FMesh>& meshSections)
 		bHasRendered = true;
 	}
 
-	for (int16 s = 0; s < meshSections.Num(); s++)
+	for (uint8 i = 0; i < 16; i++)
 	{
-		if (meshSections[s].Vertices.Num() == 0) continue;
-
-		if (bRuntimeEnabled)
+		for (int16 s = 0; s < meshSections[i].Num(); s++)
 		{
+			if (meshSections[i][s].Vertices.Num() == 0) continue;
 
-			if (TerrainMesh->DoesSectionExist(s))
+			if (bRuntimeEnabled)
 			{
-				TerrainMesh->UpdateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents);
+
+				if (TerrainMesh[i]->DoesSectionExist(s))
+				{
+					TerrainMesh[i]->UpdateMeshSection(s, meshSections[i][s].Vertices, meshSections[i][s].Triangles, meshSections[i][s].Normals, meshSections[i][s].UVs, meshSections[i][s].VertexColors, meshSections[i][s].RTangents);
+				}
+				else
+				{
+					TerrainMesh[i]->CreateMeshSection(s, meshSections[i][s].Vertices, meshSections[i][s].Triangles, meshSections[i][s].Normals, meshSections[i][s].UVs, meshSections[i][s].VertexColors, meshSections[i][s].RTangents, true, EUpdateFrequency::Average);
+				}
+				TerrainMesh[i]->SetMaterial(s, meshSections[i][s].Mat);
 			}
 			else
 			{
-				TerrainMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].RTangents, true, EUpdateFrequency::Average);
+				ChunkMesh->CreateMeshSection(s, meshSections[i][s].Vertices, meshSections[i][s].Triangles, meshSections[i][s].Normals, meshSections[i][s].UVs, meshSections[i][s].VertexColors, meshSections[i][s].Tangents, true);
+				ChunkMesh->SetMaterial(s, meshSections[i][s].Mat);
 			}
-			TerrainMesh->SetMaterial(s, meshSections[s].Mat);
-		}
-		else
-		{
-			ChunkMesh->CreateMeshSection(s, meshSections[s].Vertices, meshSections[s].Triangles, meshSections[s].Normals, meshSections[s].UVs, meshSections[s].VertexColors, meshSections[s].Tangents, true);
-			ChunkMesh->SetMaterial(s, meshSections[s].Mat);
 		}
 	}
 }
@@ -360,4 +364,39 @@ void AChunk::RemoveChunk()
 	Destroy();
 }
 
+void AChunk::DrawChunkLimits()
+{
+	int32 Side = ChunkSize * VoxelSize;
+	int32 Heigh = Side * 16;
+	FVector Origin = GetActorLocation();
+	FVector XCorner = Origin + FVector(Side, 0, 0);
+	FVector YCorner = Origin + FVector(0, Side, 0);
+	FVector XYCorner = Origin + FVector(Side, Side, 0);
+	FVector ZOrigin = Origin + FVector(0, 0, Heigh);
+	FVector XZCorner = Origin + FVector(Side, 0, Heigh);
+	FVector YZCorner = Origin + FVector(0, Side, Heigh);
+	FVector XYZCorner = Origin + FVector(Side, Side, Heigh);
 
+	//Draw the Line!
+	DrawDebugLine(GetWorld(), Origin, ZOrigin, FColor(0, 0, 255), true, -1, 0, 12.0);
+	DrawDebugLine(GetWorld(), XCorner, XZCorner, FColor(0, 255, 255), true, -1, 0, 12.0);
+	DrawDebugLine(GetWorld(), YCorner, YZCorner, FColor(255, 64, 0), true, -1, 0, 12.0);
+	DrawDebugLine(GetWorld(), XYCorner, XYZCorner, FColor(0, 0, 0), true, -1, 0, 12.0);
+	for (int8 i = 0; i < 16; i++)
+	{
+		DrawDebugLine(GetWorld(), Origin, YCorner, FColor(0, 255, 0), true, -1, 0, 12.0);
+		DrawDebugLine(GetWorld(), Origin, XCorner, FColor(255, 0, 0), true, -1, 0, 12.0);
+		//DrawDebugLine(GetWorld(), XCorner, XYCorner, FColor(255, 255, 0), true, -1, 0, 12.0);
+		//DrawDebugLine(GetWorld(), YCorner, XYCorner, FColor(64, 0, 255), true, -1, 0, 12.0);
+		Origin += FVector(0, 0, Side);
+		YCorner += FVector(0, 0, Side);
+		XCorner += FVector(0, 0, Side);
+		XYCorner += FVector(0, 0, Side);
+	}
+	//DrawDebugLine(GetWorld(), XCorner, XYCorner, FColor(255, 0, 0), true, -1, 0, 12.0);
+	//DrawDebugLine(GetWorld(), YCorner, XYCorner, FColor(0, 64, 0), true, -1, 0, 12.0);
+	//DrawDebugLine(GetWorld(), ZOrigin, XZCorner, FColor(0, 0, 64), true, -1, 0, 12.0);
+	//DrawDebugLine(GetWorld(), ZOrigin, YZCorner, FColor(0, 0, 128), true, -1, 0, 12.0);
+	//DrawDebugLine(GetWorld(), XZCorner, XYZCorner, FColor(0, 0, 192), true, -1, 0, 12.0);
+	//DrawDebugLine(GetWorld(), YZCorner, XYZCorner, FColor(0, 0, 255), true, -1, 0, 12.0);
+}

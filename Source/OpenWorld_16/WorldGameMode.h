@@ -14,38 +14,10 @@
 class AChunk;
 class FMeshExtractor;
 
-UENUM(BlueprintType)
-enum class EFillState : uint8
-{
-	FS_Full		UMETA(DisplayName = "Full"),
-	FS_Empty	UMETA(DisplayName = "Empty"),
-	FS_Mixt		UMETA(DisplayName = "Mixed")
-};
-
-UENUM(BlueprintType)
-enum class EMapType : uint8
-{
-	MT_Laminated	UMETA(DisplayName = "Laminated"),
-	MT_Ramp			UMETA(DisplayName = "Ramp")
-};
-
-USTRUCT()
-struct FDensity
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-		TArray<uint16> Density;
-
-	UPROPERTY()
-		EFillState FillState = EFillState::FS_Empty;
-};
-
 USTRUCT(BlueprintType)
 struct FMesh 
 {
 	GENERATED_BODY()
-
 
 	UPROPERTY(EditAnywhere)
 		TArray<FVector> Vertices;
@@ -72,51 +44,6 @@ struct FMesh
 		UMaterialInstance* Mat;
 };
 
-USTRUCT(BlueprintType)
-struct FDynamicMaterial 
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere)
-		UMaterialInstance* Mat;
-
-	UPROPERTY(EditAnywhere)
-		int32 index;
-};
-
-USTRUCT(BlueprintType)
-struct FVoxelS 
-{
-	GENERATED_BODY()
-
-	/** Regular material instance used when there is no material blend. It reduces the amount of 
-	Dynamic meterial Inatances and increases performance (It has a bit lower shader instructions too). */
-	UPROPERTY(EditDefaultsOnly)
-		UMaterialInstance* Mat;
-
-	/** Base texture of the material, used in dynamic material when blending materials */
-	UPROPERTY(EditDefaultsOnly)
-		UTexture* BaseColor;
-
-	/** Normal map texture of the material, used in dynamic material when blending materials */
-	UPROPERTY(EditDefaultsOnly)
-		UTexture* NormalMap;
-
-};
-
-USTRUCT()
-struct FChunkData
-{
-	GENERATED_BODY()
-
-	/** Chunk density data pointer */
-	TArray<FDensity>* Density = nullptr;
-
-	/** Chunk Position */
-	UPROPERTY()
-		FVector2D Position;
-};
-
 USTRUCT()
 struct FSurfaceData
 {
@@ -129,6 +56,8 @@ struct FSurfaceData
 	/** Chunk Position */
 	UPROPERTY()
 		FVector2D Position;
+
+	TArray<TArray<FMesh>> Gen;
 };
 
 
@@ -242,6 +171,9 @@ public:
 	// Queue for new Dynamic materials to be added
 		TQueue<FIntVector, EQueueMode::Mpsc>RequestedMaterials;
 
+	// Lock some sections when needed
+		FCriticalSection CritialSection;
+
 	// Time Handler for the timer that checks for finished jobs from background thread
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
 		FTimerHandle AsynkThreadCountTH;
@@ -262,7 +194,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Debug Variables")
 		FString MeshExtractTime = "0.000";
 
-	//
+	// Average time needed for mesh extraction (thread safe counter)
 		FThreadSafeCounter64 AvTime;
 		FThreadSafeCounter ExtractedMeshs;
 
@@ -276,57 +208,70 @@ public:
 //#####################   FUNCTIONS   #####################################################################################
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	/** Stores the player position */
+	/**
+	* Stores the player position */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Update Position", Keywords = "Update"), Category = Procedural)
 		bool UpdatePosition();
 
-	/** Cheks if a chunk is in the render range */
+	/**
+	* Cheks if a chunk is in the render range */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Check Range", Keywords = "Range"), Category = Procedural)
 		bool InRange(const int32& x, const int32& y, const FVector2D& Center, const int32& Range);
 
-	/** Cheks if the given position is inside the given range */
+	/**
+	* Cheks if the given position is inside the given range */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Check Local Range", Keywords = "Range"), Category = Procedural)
 		bool InLocalRange(const int32& x, const int32& y, const int32& Range);
 
-	/** Generates the noise used to calculate the map */
+	/**
+	* Generates the noise used to calculate the map */
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "Generate Noise", Keywords = "Noise"), Category = Procedural)
 		UUFNNoiseGenerator* CalculateNoise();
 		virtual UUFNNoiseGenerator* CalculateNoise_Implementation();
 
-	/** Delete chunks */
+	/**
+	* Delete chunks */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Unload map", Keywords = "Unload"), Category = Procedural)
 		void UnloadMap();
 
-	/** Add chunks */
+	/**
+	* Add chunks */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Load Map", Keywords = "Load"), Category = Procedural)
 		void LoadMap();
 
-	/** Returns the density ID of a voxel in a given location */
+	/**
+	* Returns the density ID of a voxel in a given location */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Voxel from world", Keywords = "block"), Category = Procedural)
 		int32 GetVoxelFromWorld(const FVector& Location);
 
-	/** Sets the donsity ID of a voxel at a given location */
+	/**
+	* Sets the donsity ID of a voxel at a given location */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set voxel from world", Keywords = "block"), Category = Procedural)
-		bool SetVoxelFromWorld(FVector Location, int32 value);
+		bool SetVoxelFromWorld(const FVector& Location, const int32& value);
 
-	/** Generates a mesh for a grid of 8 points*/
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Add triangles"), Category = "Procedural")
-		void AddTriangles(TArray<FVector> &Vertex, TArray<int32> &Triangles, TArray<uint8> values);
-
-	/** Gives the index for a given group of material ID's */
+	/** 
+	* Gives the index for a given group of material ID's */
 	UFUNCTION(BlueprintCallable)
 		FString CalcMatIndex(int32 & d1, int32 & d2, int32 & d3);
 
-	/** Gives a material based on face caracteristics */
+	/** 
+	* Gives a material based on face caracteristics */
 	UFUNCTION(BlueprintCallable)
 		bool GetMaterial(int32 & d1, int32 & d2, int32 & d3, FDynamicMaterial & mat);
 
-	/** Returns a dynamic transition material with the specified matetial index */
+	/** 
+	* Returns a dynamic transition material with the specified matetial index */
 	UFUNCTION(BlueprintCallable)
 		FDynamicMaterial CreateDynMaterial(const int32 & d1,const int32 & d2,const int32 & d3);
 
-	/** Timer function that finishes background thread calculations */
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set voxel from world", Keywords = "block"), Category = Procedural)
+	/** 
+	* Timer function that finishes background thread calculations */
+	UFUNCTION()
 		void FinishJob();
+
+	/** 
+	* Shows chunk's limits */
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Draw Chunk Limits", Keywords = "Chunk"), Category = Procedural)
+		void DrawAllChunkLimits();
 	
 };

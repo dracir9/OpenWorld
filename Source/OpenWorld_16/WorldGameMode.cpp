@@ -199,22 +199,24 @@ int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 	// Calculate local coordinates of the voxel so it can be found inside chunk
 	const FVector LocalBlockPos = FVector((Location.X / VoxelSize - (ChunkIndex.X * ChunkSize)) , (Location.Y / VoxelSize - (ChunkIndex.Y * ChunkSize)), Location.Z / VoxelSize);
 
-	// Check if local coordinates are inside the actual chunk, it should always be inside!
-	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize * 16) {
-		UE_LOG(RenderTerrain, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
-		return int32(0);
-	}
+	int32 ID = -1;
+
+	// Lock our FCriticalSection to make it thread-safe.
+	CritialSection.Lock();
 
 	// Finally get the voxel ID
 	AChunk* NChunk = World.FindRef(ChunkIndex);
 	if (NChunk) {		
-		return NChunk->GetVoxelDensity(LocalBlockPos.X, LocalBlockPos.Y, LocalBlockPos.Z);
+		ID = NChunk->GetVoxelDensity(LocalBlockPos.X, LocalBlockPos.Y, LocalBlockPos.Z);
 	}
+	CritialSection.Unlock();
+	// Unlock our critical section
+
 	//*****************  If some chunks not found:
-	return int32(-1);
+	return ID;
 }
 
-bool AWorldGameMode::SetVoxelFromWorld(FVector Location, int32 value)
+bool AWorldGameMode::SetVoxelFromWorld(const FVector& Location, const int32& value)
 {
 	// Calculate Chunk index
 	FVector2D ChunkIndex = FVector2D(floor(round(Location.X) / (ChunkSize * VoxelSize)), floor(round(Location.Y) / (ChunkSize * VoxelSize)));
@@ -222,22 +224,17 @@ bool AWorldGameMode::SetVoxelFromWorld(FVector Location, int32 value)
 	// Calculate local coordinates of the voxel so it can be found inside chunk
 	FVector LocalBlockPos = FVector((Location.X - (ChunkIndex.X * ChunkSize * VoxelSize)) / VoxelSize, (Location.Y - (ChunkIndex.Y * ChunkSize * VoxelSize)) / VoxelSize, Location.Z / VoxelSize);
 
-	// Check if local coordinates are inside the actual chunk, it should always be inside!
-	if (LocalBlockPos.X >= ChunkSize || LocalBlockPos.Y >= ChunkSize || LocalBlockPos.Z >= ChunkSize) {
-		UE_LOG(RenderTerrain, Error, TEXT("Requested a voxel out of range %s"), *LocalBlockPos.ToString());
-		return int32(0);
-	}
-
 	// Finally change the value
 	AChunk* NChunk;
 
 	NChunk = World.FindRef(ChunkIndex);
 	if (NChunk) {
-		if (!NChunk->SetVoxelDensity(LocalBlockPos, value)) return true;
+		if (!NChunk->SetVoxelDensity(LocalBlockPos, value)) return false;
 		NChunk->RenderChunk();
 		return true;
 	}
 
+	// Update neighbour chunks if needed
 	if (LocalBlockPos.X == ChunkSize - 1)
 	{
 		ChunkIndex += FVector2D(1, 0);
@@ -246,43 +243,25 @@ bool AWorldGameMode::SetVoxelFromWorld(FVector Location, int32 value)
 	{
 		ChunkIndex += FVector2D(-1, 0);
 	}
+	else if (LocalBlockPos.Y == 0)
+	{
+		ChunkIndex += FVector2D(0, -1);
+	}
+	else if (LocalBlockPos.Y == ChunkSize - 1)
+	{
+		ChunkIndex += FVector2D(0, 1);
+	}
+
+	NChunk = World.FindRef(ChunkIndex);
+	if (NChunk) {
+		if (!NChunk->SetVoxelDensity(LocalBlockPos, value)) return false;
+		NChunk->RenderChunk();
+		return true;
+	}
 
 	//*****************  If something went wrong:
 	return false;
 }
-
-void AWorldGameMode::AddTriangles(TArray<FVector>& Vertex, TArray<int32>& Triangles, TArray<uint8> values)
-{
-	double start = FPlatformTime::Seconds();
-
-	GRIDCELL grid;
-	FVector points[8] = { FVector(0, 0, 0), FVector(100, 0, 0),  FVector(100, 100, 0),  FVector(0, 100, 0),  FVector(0, 0, 100),  FVector(100, 0, 100),  FVector(100, 100, 100),  FVector(0, 100, 100) };
-
-	for (int8 i = 0; i < 8; i++) {
-		grid.p[i] = points[i];
-		grid.val[i] = values[i];
-	}
-
-	TArray<TRIANGLE> triangles;
-
-	int8 newTriangles = Polygonise(grid, 127, triangles);
-
-	for (int8 a = 0; a < triangles.Num(); a++) {
-		//UE_LOG(LogTemp, Warning, TEXT("Adding triangles"));
-		int32 oldVertCount = Vertex.Num();
-		Vertex.Add(triangles[a].p[0]);
-		Vertex.Add(triangles[a].p[1]);
-		Vertex.Add(triangles[a].p[2]);
-
-		Triangles.Add(oldVertCount);
-		Triangles.Add(oldVertCount + 1);
-		Triangles.Add(oldVertCount + 2);
-	}
-	double end = FPlatformTime::Seconds();
-	double time = (end - start) * 1000;
-	UE_LOG(LogTemp, Warning, TEXT("Triangles load took: %f ms"), time);
-}
-
 
 FString AWorldGameMode::CalcMatIndex(int32 & d1, int32 & d2, int32 & d3)
 {
@@ -449,7 +428,7 @@ void AWorldGameMode::FinishJob()
 			AChunk* NChunk = World.FindRef(ChunkIndex);
 			if (NChunk)
 			{
-				NChunk->FinishRendering(job.Mesh);
+				NChunk->FinishRendering(job.Gen);
 			}
 			job.Mesh.Empty();
 		}
@@ -467,5 +446,25 @@ void AWorldGameMode::FinishJob()
 		MeshExtractTime = FString::SanitizeFloat((double)AvTime.GetValue() / ((double)ExtractedMeshs.GetValue() * 1000.0f));
 		AvTime.Reset();
 		ExtractedMeshs.Reset();
+	}
+}
+
+void AWorldGameMode::DrawAllChunkLimits()
+{
+	static bool bIsOn;
+	
+	// If lines are already visible delete them. If they are not, for each chunk show lines
+	if (bIsOn)
+	{
+		FlushPersistentDebugLines(GetWorld());
+		bIsOn = false;
+	}
+	else
+	{
+		for (auto elem = World.CreateIterator(); elem; ++elem)
+		{
+			elem.Value()->DrawChunkLimits();
+		}
+		bIsOn = true;
 	}
 }

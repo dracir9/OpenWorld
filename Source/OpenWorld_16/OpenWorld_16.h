@@ -73,3 +73,75 @@ typedef struct
 	unsigned char val[8];
 	uint16 mat[8];
 } GRIDCELL;
+
+UENUM(BlueprintType)
+enum class EFillState : uint8
+{
+	FS_Full		UMETA(DisplayName = "Full"),
+	FS_Empty	UMETA(DisplayName = "Empty"),
+	FS_Mixt		UMETA(DisplayName = "Mixed")
+};
+
+UENUM(BlueprintType)
+enum class EMapType : uint8
+{
+	MT_Laminated	UMETA(DisplayName = "Laminated"),
+	MT_Ramp			UMETA(DisplayName = "Ramp")
+};
+
+USTRUCT()
+struct FDensity
+{
+	GENERATED_BODY()
+
+		UPROPERTY()
+		TArray<uint16> Density;
+
+	UPROPERTY()
+		EFillState FillState = EFillState::FS_Empty;
+};
+
+USTRUCT(BlueprintType)
+struct FDynamicMaterial
+{
+	GENERATED_BODY()
+
+		UPROPERTY(EditAnywhere)
+		UMaterialInstance* Mat;
+
+	UPROPERTY(EditAnywhere)
+		int32 index;
+};
+
+USTRUCT(BlueprintType)
+struct FVoxelS
+{
+	GENERATED_BODY()
+
+		/** Regular material instance used when there is no material blend. It reduces the amount of
+		Dynamic meterial Inatances and increases performance (It has a bit lower shader instructions too). */
+		UPROPERTY(EditDefaultsOnly)
+		UMaterialInstance* Mat;
+
+	/** Base texture of the material, used in dynamic material when blending materials */
+	UPROPERTY(EditDefaultsOnly)
+		UTexture* BaseColor;
+
+	/** Normal map texture of the material, used in dynamic material when blending materials */
+	UPROPERTY(EditDefaultsOnly)
+		UTexture* NormalMap;
+
+};
+
+USTRUCT()
+struct FChunkData
+{
+	GENERATED_BODY()
+
+		/** Chunk density data pointer */
+		TArray<FDensity>* Density = nullptr;
+
+	/** Chunk Position */
+	UPROPERTY()
+		FVector2D Position;
+};

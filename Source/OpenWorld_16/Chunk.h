@@ -61,16 +61,23 @@ public:
 
 	/**
 	* Add given mesh to component to be rendered */
-	UFUNCTION(BlueprintCallable)
-		void FinishRendering(const TArray<FMesh>& meshSections);
+	//UFUNCTION(BlueprintCallable)
+		void FinishRendering(const TArray<TArray<FMesh>>& meshSections);
 
 	/**
 	* Helper function to calculate normal vector of a plane.*/
 	UFUNCTION(BlueprintCallable)
 		FVector CalcNormal(const FVector& p1, const FVector& p2, const FVector& p3);
 
+	/**
+	* Special heigh maps useful for testing map generation*/
 	UFUNCTION(BlueprintCallable)
 		void TestHeighmap(const EMapType& type);
+
+	/**
+	* Draws lines at the chunk's edges. Useful for debugging and testing*/
+	UFUNCTION(BlueprintCallable)
+		void DrawChunkLimits();
 
 
 protected:
@@ -87,7 +94,7 @@ public:
 
 	// Base component of the terrain
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Terrain")
-		class URuntimeMeshComponent* TerrainMesh;
+		TArray<URuntimeMeshComponent*> TerrainMesh;
 
 	// Stores the reference to World Game Mode
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
