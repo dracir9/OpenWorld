@@ -59,13 +59,13 @@ uint32 FMeshExtractor::Run()
 
 	while (StopTaskCounter.GetValue() == 0 && !IsFinished)
 	{
-		FPlatformProcess::Sleep(0.01);
+		FPlatformProcess::Sleep(0.1);
 
 		if (!GameMode) return 0;
 
 		FChunkData Data;
 
-		if (GameMode->QueuedMeshs.Dequeue(Data))
+		while (GameMode->QueuedMeshs.Dequeue(Data))
 		{
 			double start = FPlatformTime::Seconds();
 
@@ -74,6 +74,7 @@ uint32 FMeshExtractor::Run()
 			double end = FPlatformTime::Seconds();
 			GameMode->AvTime.Add(FMath::FloorToInt((end - start) * 1000000));
 			GameMode->ExtractedMeshs.Increment();
+			FPlatformProcess::Sleep(0.01);
 		}
 	}
 	return 0;
@@ -281,13 +282,13 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	};
 
 	uint16 k = 0;
-	for (uint8 b = 0; b < TPoints.Num(); b++)
+	for (uint8 ch = 0; ch < TPoints.Num(); ch++)
 	{
-		if (TPoints[b].FillState != EFillState::FS_Mixt)
+		if (TPoints[ch].FillState != EFillState::FS_Mixt)
 		{
 			k += 14;
 		}
-		for (; k - b * ChunkSize < ChunkSize; k++)
+		for (; k - ch * ChunkSize < ChunkSize; k++)
 		{
 			for (uint8 j = 0; j < ChunkSize; j++)
 			{
@@ -321,11 +322,11 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 
 					int16 ID = 0;
 
-					for (int8 a = 0; a < triangles.Num(); a++)
+					for (TRIANGLE& triangle : triangles/*int8 a = 0; a < triangles.Num(); a++*/)
 					{
-						int32 id1 = triangles[a].mat[0];
-						int32 id2 = triangles[a].mat[1];
-						int32 id3 = triangles[a].mat[2];
+						int32 id1 = triangle.mat[0];
+						int32 id2 = triangle.mat[1];
+						int32 id3 = triangle.mat[2];
 
 						// Request material for the mesh. If not created properly avoid.
 						FDynamicMaterial mat;
@@ -333,45 +334,70 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						
 
 						ID = mat.index;
-						if (!meshSections[b].IsValidIndex(ID))
+						if (!meshSections[ch].IsValidIndex(ID))
 						{
-							meshSections[b].SetNum(ID + 1);
+							meshSections[ch].SetNum(ID + 1);
 						}
-						meshSections[b][ID].Mat = mat.Mat;
-
+						meshSections[ch][ID].Mat = mat.Mat;
+						
 
 						for (uint8 p = 0; p < 3; p++)
 						{
-							if (triangles[a].mat[p] == id1)
+							if (triangle.mat[p] == id1)
 							{
-								meshSections[b][ID].VertexColors.Add(FColor(255, 0, 0, 0));
+								meshSections[ch][ID].VertexColors.Add(FColor(255, 0, 0, 0));
 							}
-							else if (triangles[a].mat[p] == id2)
+							else if (triangle.mat[p] == id2)
 							{
-								meshSections[b][ID].VertexColors.Add(FColor(0, 255, 0, 0));
+								meshSections[ch][ID].VertexColors.Add(FColor(0, 255, 0, 0));
 							}
 							else
 							{
-								meshSections[b][ID].VertexColors.Add(FColor(0, 0, 255, 0));
+								meshSections[ch][ID].VertexColors.Add(FColor(0, 0, 255, 0));
 							}
 						}
 
 						// Add vertices
-						int32 oldVertCount = meshSections[b][ID].Vertices.Num();
-						meshSections[b][ID].Vertices.Add(triangles[a].p[0]);
-						meshSections[b][ID].Vertices.Add(triangles[a].p[1]);
-						meshSections[b][ID].Vertices.Add(triangles[a].p[2]);
+						int32 oldVertCount = meshSections[ch][ID].Vertices.Num();
+						meshSections[ch][ID].Vertices.Add(triangle.p[0]);
+						meshSections[ch][ID].Vertices.Add(triangle.p[1]);
+						meshSections[ch][ID].Vertices.Add(triangle.p[2]);
 
 						// Add vertex index (create triangle)
-						meshSections[b][ID].Triangles.Add(oldVertCount);
-						meshSections[b][ID].Triangles.Add(oldVertCount + 1);
-						meshSections[b][ID].Triangles.Add(oldVertCount + 2);
+						meshSections[ch][ID].Triangles.Add(oldVertCount);
+						meshSections[ch][ID].Triangles.Add(oldVertCount + 1);
+						meshSections[ch][ID].Triangles.Add(oldVertCount + 2);
 
 						// Calculate Normals
-						FVector Normal = CalcNormals(triangles[a].p[0], triangles[a].p[1], triangles[a].p[2]);
-						meshSections[b][ID].Normals.Add(Normal);
-						meshSections[b][ID].Normals.Add(Normal);
-						meshSections[b][ID].Normals.Add(Normal);
+						FVector Normal = CalcNormals(triangle.p[0], triangle.p[1], triangle.p[2]);
+						meshSections[ch][ID].Normals.Add(Normal);
+						meshSections[ch][ID].Normals.Add(Normal);
+						meshSections[ch][ID].Normals.Add(Normal);
+						
+						// Calculate UVs
+						FVector a = triangle.p[0] / VoxelSize;
+						FVector b = triangle.p[1] / VoxelSize;
+						FVector c = triangle.p[2] / VoxelSize;
+						Normal = Normal.GetAbs();
+						if (Normal.Z >= 0.577f)
+						{
+							meshSections[ch][ID].UVs.Add(FVector2D(a.X, a.Y));
+							meshSections[ch][ID].UVs.Add(FVector2D(b.X, b.Y));
+							meshSections[ch][ID].UVs.Add(FVector2D(c.X, c.Y));
+						}
+						else if (Normal.Y >= 0.577f)
+						{
+							meshSections[ch][ID].UVs.Add(FVector2D(a.X, a.Z));
+							meshSections[ch][ID].UVs.Add(FVector2D(b.X, b.Z));
+							meshSections[ch][ID].UVs.Add(FVector2D(c.X, c.Z));
+						}
+						else
+						{
+							meshSections[ch][ID].UVs.Add(FVector2D(a.Y, a.Z));
+							meshSections[ch][ID].UVs.Add(FVector2D(b.Y, b.Z));
+							meshSections[ch][ID].UVs.Add(FVector2D(c.Y, c.Z));
+						}
+
 
 					}// for (int8 a = 0; a < triangles.Num(); a++)
 					static bool bTriangleDone;
@@ -453,4 +479,10 @@ int32 FMeshExtractor::PerimeterIndex(const int32& x, const int32& y, const int32
 	}
 
 	return idx;
+}
+
+double FMeshExtractor::VecAngle(const FVector& U, const FVector& V)
+{
+	float dotP = FVector::DotProduct(U, V);
+	return asin(dotP / (U.Size() * V.Size()));
 }

@@ -70,9 +70,14 @@ class FMeshExtractor : public FRunnable
 	/** The surface mesh calculation*/
 	void ExtractMesh(TArray<FDensity>* TheArray, FVector2D Position);
 
+	/** Returns point data in the given location */
 	FORCEINLINE FPoint GetPoint(const FVector& pos);
 
+	/** Returns point data when we are looking at full chunks (Only perimeter voxels are stored in memory)*/
 	int32 PerimeterIndex(const int32& x, const int32& y, const int32& z);
+
+	/** Return the angle between two vectors*/
+	double VecAngle(const FVector& U, const FVector& V);
 
 public:
 

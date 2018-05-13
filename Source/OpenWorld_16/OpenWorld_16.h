@@ -106,7 +106,7 @@ struct FDynamicMaterial
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere)
 		UMaterialInstance* Mat;
 
 	UPROPERTY(EditAnywhere)
