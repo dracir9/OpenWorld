@@ -65,7 +65,7 @@ uint32 FMeshExtractor::Run()
 
 		FChunkData Data;
 
-		while (GameMode->QueuedMeshs.Dequeue(Data))
+		while (GameMode->QueuedMeshs.Dequeue(Data) && StopTaskCounter.GetValue() == 0 && !IsFinished)
 		{
 			double start = FPlatformTime::Seconds();
 
@@ -159,13 +159,13 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 
 	
 	bool bNeedUpdate = false;
-	TPoints.SetNum(ChunkDensity.Num());
+	Section.SetNum(ChunkDensity.Num());
 	
 	for (uint8 a = 0; a < ChunkDensity.Num(); a++)
 	{
 		bool bIsPerimeter = false;
 
-		TPoints[a].FillState = ChunkDensity[a].FillState;
+		Section[a].FillState = ChunkDensity[a].FillState;
 		if (ChunkDensity[a].FillState == EFillState::FS_Empty)
 		{
 			continue;
@@ -174,7 +174,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 		{
 			bIsPerimeter = true;
 		}
-		TPoints[a].points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize));
+		Section[a].points.SetNum((ChunkSize + 1) * (ChunkSize + 1) * (ChunkSize));
 
 		int32 i = 0;
 		for (uint8 x = 0; x < ChunkSize + 1; x++)
@@ -221,9 +221,9 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					height = height * (MaxHeight / 2) + MaxHeight / 2;
 					height -= p.Z + a * VoxelSize * ChunkSize;
 
-					if (ID == 0)
+					if (floor(ID/4) == 0)
 					{
-						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, -100), FVector2D(128, 245), height));
+						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(3, 0), FVector2D(128, 255), ID%4));
 						point.mat = 0;
 					}
 
@@ -238,11 +238,11 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					// If is terrain
 					else
 					{
-						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(100, 0), FVector2D(0, 117), height));
-						point.mat = --ID;
+						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(3, 0), FVector2D(0, 127), ID%4));
+						point.mat = floor(ID/4) - 1;
 					}
 
-					TPoints[a].points[i] = point;
+					Section[a].points[i] = point;
 
 					i++;
 				} // Close z for loop
@@ -282,9 +282,9 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	};
 
 	uint16 k = 0;
-	for (uint8 ch = 0; ch < TPoints.Num(); ch++)
+	for (uint8 ch = 0; ch < Section.Num(); ch++)
 	{
-		if (TPoints[ch].FillState != EFillState::FS_Mixt)
+		if (Section[ch].FillState != EFillState::FS_Mixt)
 		{
 			k += 14;
 		}
@@ -436,13 +436,13 @@ FPoint FMeshExtractor::GetPoint(const FVector& pos)
 {
 	int32 section = FMath::FloorToInt(pos.Z / ChunkSize);
 
-	if (section >= TPoints.Num()) return FPoint(255);
+	if (section >= Section.Num()) return FPoint(255);
 	
 	
-	if (TPoints[section].FillState != EFillState::FS_Empty)
+	if (Section[section].FillState != EFillState::FS_Empty)
 	{
 		int32 idx = pos.X * (ChunkSize + 1) * ChunkSize + pos.Y * ChunkSize + (pos.Z - ChunkSize * section);
-		return TPoints[section].points[idx];
+		return Section[section].points[idx];
 	}
 	else
 	{

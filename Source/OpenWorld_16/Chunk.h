@@ -72,7 +72,7 @@ public:
 	/**
 	* Special heigh maps useful for testing map generation*/
 	UFUNCTION(BlueprintCallable)
-		void TestHeighmap(const EMapType& type);
+		void TestHeightmap(const EMapType& type);
 
 	/**
 	* Draws lines at the chunk's edges. Useful for debugging and testing*/

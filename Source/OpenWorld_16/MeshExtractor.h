@@ -56,7 +56,7 @@ class FMeshExtractor : public FRunnable
 	TArray<FDensity> ChunkDensity;
 
 	/** Total Points. Array to temporally store chunk's point cloud*/
-	TArray<FPoints> TPoints;
+	TArray<FPoints> Section;
 
 	/** Pointer to the noise object used to calculate terrain */
 	UUFNNoiseGenerator* Noise;

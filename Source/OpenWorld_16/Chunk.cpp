@@ -51,7 +51,7 @@ void AChunk::InitializeChunk()
 
 	if (bUseTestHeightmaps)
 	{
-		TestHeighmap(MapType);
+		TestHeightmap(MapType);
 		return;
 	}
 	
@@ -81,23 +81,27 @@ void AChunk::InitializeChunk()
 
 					if (k < height)
 					{
+						height = height - k;
+						int8 add = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, 50), FVector2D(0, 3.99999), height));
 						if (k < MaxHeight/2)
 						{
-							Density[section].Density[i] = 1;
+							Density[section].Density[i] = 4 + add;
 						}
 						else if (k < MaxHeight*0.7)
 						{
-							Density[section].Density[i] = 2;
+							Density[section].Density[i] = 8 + add;
 						}
 						else
 						{
-							Density[section].Density[i] = 3;
+							Density[section].Density[i] = 12 + add;
 						}
 						bSolid = true;
 					}
 					else
 					{
-						Density[section].Density[i] = 0;
+						height = k - height;
+						int8 add = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(50, 0), FVector2D(0, 3.99999), height));
+						Density[section].Density[i] = 0 + add;
 						bAir = true;
 					}
 					i++;
@@ -212,7 +216,7 @@ FVector AChunk::CalcNormal(const FVector & p1, const FVector & p2, const FVector
 	return Norm;
 }
 
-void AChunk::TestHeighmap(const EMapType& type)
+void AChunk::TestHeightmap(const EMapType& type)
 {
 	switch (type)
 	{
