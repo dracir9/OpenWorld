@@ -183,7 +183,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 			{
 				for (uint8 z = 0; z < ChunkSize; z++)
 				{
-					int16 ID = 0;
+					int32 ID = 0;
 					FVector p = FVector(x, y, z);
 
 					///*/////////////////////
@@ -196,10 +196,9 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						FVector pos = (p * VoxelSize) + FVector(Position.X, Position.Y, a * VoxelSize * ChunkSize);
 						ID = GameMode->GetVoxelFromWorld(pos);
 					}
-
-					// If point is inside the chunk get the value directly from ChunkDensity array
 					else
 					{
+						// If point is inside the chunk get the value directly from ChunkDensity array
 						if (bIsPerimeter)
 						{
 							ID = ChunkDensity[a].Density[PerimeterIndex(x, y, z)];
@@ -210,7 +209,6 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 							ID = ChunkDensity[a].Density[idx];
 						}
 					}
-
 					///*/////////////////////////////
 					// Set position, isovalue and material for vertex
 					///*/////////////////////////////
@@ -220,8 +218,8 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					float height = Noise->GetNoise2D(p.X + Position.X, p.Y + Position.Y);
 					height = height * (MaxHeight / 2) + MaxHeight / 2;
 					height -= p.Z + a * VoxelSize * ChunkSize;
-
-					if (floor(ID/4) == 0)
+					
+					if (floor(ID/4.0f) == 0)
 					{
 						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(3, 0), FVector2D(128, 255), ID%4));
 						point.mat = 0;
@@ -239,7 +237,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					else
 					{
 						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(3, 0), FVector2D(0, 127), ID%4));
-						point.mat = floor(ID/4) - 1;
+						point.mat = floor(ID/4.0f) - 1;
 					}
 
 					Section[a].points[i] = point;
@@ -424,9 +422,13 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	FinishedMesh.Position = Position;
 	
 
-	if (bNeedUpdate && !GameMode->MeshsToUpdate.Enqueue(FIntVector(Position.X, Position.Y, 0)))
+	if (bNeedUpdate)
 	{
-		UE_LOG(Mesh_Extractor, Warning, TEXT("Full! %d"), GameMode->MeshsToUpdate.Count());
+		bool bIsFull = GameMode->MeshsToUpdate.Enqueue(FIntVector(Position.X, Position.Y, 0));
+		if (!bIsFull)
+		{
+			UE_LOG(Mesh_Extractor, Warning, TEXT("Full! %d"), GameMode->MeshsToUpdate.Count());
+		}
 	}
 
 	GameMode->FinishedMeshs.Enqueue(FinishedMesh);

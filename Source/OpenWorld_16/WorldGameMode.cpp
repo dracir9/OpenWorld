@@ -202,14 +202,14 @@ int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 	int32 ID = -1;
 
 	// Lock our FCriticalSection to make it thread-safe.
-	CritialSection.Lock();
+	//CritialSection.Lock();
 
 	// Finally get the voxel ID
 	AChunk* NChunk = World.FindRef(ChunkIndex);
 	if (NChunk) {		
 		ID = NChunk->GetVoxelDensity(LocalBlockPos.X, LocalBlockPos.Y, LocalBlockPos.Z);
 	}
-	CritialSection.Unlock();
+	//CritialSection.Unlock();
 	// Unlock our critical section
 
 	//*****************  If some chunks not found:
