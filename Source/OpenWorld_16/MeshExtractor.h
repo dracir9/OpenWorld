@@ -76,9 +76,6 @@ class FMeshExtractor : public FRunnable
 	/** Returns point data when we are looking at full chunks (Only perimeter voxels are stored in memory)*/
 	int32 PerimeterIndex(const int32& x, const int32& y, const int32& z);
 
-	/** Return the angle between two vectors*/
-	double VecAngle(const FVector& U, const FVector& V);
-
 public:
 
 	//Done?

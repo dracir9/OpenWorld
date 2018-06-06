@@ -55,11 +55,11 @@ bool FMeshExtractor::Init()
 uint32 FMeshExtractor::Run()
 {
 	//Initial wait before starting
-	FPlatformProcess::Sleep(0.03);
+	FPlatformProcess::Sleep(0.03f);
 
 	while (StopTaskCounter.GetValue() == 0 && !IsFinished)
 	{
-		FPlatformProcess::Sleep(0.1);
+		FPlatformProcess::Sleep(0.1f);
 
 		if (!GameMode) return 0;
 
@@ -72,9 +72,9 @@ uint32 FMeshExtractor::Run()
 			ExtractMesh(Data.Density, Data.Position);
 
 			double end = FPlatformTime::Seconds();
-			GameMode->AvTime.Add(FMath::FloorToInt((end - start) * 1000000));
+			GameMode->AvTime.Add(FMath::FloorToInt((end - start) * 1000000.0));
 			GameMode->ExtractedMeshs.Increment();
-			FPlatformProcess::Sleep(0.01);
+			FPlatformProcess::Sleep(0.001f);
 		}
 	}
 	return 0;
@@ -137,7 +137,6 @@ bool FMeshExtractor::IsThreadFinished()
 
 void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 {	
-
 	static bool bInit;
 	// Initial checks for safety
 	if (Density)
@@ -160,6 +159,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	
 	bool bNeedUpdate = false;
 	Section.SetNum(ChunkDensity.Num());
+	TSet<int32> usedID;
 	
 	for (uint8 a = 0; a < ChunkDensity.Num(); a++)
 	{
@@ -232,12 +232,16 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						point.mat = 0;
 						bNeedUpdate = true;
 					}
-
+					
 					// If is terrain
 					else
 					{
 						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(3, 0), FVector2D(0, 127), ID%4));
 						point.mat = floor(ID/4.0f) - 1;
+						if (!usedID.Contains(point.mat))
+						{
+							usedID.Add(point.mat);
+						}
 					}
 
 					Section[a].points[i] = point;
@@ -272,6 +276,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	//Initializes the variables used to store all the mesh data.
 	TArray<TArray<FMesh>> meshSections;
 	meshSections.SetNum(16);
+	TArray<int32> IDArray = usedID.Array();;
 
 	const FVector grid[] =
 	{
@@ -286,6 +291,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 		{
 			k += 14;
 		}
+		meshSections[ch].SetNum(usedID.Num() + floor(usedID.Num() / 2.0f));
 		for (; k - ch * ChunkSize < ChunkSize; k++)
 		{
 			for (uint8 j = 0; j < ChunkSize; j++)
@@ -316,8 +322,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					
 					// Calculate shape using Marching Cubes algorithm
 					if (!Polygonise(cell, 128, triangles)) continue;
-
-
+					
 					int16 ID = 0;
 
 					for (TRIANGLE& triangle : triangles/*int8 a = 0; a < triangles.Num(); a++*/)
@@ -329,16 +334,21 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						// Request material for the mesh. If not created properly avoid.
 						FDynamicMaterial mat;
 						if (!GameMode->GetMaterial(id1, id2, id3, mat)) return;
-						
 
 						ID = mat.index;
-						if (!meshSections[ch].IsValidIndex(ID))
+						if (!usedID.Contains(ID))
 						{
-							meshSections[ch].SetNum(ID + 1);
+							usedID.Add(ID);
+							IDArray.Add(ID);
+						}
+
+						ID = IDArray.Find(ID);
+						if (meshSections[ch].Num() <= ID)
+						{
+							UE_LOG(Mesh_Extractor, Warning, TEXT("Resized!"));
+							meshSections[ch].SetNum(ID +1);
 						}
 						meshSections[ch][ID].Mat = mat.Mat;
-						
-
 						for (uint8 p = 0; p < 3; p++)
 						{
 							if (triangle.mat[p] == id1)
@@ -410,6 +420,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	}
 
 	if (!bInit)
+	
 	{
 		UE_LOG(Mesh_Extractor, Display, TEXT("[6/7] First calculation completed!"));
 		bInit = true;
@@ -481,10 +492,4 @@ int32 FMeshExtractor::PerimeterIndex(const int32& x, const int32& y, const int32
 	}
 
 	return idx;
-}
-
-double FMeshExtractor::VecAngle(const FVector& U, const FVector& V)
-{
-	float dotP = FVector::DotProduct(U, V);
-	return asin(dotP / (U.Size() * V.Size()));
 }

@@ -228,39 +228,66 @@ bool AWorldGameMode::SetVoxelFromWorld(const FVector& Location, const int32& val
 	AChunk* NChunk;
 
 	NChunk = World.FindRef(ChunkIndex);
-	if (NChunk) {
+	if (NChunk) 
+	{
 		if (!NChunk->SetVoxelDensity(LocalBlockPos, value)) return false;
 		NChunk->RenderChunk();
-		return true;
 	}
-
+	else
+	{
+		return false;
+	}
 	// Update neighbour chunks if needed
-	if (LocalBlockPos.X == ChunkSize - 1)
+	if (LocalBlockPos.X == 0 && LocalBlockPos.Y == 0)
 	{
-		ChunkIndex += FVector2D(1, 0);
+		NChunk = World.FindRef(ChunkIndex + FVector2D(-1, -1));
+
+		if (NChunk)
+		{
+			NChunk->RenderChunk();
+		}
+		else
+		{
+			return false;
+		}
 	}
-	else if (LocalBlockPos.X == 0)
+	if (LocalBlockPos.X == 0)
 	{
-		ChunkIndex += FVector2D(-1, 0);
+		NChunk = World.FindRef(ChunkIndex + FVector2D(-1, 0));
+		if (NChunk)
+		{
+			NChunk->RenderChunk();
+		}
+		else
+		{
+			return false;
+		}
 	}
-	else if (LocalBlockPos.Y == 0)
+	if (LocalBlockPos.Y == 0)
 	{
-		ChunkIndex += FVector2D(0, -1);
-	}
-	else if (LocalBlockPos.Y == ChunkSize - 1)
-	{
-		ChunkIndex += FVector2D(0, 1);
+		NChunk = World.FindRef(ChunkIndex + FVector2D(0, -1));
+		if (NChunk)
+		{
+			NChunk->RenderChunk();
+		}
+		else
+		{
+			return false;
+		}
+
+		if (LocalBlockPos.X == 0)
+		{
+			NChunk = World.FindRef(ChunkIndex + FVector2D(-1, -1));
+			if (NChunk)
+			{
+				NChunk->RenderChunk();
+			}
+			return false;
+		}
 	}
 
-	NChunk = World.FindRef(ChunkIndex);
-	if (NChunk) {
-		if (!NChunk->SetVoxelDensity(LocalBlockPos, value)) return false;
-		NChunk->RenderChunk();
-		return true;
-	}
-
-	//*****************  If something went wrong:
-	return false;
+	//*****************  If all went ok return true:
+	return true;
 }
 
 FString AWorldGameMode::CalcMatIndex(int32 & d1, int32 & d2, int32 & d3)

@@ -112,7 +112,7 @@ void AChunk::InitializeChunk()
 		{
 			Density[section].FillState = EFillState::FS_Mixt;
 		}
-		else if(bSolid)
+		else if (bSolid)
 		{
 			uint16 i = ChunkSize * ChunkSize;
 			for (uint8 a = 1; a < ChunkSize; a++)
@@ -135,7 +135,7 @@ void AChunk::InitializeChunk()
 			Density[section].FillState = EFillState::FS_Empty;
 		}
 	}
-	
+
 	Density.Shrink();
 
 	// Set debug variables to be displayed. Get allocated memory of ChunkDenity array
@@ -150,7 +150,7 @@ void AChunk::RenderChunk()
 		UE_LOG(RenderTerrain, Error, TEXT("Components not created properly"));
 		return;
 	}
-	
+
 	if (!GameMode) {
 		UE_LOG(RenderTerrain, Error, TEXT("Game Mode ref is null!!"));
 		return;
@@ -178,15 +178,25 @@ void AChunk::FinishRendering(const TArray<TArray<FMesh>>& meshSections)
 		bHasRendered = true;
 	}
 
-	for (uint8 i = 0; i < 16; i++)
+	if (bRuntimeEnabled)
 	{
-		for (int16 s = 0; s < meshSections[i].Num(); s++)
+		for (uint8 i = 0; i < 16; i++)
 		{
-			if (meshSections[i][s].Vertices.Num() == 0) continue;
-
-			if (bRuntimeEnabled)
+			if (TerrainMesh[i]->GetNumSections() > meshSections[i].Num())
 			{
-
+				for (uint16 s = meshSections.Num(); s < TerrainMesh[i]->GetNumSections(); s++)
+				{
+					TerrainMesh[i]->ClearMeshSection(s);
+				}
+				UE_LOG(RenderTerrain, Warning, TEXT("Unused mesh sections"))
+			}
+			for (uint16 s = 0; s < meshSections[i].Num(); s++)
+			{
+				if (meshSections[i][s].Vertices.Num() == 0)
+				{
+					TerrainMesh[i]->ClearMeshSection(s);
+					continue;
+				}
 				if (TerrainMesh[i]->DoesSectionExist(s))
 				{
 					TerrainMesh[i]->UpdateMeshSection(s, meshSections[i][s].Vertices, meshSections[i][s].Triangles, meshSections[i][s].Normals, meshSections[i][s].UVs, meshSections[i][s].VertexColors, meshSections[i][s].RTangents);
@@ -197,10 +207,19 @@ void AChunk::FinishRendering(const TArray<TArray<FMesh>>& meshSections)
 				}
 				TerrainMesh[i]->SetMaterial(s, meshSections[i][s].Mat);
 			}
-			else
+		}
+	}
+	else
+	{
+		ChunkMesh->ClearAllMeshSections();
+		uint32 a = 0;
+		for (uint8 i = 0; i < 16; i++)
+		{
+			for (uint16 s = 0; s < meshSections[i].Num(); s++)
 			{
-				ChunkMesh->CreateMeshSection(s, meshSections[i][s].Vertices, meshSections[i][s].Triangles, meshSections[i][s].Normals, meshSections[i][s].UVs, meshSections[i][s].VertexColors, meshSections[i][s].Tangents, true);
-				ChunkMesh->SetMaterial(s, meshSections[i][s].Mat);
+				ChunkMesh->CreateMeshSection(a, meshSections[i][s].Vertices, meshSections[i][s].Triangles, meshSections[i][s].Normals, meshSections[i][s].UVs, meshSections[i][s].VertexColors, meshSections[i][s].Tangents, true);
+				ChunkMesh->SetMaterial(a, meshSections[i][s].Mat);
+				a++;
 			}
 		}
 	}
@@ -317,6 +336,8 @@ bool AChunk::SetVoxelDensity(const FVector& pos, const int32& value)
 		}
 		else
 		{
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("WARNING!!! You should not change this block!"));
 			Density[section].FillState = EFillState::FS_Mixt;
 			Density[section].Density[idx] = value;
 			return true;
