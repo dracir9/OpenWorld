@@ -47,99 +47,14 @@ void AChunk::InitializeChunk()
 {
 	if (!Noise) return;
 
-	Density.SetNum(16);
-
 	if (bUseTestHeightmaps)
 	{
 		TestHeightmap(MapType);
 		return;
 	}
-	
-	double height = 0.0f;
 
-	uint16 z = 0;
-
-	bool bSolid = false;
-	bool bAir = false;
-
-	for (uint8 section = 0; section < 16; section++)
-	{
-		Density[section].Density.SetNum(ChunkSize * ChunkSize * ChunkSize);
-		int32 i = 0;
-
-		for (; z - section * ChunkSize < ChunkSize; z++)
-		{
-			int32 k = z * VoxelSize;
-
-			for (uint8 y = 0; y < ChunkSize; y++)
-			{
-				for (uint8 x = 0; x < ChunkSize; x++)
-				{
-					height = Noise->GetNoise2D(x * VoxelSize + GetActorLocation().X, y * VoxelSize + GetActorLocation().Y);
-					height = height * (MaxHeight / 2) + MaxHeight / 2;
-					
-
-					if (k < height)
-					{
-						height = height - k;
-						int8 add = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, 50), FVector2D(0, 3.99999), height));
-						if (k < MaxHeight/2)
-						{
-							Density[section].Density[i] = 4 + add;
-						}
-						else if (k < MaxHeight*0.7)
-						{
-							Density[section].Density[i] = 8 + add;
-						}
-						else
-						{
-							Density[section].Density[i] = 12 + add;
-						}
-						bSolid = true;
-					}
-					else
-					{
-						height = k - height;
-						int8 add = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(50, 0), FVector2D(0, 3.99999), height));
-						Density[section].Density[i] = 0 + add;
-						bAir = true;
-					}
-					i++;
-				}
-			}
-		}
-		if (bSolid && bAir)
-		{
-			Density[section].FillState = EFillState::FS_Mixt;
-		}
-		else if (bSolid)
-		{
-			uint16 i = ChunkSize * ChunkSize;
-			for (uint8 a = 1; a < ChunkSize; a++)
-			{
-				for (uint8 b = 0; b < ChunkSize; b++)
-				{
-					for (uint8 c = 0; c < ChunkSize; c++)
-					{
-						Density[section].Density[PerimeterIndex(c, b, a)] = Density[section].Density[i];
-						i++;
-					}
-				}
-			}
-			Density[section].Density.SetNum(pow(ChunkSize, 3) - pow(ChunkSize - 2, 3), true);
-			Density[section].FillState = EFillState::FS_Full;
-		}
-		else
-		{
-			Density[section].Density.Empty();
-			Density[section].FillState = EFillState::FS_Empty;
-		}
-	}
-
-	Density.Shrink();
-
-	// Set debug variables to be displayed. Get allocated memory of ChunkDenity array
-	GameMode->SDensitySize = FString::FromInt(Density.GetAllocatedSize());
+	Async<void>(EAsyncExecution::ThreadPool, InitializeAsync());
+	return;
 }
 
 
@@ -184,11 +99,10 @@ void AChunk::FinishRendering(const TArray<TArray<FMesh>>& meshSections)
 		{
 			if (TerrainMesh[i]->GetNumSections() > meshSections[i].Num())
 			{
-				for (uint16 s = meshSections.Num(); s < TerrainMesh[i]->GetNumSections(); s++)
+				for (uint16 s = meshSections[i].Num(); s <= TerrainMesh[i]->GetNumSections(); s++)
 				{
 					TerrainMesh[i]->ClearMeshSection(s);
 				}
-				UE_LOG(RenderTerrain, Warning, TEXT("Unused mesh sections"))
 			}
 			for (uint16 s = 0; s < meshSections[i].Num(); s++)
 			{
@@ -225,7 +139,7 @@ void AChunk::FinishRendering(const TArray<TArray<FMesh>>& meshSections)
 	}
 }
 
-FVector AChunk::CalcNormal(const FVector & p1, const FVector & p2, const FVector & p3)
+FVector AChunk::CalcNormal(const FVector& p1, const FVector& p2, const FVector& p3)
 {
 	FVector Norm;
 	Norm.X = (p3.Y - p1.Y)*(p2.Z - p1.Z) - (p3.Z - p1.Z)*(p2.Y - p1.Y);
@@ -235,7 +149,7 @@ FVector AChunk::CalcNormal(const FVector & p1, const FVector & p2, const FVector
 	return Norm;
 }
 
-void AChunk::TestHeightmap(const EMapType& type)
+void AChunk::TestHeightmap(const EMapType type)
 {
 	switch (type)
 	{
@@ -244,7 +158,7 @@ void AChunk::TestHeightmap(const EMapType& type)
 	case EMapType::MT_Laminated:
 		for (uint8 a = 0; a < 16; a++)
 		{
-			Density[a].Density.SetNum(ChunkSize * ChunkSize * ChunkSize);
+			Density[a].Voxel.SetNum(ChunkSize * ChunkSize * ChunkSize);
 			Density[a].FillState = EFillState::FS_Mixt;
 			for (uint8 x = 0; x < ChunkSize; x++)
 			{
@@ -256,11 +170,11 @@ void AChunk::TestHeightmap(const EMapType& type)
 
 						if (z < 8)
 						{
-							Density[a].Density[i] = 1;
+							Density[a].Voxel[i] = 4;
 						}
 						else
 						{
-							Density[a].Density[i] = 0;
+							Density[a].Voxel[i] = 0;
 						}
 					}
 				}
@@ -271,7 +185,7 @@ void AChunk::TestHeightmap(const EMapType& type)
 	case EMapType::MT_Ramp:
 		for (uint8 a = 0; a < 16; a++)
 		{
-			Density[a].Density.SetNum(ChunkSize * ChunkSize * ChunkSize);
+			Density[a].Voxel.SetNum(ChunkSize * ChunkSize * ChunkSize);
 			Density[a].FillState = EFillState::FS_Mixt;
 			for (uint8 x = 0; x < ChunkSize; x++)
 			{
@@ -283,11 +197,11 @@ void AChunk::TestHeightmap(const EMapType& type)
 
 						if (z + a * ChunkSize < y + x * ChunkSize)
 						{
-							Density[a].Density[i] = 1;
+							Density[a].Voxel[i] = 4;
 						}
 						else
 						{
-							Density[a].Density[i] = 0;
+							Density[a].Voxel[i] = 0;
 						}
 					}
 				}
@@ -305,11 +219,11 @@ int32 AChunk::GetVoxelDensity(const int32& x, const int32& y, const int32& z)
 		if (Density[section].FillState == EFillState::FS_Mixt)
 		{
 			int32 idx = x + y * ChunkSize + k * ChunkSize * ChunkSize;
-			return Density[section].Density[idx];
+			return Density[section].Voxel[idx];
 		}
 		else if (Density[section].FillState == EFillState::FS_Full)
 		{
-			return Density[section].Density[PerimeterIndex(x, y, k)];
+			return Density[section].Voxel[PerimeterIndex(x, y, k, ChunkSize)];
 		}
 		else
 		{
@@ -326,8 +240,8 @@ bool AChunk::SetVoxelDensity(const FVector& pos, const int32& value)
 
 		if (Density[section].FillState == EFillState::FS_Mixt)
 		{
-			if (Density[section].Density[idx] == value) return false;
-			Density[section].Density[idx] = value;
+			if (Density[section].Voxel[idx] == value) return false;
+			Density[section].Voxel[idx] = value;
 			return true;
 		}
 		else if (Density[section].FillState == EFillState::FS_Empty && value == 0)
@@ -336,17 +250,30 @@ bool AChunk::SetVoxelDensity(const FVector& pos, const int32& value)
 		}
 		else
 		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("WARNING!!! You should not change this block!"));
-			Density[section].FillState = EFillState::FS_Mixt;
-			Density[section].Density[idx] = value;
+			UE_LOG(EditTerrain, Display, TEXT("Changed from full to mixt"))
+			FDensity temp;
+			temp.Voxel.SetNum(ChunkSize * ChunkSize * ChunkSize);
+			temp.FillState = EFillState::FS_Mixt;
+			uint32 i = 0;
+			for (uint8 z = 0; z < ChunkSize; z++)
+			{
+				for (uint8 y = 0; y < ChunkSize; y++)
+				{
+					for (uint8 x = 0; x < ChunkSize; x++)
+					{
+						temp.Voxel[i++] = Density[section].Voxel[PerimeterIndex(x, y, z, ChunkSize)];
+					}
+				}
+			}
+			Density[section] = temp;
+			Density[section].Voxel[idx] = value;
 			return true;
 		}
 		return false;
 	}
 }
 
-int32 AChunk::PerimeterIndex(const int32& x, const int32& y, const int32& z)
+int32 AChunk::PerimeterIndex(const int32& x, const int32& y, const int32& z, const int32& ChunkSize)
 {
 	int32 idx = x + y * ChunkSize + z * ChunkSize * ChunkSize;
 
@@ -382,17 +309,18 @@ void AChunk::RemoveChunk()
 {
 	for (uint8 a = 0; a < Density.Num(); a++)
 	{
-		Density[a].Density.Empty();
+		Density[a].Voxel.Empty();
 	}
 	Density.Empty();
 	Density.~TArray();
 	Destroy();
 }
 
-void AChunk::DrawChunkLimits()
+void AChunk::DrawChunkLimits() const
 {
 	int32 Side = ChunkSize * VoxelSize;
 	int32 Heigh = Side * 16;
+	// Calculate corner points
 	FVector Origin = GetActorLocation();
 	FVector XCorner = Origin + FVector(Side, 0, 0);
 	FVector YCorner = Origin + FVector(0, Side, 0);
@@ -402,7 +330,7 @@ void AChunk::DrawChunkLimits()
 	FVector YZCorner = Origin + FVector(0, Side, Heigh);
 	FVector XYZCorner = Origin + FVector(Side, Side, Heigh);
 
-	//Draw the Line!
+	//Draw the debug lines!
 	DrawDebugLine(GetWorld(), Origin, ZOrigin, FColor(0, 0, 255), true, -1, 0, 12.0);
 	DrawDebugLine(GetWorld(), XCorner, XZCorner, FColor(0, 255, 255), true, -1, 0, 12.0);
 	DrawDebugLine(GetWorld(), YCorner, YZCorner, FColor(255, 64, 0), true, -1, 0, 12.0);
@@ -411,17 +339,121 @@ void AChunk::DrawChunkLimits()
 	{
 		DrawDebugLine(GetWorld(), Origin, YCorner, FColor(0, 255, 0), true, -1, 0, 12.0);
 		DrawDebugLine(GetWorld(), Origin, XCorner, FColor(255, 0, 0), true, -1, 0, 12.0);
-		//DrawDebugLine(GetWorld(), XCorner, XYCorner, FColor(255, 255, 0), true, -1, 0, 12.0);
-		//DrawDebugLine(GetWorld(), YCorner, XYCorner, FColor(64, 0, 255), true, -1, 0, 12.0);
 		Origin += FVector(0, 0, Side);
 		YCorner += FVector(0, 0, Side);
 		XCorner += FVector(0, 0, Side);
 		XYCorner += FVector(0, 0, Side);
 	}
-	//DrawDebugLine(GetWorld(), XCorner, XYCorner, FColor(255, 0, 0), true, -1, 0, 12.0);
-	//DrawDebugLine(GetWorld(), YCorner, XYCorner, FColor(0, 64, 0), true, -1, 0, 12.0);
-	//DrawDebugLine(GetWorld(), ZOrigin, XZCorner, FColor(0, 0, 64), true, -1, 0, 12.0);
-	//DrawDebugLine(GetWorld(), ZOrigin, YZCorner, FColor(0, 0, 128), true, -1, 0, 12.0);
-	//DrawDebugLine(GetWorld(), XZCorner, XYZCorner, FColor(0, 0, 192), true, -1, 0, 12.0);
-	//DrawDebugLine(GetWorld(), YZCorner, XYZCorner, FColor(0, 0, 255), true, -1, 0, 12.0);
+}
+
+TFunction<void()> AChunk::InitializeAsync()
+{
+	FVector Position = GetActorLocation()/VoxelSize;
+	uint8 VoxelNum = ChunkSize;
+	int32 HeightLimit = MaxHeight/VoxelSize;
+	UUFNNoiseGenerator* RandomNoise = Noise;
+
+	return [Position, VoxelNum, HeightLimit, RandomNoise, this]()
+	{
+		double height = 0.0f;
+		uint16 z = 0;
+
+		bool bSolid = false;
+		bool bAir = false;
+
+		TArray<FDensity> Grid;
+		Grid.SetNum(16);
+
+		// For each subchunk of the voxel
+		for (uint8 section = 0; section < 16; section++)
+		{
+			// Set density data array size
+			Grid[section].Voxel.SetNum(VoxelNum * VoxelNum * VoxelNum);
+			// Index used to store values in density array
+			int32 i = 0;
+
+			//For each voxel in the subchunk
+			for (; z - section * VoxelNum < VoxelNum; z++)
+			{
+				for (uint8 y = 0; y < VoxelNum; y++)
+				{
+					for (uint8 x = 0; x < VoxelNum; x++)
+					{
+						// Calculate the height of this X,Y position using random function
+						height = RandomNoise->GetNoise2D(x + Position.X, y + Position.Y);
+						height = height * (HeightLimit / 2) + HeightLimit / 2;
+
+						// If the current voxel is under the calculated terrain height set it solid
+						if (z < height)
+						{
+							// Set material based on height
+							height = height - z;
+							int8 add = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0, 0.5f), FVector2D(0, 3.99999), height));
+							if (z < HeightLimit / 2)
+							{
+								Grid[section].Voxel[i] = 4 + add;
+							}
+							else if (z < HeightLimit*0.7)
+							{
+								Grid[section].Voxel[i] = 8 + add;
+							}
+							else
+							{
+								Grid[section].Voxel[i] = 12 + add;
+							}
+							bSolid = true;
+						}
+						else
+						{
+							// If over the terrain height set the voxel to be air
+							height = z - height;
+							int8 add = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(0.5f, 0), FVector2D(0, 3.99999), height));
+							Grid[section].Voxel[i] = 0 + add;
+							bAir = true;
+						}
+						// Increment the index variable
+						i++;
+					}
+				}
+			}
+			// If the subchunk has solid and air voxels set the state to mixt
+			if (bSolid && bAir)
+			{
+				Grid[section].FillState = EFillState::FS_Mixt;
+			}
+			// If it is completely solid delete inner voxels and keep only the ones in the perimeter. Set state to full
+			else if (bSolid)
+			{
+				uint16 i = VoxelNum * VoxelNum;
+				for (uint8 a = 1; a < VoxelNum; a++)
+				{
+					for (uint8 b = 0; b < VoxelNum; b++)
+					{
+						for (uint8 c = 0; c < VoxelNum; c++)
+						{
+							Grid[section].Voxel[PerimeterIndex(c, b, a, VoxelNum)] = Grid[section].Voxel[i];
+							i++;
+						}
+					}
+				}
+				Grid[section].Voxel.SetNum(pow(VoxelNum, 3) - pow(VoxelNum - 2, 3), true);
+				Grid[section].FillState = EFillState::FS_Full;
+			}
+			// Finally if there is only air empty the density array and set the state to empty
+			else
+			{
+				Grid[section].Voxel.Empty();
+				Grid[section].FillState = EFillState::FS_Empty;
+			}
+		}
+
+		// Optimize memory usage
+		Grid.Shrink();
+
+		//
+		Density = Grid;
+
+		// Set debug variables to be displayed. Get allocated memory of ChunkDenity array
+		GameMode->SDensitySize = FString::FromInt(Density.GetAllocatedSize());
+	};
 }

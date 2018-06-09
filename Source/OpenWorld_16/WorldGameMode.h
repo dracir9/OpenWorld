@@ -50,14 +50,14 @@ struct FSurfaceData
 	GENERATED_BODY()
 
 	/** Mesh data array */
-	UPROPERTY()
-		TArray<FMesh> Mesh;
+	/*UPROPERTY()
+		TArray<FMesh> Mesh;*/
 
 	/** Chunk Position */
 	UPROPERTY()
 		FVector2D Position;
 
-	TArray<TArray<FMesh>> Gen;
+	TArray<TArray<FMesh>> Mesh;
 };
 
 
@@ -88,27 +88,27 @@ public:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//Chunk to spawn
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "World Settings")
 		TSubclassOf<AChunk> Chunk;
 
 	// Stores the base instance for transition between materials
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "World Settings")
 		UMaterialInterface* TransitionMat;
 
 	// Stores the materials for all the tipes of voxel
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "World Settings")
 		TArray<FVoxelS> Voxels;
 
 	// Sets the number of voxels per line that the chunk will contain.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "World Settings")
 		int32 ChunkSize = 16;
 
 	// Size of the voxels in UUs.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "World Settings")
 		int32 VoxelSize = 100;
 
-	// Maximum terrain height
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings", 
+	// Maximum terrain height in UnrealUnits.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "World Settings",
 		meta = (ClampMin = "0.0", ClampMax = "25000.0", UIMin = "0.0", UIMax = "25000.0"))
 		int32 MaxHeight = 20000;
 
@@ -117,7 +117,7 @@ public:
 		int32 RenderRange = 8;
 
 	// Can we use RuntimeMeshComponent plugin?
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "World Settings")
 		bool bUseRuntime = true;
 
 	/** Are we using a special type of height map?
@@ -129,7 +129,7 @@ public:
 	/** Defines the type of debugging height map
 	* Works when bUseTestHeightmaps is true
 	* It defines the function used to generate the heightmap */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings", meta = (EditCondition = "bUseTestHeightmaps"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "World Settings", meta = (EditCondition = "bUseTestHeightmaps"))
 		EMapType MapType;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,5 +273,7 @@ public:
 	* Shows chunk's limits */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Draw Chunk Limits", Keywords = "Chunk"), Category = Procedural)
 		void DrawAllChunkLimits();
+
+	TFunction<void()> TestFunction(TPromise<int32>);
 	
 };

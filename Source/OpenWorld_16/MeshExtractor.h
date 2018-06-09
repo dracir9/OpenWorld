@@ -13,7 +13,6 @@
 DECLARE_LOG_CATEGORY_EXTERN(Mesh_Extractor, Log, All);
 
 class AWorldGameMode;
-class UUFNNoiseGenerator;
 enum class EFillState : uint8;
 struct FMesh;
 struct FDensity;
@@ -58,9 +57,6 @@ class FMeshExtractor : public FRunnable
 	/** Total Points. Array to temporally store chunk's point cloud*/
 	TArray<FPoints> Section;
 
-	/** Pointer to the noise object used to calculate terrain */
-	UUFNNoiseGenerator* Noise;
-
 	/** The Game Mode */
 	AWorldGameMode* GameMode;
 
@@ -82,7 +78,7 @@ public:
 	bool IsFinished = false;
 
 	//Constructor / Destructor
-	FMeshExtractor(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, int32 height, UUFNNoiseGenerator* noise);
+	FMeshExtractor(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, int32 height);
 	virtual ~FMeshExtractor();
 
 
@@ -106,7 +102,7 @@ public:
 	This code ensures only 1 Mesh Extractor thread will be able to run at a time.
 	This function returns a handle to the newly started instance.
 	*/
-	static FMeshExtractor* JoyInit(AWorldGameMode* IN_GM, int32 Size, int32 VoxelSize, int32 Height, UUFNNoiseGenerator* Noise);
+	static FMeshExtractor* JoyInit(AWorldGameMode* IN_GM, int32 Size, int32 VoxelSize, int32 Height);
 
 
 	/** Helper function to calculate normal vector of a plane.*/

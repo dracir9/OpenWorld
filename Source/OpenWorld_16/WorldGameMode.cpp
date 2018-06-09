@@ -28,11 +28,11 @@ void AWorldGameMode::BeginPlay()
 	if (Voxels.Num() <= 0) Voxels.SetNum(5);
 	
 	/// Start Background for mesh calculations
-	BackThread = FMeshExtractor::JoyInit(this, ChunkSize, VoxelSize, MaxHeight, Noise);
+	BackThread = FMeshExtractor::JoyInit(this, ChunkSize, VoxelSize, MaxHeight);
 
 	/// Start timer to finish jobs from background thread
 	GetWorldTimerManager().SetTimer(AsynkThreadCountTH, this, &AWorldGameMode::FinishJob, 0.1f, true, 1.0f);
-
+	
 	/// Load Map
 	UpdatePosition();
 	LoadMap();
@@ -202,14 +202,14 @@ int32 AWorldGameMode::GetVoxelFromWorld(const FVector& Location)
 	int32 ID = -1;
 
 	// Lock our FCriticalSection to make it thread-safe.
-	//CritialSection.Lock();
+	CritialSection.Lock();
 
 	// Finally get the voxel ID
 	AChunk* NChunk = World.FindRef(ChunkIndex);
 	if (NChunk) {		
 		ID = NChunk->GetVoxelDensity(LocalBlockPos.X, LocalBlockPos.Y, LocalBlockPos.Z);
 	}
-	//CritialSection.Unlock();
+	CritialSection.Unlock();
 	// Unlock our critical section
 
 	//*****************  If some chunks not found:
@@ -439,10 +439,11 @@ void AWorldGameMode::FinishJob()
 	double start = FPlatformTime::Seconds();
 	int8 count = 0;
 
+	// If we have work to do and we still have time
 	while ((FPlatformTime::Seconds() - start) < 0.001f && count < 64 && (!FinishedMeshs.IsEmpty() || !RequestedMaterials.IsEmpty()))
 	{
 		count++;
-
+		// Finish rendering 
 		if (!FinishedMeshs.IsEmpty())
 		{
 			FSurfaceData job;
@@ -455,7 +456,7 @@ void AWorldGameMode::FinishJob()
 			AChunk* NChunk = World.FindRef(ChunkIndex);
 			if (NChunk)
 			{
-				NChunk->FinishRendering(job.Gen);
+				NChunk->FinishRendering(job.Mesh);
 			}
 			job.Mesh.Empty();
 		}
@@ -494,4 +495,13 @@ void AWorldGameMode::DrawAllChunkLimits()
 		}
 		bIsOn = true;
 	}
+}
+
+TFunction<void()>  AWorldGameMode::TestFunction(TPromise<int32> result)
+{
+	return [&]()
+	{
+		return;
+	};
+	//prom.SetValue(a);
 }

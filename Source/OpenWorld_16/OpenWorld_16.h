@@ -9,8 +9,11 @@
 //Logging during terrain rendering
 DECLARE_LOG_CATEGORY_EXTERN(RenderTerrain, Log, All);
 
-//
+//Logging during material creation
 DECLARE_LOG_CATEGORY_EXTERN(Mat_Loader, Log, All);
+
+//Logging during terrain edition
+DECLARE_LOG_CATEGORY_EXTERN(EditTerrain, Log, All);
 
 
 struct  TRIANGLE
@@ -94,8 +97,8 @@ struct FDensity
 {
 	GENERATED_BODY()
 
-		UPROPERTY()
-		TArray<uint16> Density;
+	UPROPERTY()
+		TArray<uint16> Voxel;
 
 	UPROPERTY()
 		EFillState FillState = EFillState::FS_Empty;
@@ -118,9 +121,9 @@ struct FVoxelS
 {
 	GENERATED_BODY()
 
-		/** Regular material instance used when there is no material blend. It reduces the amount of
-		Dynamic meterial Inatances and increases performance (It has a bit lower shader instructions too). */
-		UPROPERTY(EditDefaultsOnly)
+	/** Regular material instance used when there is no material blend. It reduces the amount of
+	Dynamic meterial Inatances and increases performance (It has a bit lower shader instructions too). */
+	UPROPERTY(EditDefaultsOnly)
 		UMaterialInstance* Mat;
 
 	/** Base texture of the material, used in dynamic material when blending materials */

@@ -9,6 +9,7 @@
 #include "RuntimeMeshComponent.h"
 #include "WorldGameMode.h"
 #include "SurfaceExtractor.h"
+#include "OpenWorld_16.h"
 #include "Chunk.generated.h"
 
 UCLASS()
@@ -21,6 +22,10 @@ public:
 	* Sets default values for this actor's properties */
 	AChunk();
 	
+///###############################################################################################################
+//                                                   FUNCTIONS
+///###############################################################################################################
+
 	/**
 	* Destroys the current chunk */
 	UFUNCTION(BlueprintCallable)
@@ -47,7 +52,7 @@ public:
 	* In order to get max speed we don't check for valid input!
 	* MAKE SURE COORDINATES ARE POSITIVE AND WITHIN CHUNK RANGE!*/
 	UFUNCTION(BlueprintCallable)
-		int32 PerimeterIndex(const int32& x, const int32& y, const int32& z);
+		static int32 PerimeterIndex(const int32& x, const int32& y, const int32& z, const int32& ChunkSize);
 
 	/**
 	* Calculates all the block data */
@@ -67,17 +72,21 @@ public:
 	/**
 	* Helper function to calculate normal vector of a plane.*/
 	UFUNCTION(BlueprintCallable)
-		FVector CalcNormal(const FVector& p1, const FVector& p2, const FVector& p3);
+		static FVector CalcNormal(const FVector& p1, const FVector& p2, const FVector& p3);
 
 	/**
 	* Special heigh maps useful for testing map generation*/
 	UFUNCTION(BlueprintCallable)
-		void TestHeightmap(const EMapType& type);
+		void TestHeightmap(const EMapType type);
 
 	/**
 	* Draws lines at the chunk's edges. Useful for debugging and testing*/
 	UFUNCTION(BlueprintCallable)
-		void DrawChunkLimits();
+		void DrawChunkLimits() const;
+
+	/**
+	* Function for async chunk initialization(Sets the material of each voxel)*/
+	TFunction<void()> InitializeAsync();
 
 
 protected:
@@ -87,6 +96,10 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+///#######################################################################
+//                             CHUNK PROPERTIES
+///#######################################################################
 
 	// Base componen of the world terrain
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Terrain")
@@ -108,7 +121,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		int32 ChunkSize;
 
-	// Stores maximum terrain height
+	// Stores maximum terrain height in UnrealUnits
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		int32 MaxHeight;
 

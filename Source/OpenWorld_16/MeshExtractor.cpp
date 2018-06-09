@@ -3,7 +3,6 @@
 #include "MeshExtractor.h"
 #include "WorldGameMode.h"
 #include "OpenWorld_16.h"
-#include "FastNoise/FastNoise.h"
 #include "SurfaceExtractor.h"
 #include "Async.h"
 
@@ -15,13 +14,12 @@ DEFINE_LOG_CATEGORY(Mesh_Extractor);
 FMeshExtractor* FMeshExtractor::Runnable = NULL;
 //***********************************************************
 
-FMeshExtractor::FMeshExtractor(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, int32 height, UUFNNoiseGenerator* noise)
+FMeshExtractor::FMeshExtractor(AWorldGameMode* IN_GM, int32 size, int32 Voxelsize, int32 height)
 	: GameMode(IN_GM)
 {
 	ChunkSize = size;
 	VoxelSize = Voxelsize;
 	MaxHeight = height;
-	Noise = noise;
 
 	Thread = FRunnableThread::Create(this, TEXT("FMeshExtractor"), 0, TPri_BelowNormal); //windows default = 8mb for thread, could specify more
 }
@@ -35,8 +33,6 @@ FMeshExtractor::~FMeshExtractor()
 bool FMeshExtractor::Init()
 {
 	//Init the Data
-	//Density->Empty();
-	//Mesh->Empty();
 
 	if (GameMode)
 	{
@@ -93,18 +89,13 @@ void FMeshExtractor::EnsureCompletion()
 	UE_LOG(Mesh_Extractor, Warning, TEXT("Thread shutdown"));
 }
 
-FMeshExtractor* FMeshExtractor::JoyInit(AWorldGameMode* IN_GM, int32 Size, int32 VoxelSize, int32 Height, UUFNNoiseGenerator* Noise)
+FMeshExtractor* FMeshExtractor::JoyInit(AWorldGameMode* IN_GM, int32 Size, int32 VoxelSize, int32 Height)
 {
-	if (!Noise)
-	{
-		UE_LOG(Mesh_Extractor, Error, TEXT("Noise object pointer not valid"));
-		return nullptr;
-	}
 	//Create new instance of thread if it does not exist
 	//		and the platform supports multi threading!
 	if (!Runnable && FPlatformProcess::SupportsMultithreading())
 	{
-		Runnable = new FMeshExtractor(IN_GM, Size, VoxelSize, Height, Noise);
+		Runnable = new FMeshExtractor(IN_GM, Size, VoxelSize, Height);
 	}
 	return Runnable;
 }
@@ -159,7 +150,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	
 	bool bNeedUpdate = false;
 	Section.SetNum(ChunkDensity.Num());
-	TSet<int32> usedID;
+	TMap<FVector2D, int32> usedID;
 	
 	for (uint8 a = 0; a < ChunkDensity.Num(); a++)
 	{
@@ -201,12 +192,12 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						// If point is inside the chunk get the value directly from ChunkDensity array
 						if (bIsPerimeter)
 						{
-							ID = ChunkDensity[a].Density[PerimeterIndex(x, y, z)];
+							ID = ChunkDensity[a].Voxel[PerimeterIndex(x, y, z)];
 						}
 						else
 						{
 							int32 idx = p.X + p.Y * ChunkSize + p.Z * ChunkSize * ChunkSize;
-							ID = ChunkDensity[a].Density[idx];
+							ID = ChunkDensity[a].Voxel[idx];
 						}
 					}
 					///*/////////////////////////////
@@ -214,11 +205,8 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					///*/////////////////////////////
 					FPoint point;
 					p *= VoxelSize;
-
-					float height = Noise->GetNoise2D(p.X + Position.X, p.Y + Position.Y);
-					height = height * (MaxHeight / 2) + MaxHeight / 2;
-					height -= p.Z + a * VoxelSize * ChunkSize;
 					
+					// If the voxel is air
 					if (floor(ID/4.0f) == 0)
 					{
 						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(3, 0), FVector2D(128, 255), ID%4));
@@ -228,7 +216,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					// If there is no neighbour chunk mark this chunk to be updated.
 					else if (ID == -1)
 					{
-						point.val = height >= VoxelSize ? 0 : 255;
+						point.val = 255;
 						point.mat = 0;
 						bNeedUpdate = true;
 					}
@@ -238,9 +226,11 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					{
 						point.val = FMath::FloorToInt(FMath::GetMappedRangeValueClamped(FVector2D(3, 0), FVector2D(0, 127), ID%4));
 						point.mat = floor(ID/4.0f) - 1;
-						if (!usedID.Contains(point.mat))
+						if (!usedID.Contains(FVector2D(a, point.mat)))
 						{
-							usedID.Add(point.mat);
+							int32& count = usedID.FindOrAdd(FVector2D(a, -1));
+							usedID.Add(FVector2D(a, point.mat), count);
+							usedID[FVector2D(a, -1)] = count + 1;
 						}
 					}
 
@@ -276,7 +266,6 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	//Initializes the variables used to store all the mesh data.
 	TArray<TArray<FMesh>> meshSections;
 	meshSections.SetNum(16);
-	TArray<int32> IDArray = usedID.Array();;
 
 	const FVector grid[] =
 	{
@@ -285,14 +274,15 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	};
 
 	uint16 k = 0;
-	for (uint8 ch = 0; ch < Section.Num(); ch++)
+	for (uint8 stage = 0; stage < Section.Num(); stage++)
 	{
-		if (Section[ch].FillState != EFillState::FS_Mixt)
+		if (Section[stage].FillState != EFillState::FS_Mixt)
 		{
 			k += 14;
 		}
-		meshSections[ch].SetNum(usedID.Num() + floor(usedID.Num() / 2.0f));
-		for (; k - ch * ChunkSize < ChunkSize; k++)
+		int32 count = usedID.FindRef(FVector2D(stage, -1));
+		meshSections[stage].SetNum(count + floor(count / 2.0f));
+		for (; k - stage * ChunkSize < ChunkSize; k++)
 		{
 			for (uint8 j = 0; j < ChunkSize; j++)
 			{
@@ -336,51 +326,52 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						if (!GameMode->GetMaterial(id1, id2, id3, mat)) return;
 
 						ID = mat.index;
-						if (!usedID.Contains(ID))
+						if (!usedID.Contains(FVector2D(stage, ID)))
 						{
-							usedID.Add(ID);
-							IDArray.Add(ID);
+							int32& count = usedID.FindOrAdd(FVector2D(stage, -1));
+							usedID.Add(FVector2D(stage, ID), count);
+							usedID[FVector2D(stage, -1)] = count + 1;
 						}
-
-						ID = IDArray.Find(ID);
-						if (meshSections[ch].Num() <= ID)
+						
+						ID = usedID.FindRef(FVector2D(stage, ID));
+						if (meshSections[stage].Num() <= ID)
 						{
 							UE_LOG(Mesh_Extractor, Warning, TEXT("Resized!"));
-							meshSections[ch].SetNum(ID +1);
+							meshSections[stage].SetNum(ID +1);
 						}
-						meshSections[ch][ID].Mat = mat.Mat;
+						meshSections[stage][ID].Mat = mat.Mat;
 						for (uint8 p = 0; p < 3; p++)
 						{
 							if (triangle.mat[p] == id1)
 							{
-								meshSections[ch][ID].VertexColors.Add(FColor(255, 0, 0, 0));
+								meshSections[stage][ID].VertexColors.Add(FColor(255, 0, 0, 0));
 							}
 							else if (triangle.mat[p] == id2)
 							{
-								meshSections[ch][ID].VertexColors.Add(FColor(0, 255, 0, 0));
+								meshSections[stage][ID].VertexColors.Add(FColor(0, 255, 0, 0));
 							}
 							else
 							{
-								meshSections[ch][ID].VertexColors.Add(FColor(0, 0, 255, 0));
+								meshSections[stage][ID].VertexColors.Add(FColor(0, 0, 255, 0));
 							}
 						}
 
 						// Add vertices
-						int32 oldVertCount = meshSections[ch][ID].Vertices.Num();
-						meshSections[ch][ID].Vertices.Add(triangle.p[0]);
-						meshSections[ch][ID].Vertices.Add(triangle.p[1]);
-						meshSections[ch][ID].Vertices.Add(triangle.p[2]);
+						int32 oldVertCount = meshSections[stage][ID].Vertices.Num();
+						meshSections[stage][ID].Vertices.Add(triangle.p[0]);
+						meshSections[stage][ID].Vertices.Add(triangle.p[1]);
+						meshSections[stage][ID].Vertices.Add(triangle.p[2]);
 
 						// Add vertex index (create triangle)
-						meshSections[ch][ID].Triangles.Add(oldVertCount);
-						meshSections[ch][ID].Triangles.Add(oldVertCount + 1);
-						meshSections[ch][ID].Triangles.Add(oldVertCount + 2);
+						meshSections[stage][ID].Triangles.Add(oldVertCount);
+						meshSections[stage][ID].Triangles.Add(oldVertCount + 1);
+						meshSections[stage][ID].Triangles.Add(oldVertCount + 2);
 
 						// Calculate Normals
 						FVector Normal = CalcNormals(triangle.p[0], triangle.p[1], triangle.p[2]);
-						meshSections[ch][ID].Normals.Add(Normal);
-						meshSections[ch][ID].Normals.Add(Normal);
-						meshSections[ch][ID].Normals.Add(Normal);
+						meshSections[stage][ID].Normals.Add(Normal);
+						meshSections[stage][ID].Normals.Add(Normal);
+						meshSections[stage][ID].Normals.Add(Normal);
 						
 						// Calculate UVs
 						FVector a = triangle.p[0] / VoxelSize;
@@ -389,21 +380,21 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						Normal = Normal.GetAbs();
 						if (Normal.Z >= 0.577f)
 						{
-							meshSections[ch][ID].UVs.Add(FVector2D(a.X, a.Y));
-							meshSections[ch][ID].UVs.Add(FVector2D(b.X, b.Y));
-							meshSections[ch][ID].UVs.Add(FVector2D(c.X, c.Y));
+							meshSections[stage][ID].UVs.Add(FVector2D(a.X, a.Y));
+							meshSections[stage][ID].UVs.Add(FVector2D(b.X, b.Y));
+							meshSections[stage][ID].UVs.Add(FVector2D(c.X, c.Y));
 						}
 						else if (Normal.Y >= 0.577f)
 						{
-							meshSections[ch][ID].UVs.Add(FVector2D(a.X, a.Z));
-							meshSections[ch][ID].UVs.Add(FVector2D(b.X, b.Z));
-							meshSections[ch][ID].UVs.Add(FVector2D(c.X, c.Z));
+							meshSections[stage][ID].UVs.Add(FVector2D(a.X, a.Z));
+							meshSections[stage][ID].UVs.Add(FVector2D(b.X, b.Z));
+							meshSections[stage][ID].UVs.Add(FVector2D(c.X, c.Z));
 						}
 						else
 						{
-							meshSections[ch][ID].UVs.Add(FVector2D(a.Y, a.Z));
-							meshSections[ch][ID].UVs.Add(FVector2D(b.Y, b.Z));
-							meshSections[ch][ID].UVs.Add(FVector2D(c.Y, c.Z));
+							meshSections[stage][ID].UVs.Add(FVector2D(a.Y, a.Z));
+							meshSections[stage][ID].UVs.Add(FVector2D(b.Y, b.Z));
+							meshSections[stage][ID].UVs.Add(FVector2D(c.Y, c.Z));
 						}
 
 
@@ -429,7 +420,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	ChunkDensity.Empty();
 
 	FSurfaceData FinishedMesh;
-	FinishedMesh.Gen = meshSections;
+	FinishedMesh.Mesh = meshSections;
 	FinishedMesh.Position = Position;
 	
 
