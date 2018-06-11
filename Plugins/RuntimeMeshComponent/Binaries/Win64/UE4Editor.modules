@@ -1,8 +1,0 @@
-{
-	"BuildId": "3709383",
-	"Modules": 
-	{
-		"RuntimeMeshComponent": "UE4Editor-RuntimeMeshComponent.dll",
-		"RuntimeMeshComponentEditor": "UE4Editor-RuntimeMeshComponentEditor.dll"
-	}
-}
