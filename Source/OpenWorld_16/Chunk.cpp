@@ -3,6 +3,8 @@
 #include "Chunk.h"
 #include "ProceduralMeshComponent.h"
 #include "UFNBlueprintFunctionLibrary.h"
+#include "MySaveGame.h"
+#include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -52,9 +54,25 @@ void AChunk::InitializeChunk()
 		TestHeightmap(MapType);
 		return;
 	}
+	FVector2D Position = FVector2D(GetActorLocation().X, GetActorLocation().Y);
 
-	Async<void>(EAsyncExecution::ThreadPool, InitializeAsync());
-	return;
+	if (SaveGameInstance)
+	{
+		//FChunkDensity* SavedDensity;
+		if (SaveGameInstance->WorldData.Contains(Position / (VoxelSize*ChunkSize)))
+		{
+			Density = SaveGameInstance->WorldData.FindRef(Position / (VoxelSize*ChunkSize)).Density;
+			if (!IsGridValid(Density))
+			{
+
+				Async<void>(EAsyncExecution::ThreadPool, InitializeAsync());
+			}
+		}
+		else
+		{
+			Async<void>(EAsyncExecution::ThreadPool, InitializeAsync());
+		}
+	}
 }
 
 
@@ -71,16 +89,21 @@ void AChunk::RenderChunk()
 		return;
 	}
 
+	if (!bCanRender)
+	{
+		UE_LOG(RenderTerrain, Warning, TEXT("Rendering delayed"))
+		// Start timer to retry rendering later
+		GetWorldTimerManager().SetTimer(RetryTH, this, &AChunk::RenderChunk, 1.0f, false);
+	}
+
 	if (!bHaStarted)
 	{
 		UE_LOG(RenderTerrain, Display, TEXT("[1/7] Render Started!"));
 		bHaStarted = true;
 	}
 
-	FChunkData Data;
-	Data.Density = &Density;
-	Data.Position = FVector2D(GetActorLocation().X, GetActorLocation().Y);
-	GameMode->QueuedMeshs.Enqueue(Data);
+	// Enqueue this chunk to be rendered
+	GameMode->QueuedMeshs.Enqueue(FChunkData(&Density, FVector2D(GetActorLocation().X, GetActorLocation().Y)));
 }
 
 void AChunk::FinishRendering(const TArray<TArray<FMesh>>& meshSections)
@@ -213,6 +236,7 @@ void AChunk::TestHeightmap(const EMapType type)
 
 int32 AChunk::GetVoxelDensity(const int32& x, const int32& y, const int32& z)
 {
+	if (Density.Num() == 16)
 	{
 		int32 section = z / ChunkSize;
 		uint8 k = z - ChunkSize * section;
@@ -229,6 +253,10 @@ int32 AChunk::GetVoxelDensity(const int32& x, const int32& y, const int32& z)
 		{
 			return 0;
 		}
+	}
+	else
+	{
+		return -2;
 	}
 }
 
@@ -304,18 +332,6 @@ int32 AChunk::PerimeterIndex(const int32& x, const int32& y, const int32& z, con
 	return idx;
 }
 
-
-void AChunk::RemoveChunk()
-{
-	for (uint8 a = 0; a < Density.Num(); a++)
-	{
-		Density[a].Voxel.Empty();
-	}
-	Density.Empty();
-	Density.~TArray();
-	Destroy();
-}
-
 void AChunk::DrawChunkLimits() const
 {
 	int32 Side = ChunkSize * VoxelSize;
@@ -344,6 +360,30 @@ void AChunk::DrawChunkLimits() const
 		XCorner += FVector(0, 0, Side);
 		XYCorner += FVector(0, 0, Side);
 	}
+}
+
+bool AChunk::IsGridValid(const TArray<FDensity>& Grid) const
+{
+	if (Grid.Num() != 16)
+	{
+		return false;
+	}
+	else
+	{
+		for (uint8 i = 0; i < 16; i++)
+		{
+			if (Grid[i].FillState == EFillState::FS_Mixt || Grid[i].Voxel.Num() != ChunkSize * ChunkSize * ChunkSize)
+			{
+				return false;
+			}
+			else if (Grid[i].FillState == EFillState::FS_Full || Grid[i].Voxel.Num() != pow(ChunkSize, 3) - pow(ChunkSize-2, 3))
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 TFunction<void()> AChunk::InitializeAsync()
@@ -450,10 +490,24 @@ TFunction<void()> AChunk::InitializeAsync()
 		// Optimize memory usage
 		Grid.Shrink();
 
-		//
+		// Assign the created grid to the chunk variable.
 		Density = Grid;
 
 		// Set debug variables to be displayed. Get allocated memory of ChunkDenity array
 		GameMode->SDensitySize = FString::FromInt(Density.GetAllocatedSize());
+		bCanRender = true;
 	};
+}
+
+void AChunk::RemoveChunk()
+{
+	FVector2D Position = FVector2D(GetActorLocation().X, GetActorLocation().Y);
+	SaveGameInstance->WorldData.Add(Position / (VoxelSize*ChunkSize), FChunkDensity(Density));
+	for (uint8 a = 0; a < Density.Num(); a++)
+	{
+		Density[a].Voxel.Empty();
+	}
+	Density.Empty();
+	Density.~TArray();
+	Destroy();
 }

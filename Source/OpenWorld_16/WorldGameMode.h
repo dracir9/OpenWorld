@@ -13,6 +13,7 @@
 
 class AChunk;
 class FMeshExtractor;
+class UMySaveGame;
 
 USTRUCT(BlueprintType)
 struct FMesh 
@@ -123,7 +124,7 @@ public:
 	/** Are we using a special type of height map?
 	* Use when debugging.
 	* Skips height map generation based on noise and uses a preset function */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World Settings")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "World Settings")
 		bool bUseTestHeightmaps;
 
 	/** Defines the type of debugging height map
@@ -151,6 +152,10 @@ public:
 	// Noise object for terrain generation
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Noise Settings")
 		UUFNNoiseGenerator* Noise;
+
+	// Save game Instance for saving the game stat
+	UPROPERTY(VisibleAnywhere, BlueprintReadonly)
+		UMySaveGame* SaveGameInstance;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////******      MULTYTHREADING      ******////////////////////////////////////////////////////////////////////////////////

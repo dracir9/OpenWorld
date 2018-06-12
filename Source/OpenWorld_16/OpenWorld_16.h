@@ -104,6 +104,23 @@ struct FDensity
 		EFillState FillState = EFillState::FS_Empty;
 };
 
+USTRUCT()
+struct FChunkDensity
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+		TArray<FDensity> Density;
+
+	FChunkDensity()
+	{
+		Density.Empty();
+	}
+
+	FChunkDensity(TArray<FDensity> Data) : Density(Data)
+	{}
+};
+
 USTRUCT(BlueprintType)
 struct FDynamicMaterial
 {
@@ -141,10 +158,14 @@ struct FChunkData
 {
 	GENERATED_BODY()
 
-		/** Chunk density data pointer */
+	/** Chunk density data pointer */
 		TArray<FDensity>* Density = nullptr;
 
 	/** Chunk Position */
 	UPROPERTY()
 		FVector2D Position;
+
+
+	FChunkData(TArray<FDensity>* Grid = nullptr, FVector2D Pos = FVector2D::UnitVector) : Density(Grid), Position(Pos)
+	{}
 };

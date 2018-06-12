@@ -12,6 +12,9 @@
 #include "OpenWorld_16.h"
 #include "Chunk.generated.h"
 
+
+class UMySaveGame;
+
 UCLASS()
 class OPENWORLD_16_API AChunk : public AActor
 {
@@ -70,22 +73,32 @@ public:
 		void FinishRendering(const TArray<TArray<FMesh>>& meshSections);
 
 	/**
-	* Helper function to calculate normal vector of a plane.*/
+	* Helper function to calculate normal vector of a plane.
+	* @param p1, p2, p3 Position of triangle's vertex */
 	UFUNCTION(BlueprintCallable)
 		static FVector CalcNormal(const FVector& p1, const FVector& p2, const FVector& p3);
 
 	/**
-	* Special heigh maps useful for testing map generation*/
+	* Special heigh maps useful for testing map generation
+	* @param Type of the map to generate */
 	UFUNCTION(BlueprintCallable)
 		void TestHeightmap(const EMapType type);
 
 	/**
-	* Draws lines at the chunk's edges. Useful for debugging and testing*/
+	* Draws lines at the chunk's edges. Useful for debugging and testing */
 	UFUNCTION(BlueprintCallable)
 		void DrawChunkLimits() const;
 
+
 	/**
-	* Function for async chunk initialization(Sets the material of each voxel)*/
+	* Checks if the given grid array is valid
+	* @param Grid Array to alidate
+	* @return True if valid */
+	UFUNCTION()
+		bool IsGridValid(const TArray<FDensity>& Grid) const;
+
+	/**
+	* Function for async chunk initialization(Sets the material of each voxel) */
 	TFunction<void()> InitializeAsync();
 
 
@@ -100,14 +113,6 @@ public:
 ///#######################################################################
 //                             CHUNK PROPERTIES
 ///#######################################################################
-
-	// Base componen of the world terrain
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Terrain")
-		class UProceduralMeshComponent* ChunkMesh;
-
-	// Base component of the terrain
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Terrain")
-		TArray<URuntimeMeshComponent*> TerrainMesh;
 
 	// Stores the reference to World Game Mode
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -129,6 +134,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		UUFNNoiseGenerator* Noise;
 
+	// Save game Instance for saving the game stat
+	UPROPERTY(VisibleAnywhere, BlueprintReadonly)
+		UMySaveGame* SaveGameInstance;
+
 	/** Are we using a special type of height map?
 	* Use when debugging.
 	* Skips height map generation based on noise and uses a preset function */
@@ -144,7 +153,22 @@ public:
 	// Can we use RuntimeMeshComponent plugin?
 		FThreadSafeBool bRuntimeEnabled = true;
 
+	// Time Handler for the timer that retryes rendering the chunk.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		FTimerHandle RetryTH;
+
+	// Can we render?
+		FThreadSafeBool bCanRender = false;
+
 private:
+
+	// Base componen of the world terrain
+	UPROPERTY(VisibleAnywhere, Category = "Terrain")
+		class UProceduralMeshComponent* ChunkMesh;
+
+	// Base component of the terrain
+	UPROPERTY(VisibleAnywhere, Category = "Terrain")
+		TArray<URuntimeMeshComponent*> TerrainMesh;
 
 	// Stores the voxel IDs of the chunk
 	UPROPERTY()

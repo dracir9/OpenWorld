@@ -4,6 +4,8 @@
 #include "Chunk.h"
 #include "UFNBlueprintFunctionLibrary.h"
 #include "MeshExtractor.h"
+#include "MySaveGame.h"
+#include "Kismet/GameplayStatics.h"
 #include "Async.h"
 
 
@@ -33,6 +35,15 @@ void AWorldGameMode::BeginPlay()
 	/// Start timer to finish jobs from background thread
 	GetWorldTimerManager().SetTimer(AsynkThreadCountTH, this, &AWorldGameMode::FinishJob, 0.1f, true, 1.0f);
 	
+	if (UGameplayStatics::DoesSaveGameExist(TEXT("TestSaveSlot"), 0))
+	{
+		SaveGameInstance = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("TestSaveSlot"), 0));
+	}
+	else
+	{
+		SaveGameInstance = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
+	}
+
 	/// Load Map
 	UpdatePosition();
 	LoadMap();
@@ -44,6 +55,8 @@ void AWorldGameMode::BeginPlay()
 
 void AWorldGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("TestSaveSlot"), 0);
 	BackThread->Shutdown();
 	Super::EndPlay(EndPlayReason);
 }
@@ -123,15 +136,12 @@ void AWorldGameMode::LoadMap()
 	double start = FPlatformTime::Seconds();
 	bool bUpdate = false;
 
-	int32 X = RenderRange * 2;
-	int32 Y = RenderRange * 2;
-
 	// Spiral
-	int x, y, dx, dy;
+	int8 x, y, dx, dy;
 	x = y = dx = 0;
 	dy = -1;
-	int t;
-	for (int i = 0; i < X * Y; i++) 
+	int8 t;
+	for (int i = 0; i < RenderRange * RenderRange * 4; i++) 
 	{
 		if (InLocalRange(x, y, RenderRange))
 		{
@@ -143,12 +153,19 @@ void AWorldGameMode::LoadMap()
 			{
 				NChunk = GetWorld()->SpawnActorDeferred<AChunk>(Chunk, SpawnTransform);
 				NChunk->Noise = Noise;
+				NChunk->SaveGameInstance = SaveGameInstance;
 				NChunk->VoxelSize = VoxelSize;
 				NChunk->ChunkSize = ChunkSize;
 				NChunk->MaxHeight = MaxHeight;
-				NChunk->bRuntimeEnabled = bUseRuntime;
-				NChunk->bUseTestHeightmaps = bUseTestHeightmaps;
-				NChunk->MapType = MapType;
+				if (bUseRuntime)
+				{
+					NChunk->bRuntimeEnabled = bUseRuntime;
+				}
+				if (bUseTestHeightmaps)
+				{
+					NChunk->bUseTestHeightmaps = bUseTestHeightmaps;
+					NChunk->MapType = MapType;
+				}
 
 				UGameplayStatics::FinishSpawningActor(NChunk, SpawnTransform);
 				World.Add(FVector2D(x + ChunkCenter.X, y + ChunkCenter.Y), NChunk);

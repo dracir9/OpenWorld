@@ -133,7 +133,6 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 	if (Density)
 	{
 		if ((*Density).Num() != 16) return;
-
 		ChunkDensity = *Density;
 	}
 	else
@@ -186,6 +185,12 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 					{
 						FVector pos = (p * VoxelSize) + FVector(Position.X, Position.Y, a * VoxelSize * ChunkSize);
 						ID = GameMode->GetVoxelFromWorld(pos);
+						while (ID == -2)
+						{
+							UE_LOG(RenderTerrain, Display, TEXT("Failed to get density"));
+							FPlatformProcess::Sleep(0.001);
+							ID = GameMode->GetVoxelFromWorld(pos);
+						}
 					}
 					else
 					{
