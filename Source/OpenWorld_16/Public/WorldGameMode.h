@@ -14,6 +14,7 @@
 class AChunk;
 class FMeshExtractor;
 class UMySaveGame;
+class UWorldDataSingleton;
 
 USTRUCT(BlueprintType)
 struct FMesh 
@@ -154,8 +155,12 @@ public:
 		UUFNNoiseGenerator* Noise;
 
 	// Save game Instance for saving the game stat
-	UPROPERTY(VisibleAnywhere, BlueprintReadonly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
 		UMySaveGame* SaveGameInstance;
+
+	// Class where global variables are stored
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "World Variables")
+	UWorldDataSingleton* DataInstance;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////******      MULTYTHREADING      ******////////////////////////////////////////////////////////////////////////////////

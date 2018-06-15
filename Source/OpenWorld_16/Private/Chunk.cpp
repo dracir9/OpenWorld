@@ -12,7 +12,6 @@ AChunk::AChunk()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	
 	// Create the component that will hold the terrain
 	UBillboardComponent* Root = CreateDefaultSubobject<UBillboardComponent>(TEXT("RootComponent"));
 	RootComponent = Root;
@@ -27,6 +26,7 @@ AChunk::AChunk()
 	
 	ChunkMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Procedural Mesh"));
 	if(ChunkMesh) ChunkMesh->SetupAttachment(RootComponent);
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned

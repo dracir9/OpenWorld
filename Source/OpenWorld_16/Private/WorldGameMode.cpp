@@ -5,6 +5,7 @@
 #include "UFNBlueprintFunctionLibrary.h"
 #include "MeshExtractor.h"
 #include "MySaveGame.h"
+#include "WorldDataSingleton.h"
 #include "Kismet/GameplayStatics.h"
 #include "Async.h"
 
@@ -21,7 +22,8 @@ void AWorldGameMode::BeginPlay()
 {
 	double start = FPlatformTime::Seconds();
 	Super::BeginPlay();
-
+	
+	DataInstance = Cast<UWorldDataSingleton>(GEngine->GameSingleton);
 
 	/// Generate noise used for terrain
 	Noise = CalculateNoise();

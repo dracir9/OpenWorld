@@ -15,43 +15,37 @@ DECLARE_LOG_CATEGORY_EXTERN(Mat_Loader, Log, All);
 //Logging during terrain edition
 DECLARE_LOG_CATEGORY_EXTERN(EditTerrain, Log, All);
 
-
-struct  TRIANGLE
+USTRUCT()
+struct  FTriangle
 {
-	FVector p[3];
-	int32 mat[3];
+	GENERATED_BODY()
 
-	TRIANGLE() 
+
+	//
+		FVector p[3];
+
+	UPROPERTY()
+		FIntVector mat;
+
+	FTriangle()
 	{
-		p[0] = FVector(0, 0, 0);
-		p[1] = FVector(0, 0, 0);
-		p[2] = FVector(0, 0, 0);
+		p[0] = p[1] = p[2] = FVector::ZeroVector;
 
-		mat[0] = 0;
-		mat[1] = 0;
-		mat[2] = 0;
+		mat = FIntVector::ZeroValue;
 	}
 
-	TRIANGLE(int32 m1, int32 m2, int32 m3) 
+	FTriangle(FIntVector material) : mat(material)
 	{
-		p[0] = FVector(0, 0, 0);
-		p[1] = FVector(0, 0, 0);
-		p[2] = FVector(0, 0, 0);
-
-		mat[0] = m1;
-		mat[1] = m2;
-		mat[2] = m3;
+		p[0] = p[1] = p[2] = FVector::ZeroVector;
 	}
 
-	TRIANGLE(FVector p1, FVector p2, FVector p3, int32 m1 = 0, int32 m2 = 0, int32 m3 = 0) 
+	FTriangle(FVector p1, FVector p2, FVector p3, FIntVector material = FIntVector::ZeroValue)
 	{
 		p[0] = p1;
 		p[1] = p2;
 		p[2] = p3;
 
-		mat[0] = m1;
-		mat[1] = m2;
-		mat[2] = m3;
+		mat = material;
 	}
 };
 
