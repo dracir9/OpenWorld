@@ -54,7 +54,7 @@ FVector VertexInterp(float isolevel, FVector p1, FVector p2, float valp1, float 
 	return(p);
 }
 
-uint16 VertexMat(unsigned char isolevel, uint16 p1, uint16 p2, unsigned char valp1, unsigned char valp2) {
+uint16 VertexMat(uint8 isolevel, uint16 p1, uint16 p2, uint8 valp1, uint8 valp2) {
 	uint16 temp;
 	if (valp1 < isolevel) 
 	{
@@ -67,7 +67,7 @@ uint16 VertexMat(unsigned char isolevel, uint16 p1, uint16 p2, unsigned char val
 	return temp;
 }
 
-bool Polygonise(const GRIDCELL& grid, const unsigned char& isolevel, TArray<TRIANGLE>& triangles)
+bool Polygonise(const FGridcell& grid, const unsigned char& isolevel, TArray<FTriangle>& triangles)
 {
 
 	const static int edgeTable[256] = 
@@ -452,7 +452,7 @@ bool Polygonise(const GRIDCELL& grid, const unsigned char& isolevel, TArray<TRIA
 	{
 		//TRIANGLE temp;
 		triangles.Add(
-			TRIANGLE(
+			FTriangle(
 			// Add vertex to the triangles array
 			vertlist[triTable[cubeindex][i]],
 			vertlist[triTable[cubeindex][i + 1]],
@@ -526,7 +526,7 @@ PolygoniseTri(grid,iso,triangles,0,6,1,2);
 PolygoniseTri(grid,iso,triangles,0,6,1,4);
 PolygoniseTri(grid,iso,triangles,5,6,1,4);
 */
-int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
+int PolygoniseTri(FGridcell g, unsigned char iso, TArray<FTriangle>& triangles)
 {
 	static const char mask[6][4] = 
 	{{0,2,3,7},
@@ -564,7 +564,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 14
 		case 0x0E:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),////////////////////////?POSSIBLE
 				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),
 				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3])));
@@ -573,7 +573,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 1
 		case 0x01:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),/////////////////////////////?POSSIBLE
 				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),
 				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3])));
@@ -585,7 +585,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 13
 		case 0x0D:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v1], g.p[v0], g.val[v1], g.val[v0]),////////////?POSSIBLE
 				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),
 				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2])));
@@ -594,7 +594,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 2
 		case 0x02:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v1], g.p[v0], g.val[v1], g.val[v0]),///////////////?POSSIBLE
 				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),
 				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2])));
@@ -606,13 +606,13 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 12
 		case 0x0C:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),//////////////////////?POSSIBLE
 				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]),
 				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3])));
 			ntri++;
 
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),//////////////////////?POSSIBLE
 				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]),
 				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2])));
@@ -621,7 +621,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 3
 		case 0x03:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),/////////////////-NOT LIKELY
 				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]),
 				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3])));
@@ -629,7 +629,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 			tri[0].p[1] = VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]);
 			tri[0].p[2] = VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]);*/
 			ntri++;
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),////////////////-NOT LIKELY
 				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]),
 				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2])));
@@ -641,7 +641,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 11
 		case 0x0B:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v2], g.p[v0], g.val[v2], g.val[v0]),///NOT YET FIXED
 
 				VertexInterp(iso, g.p[v2], g.p[v1], g.val[v2], g.val[v1]),
@@ -651,7 +651,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 4
 		case 0x04:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v2], g.p[v1], g.val[v2], g.val[v1]),//////////////////////
 				VertexInterp(iso, g.p[v2], g.p[v0], g.val[v2], g.val[v0]),
 				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
@@ -663,13 +663,13 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		///Case 10
 		case 0x0A:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]),/// NOT YET FIXED
 				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),
 				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3])));
 			ntri++;
 
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),/// NOT YET FIXED
 				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]),
 				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
@@ -678,7 +678,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 5
 		case 0x05:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),/////////////////////
 				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]),
 				VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3])));
@@ -686,7 +686,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 			tri[0].p[1] = VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]);
 			tri[0].p[2] = VertexInterp(iso, g.p[v0], g.p[v3], g.val[v0], g.val[v3]);*/
 			ntri++;
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),////////////////////
 				VertexInterp(iso, g.p[v1], g.p[v2], g.val[v1], g.val[v2]),
 				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
@@ -698,13 +698,13 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 9
 		case 0x09:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),/// NOT TESTED YET
 				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),
 				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
 			ntri++;
 
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),/// NOT TESTED YET
 				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),
 				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
@@ -713,7 +713,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		///Case 6
 		case 0x06:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),/// NOT TESTED YET
 				VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]),
 				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
@@ -721,7 +721,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 			tri[0].p[1] = VertexInterp(iso, g.p[v1], g.p[v3], g.val[v1], g.val[v3]);
 			tri[0].p[2] = VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3]);*/
 			ntri++;
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v0], g.p[v1], g.val[v0], g.val[v1]),/// NOT TESTED YET
 				VertexInterp(iso, g.p[v0], g.p[v2], g.val[v0], g.val[v2]),
 				VertexInterp(iso, g.p[v2], g.p[v3], g.val[v2], g.val[v3])));
@@ -733,7 +733,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 7
 		case 0x07:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v3], g.p[v0], g.val[v3], g.val[v0]),////////////////////
 				VertexInterp(iso, g.p[v3], g.p[v2], g.val[v3], g.val[v2]),
 				VertexInterp(iso, g.p[v3], g.p[v1], g.val[v3], g.val[v1])));
@@ -742,7 +742,7 @@ int PolygoniseTri(GRIDCELL g, unsigned char iso, TArray<TRIANGLE>& triangles)
 
 		/// Case 8
 		case 0x08:
-			triangles.Add(TRIANGLE(
+			triangles.Add(FTriangle(
 				VertexInterp(iso, g.p[v3], g.p[v0], g.val[v3], g.val[v0]),/// NOT TESTED YET
 				VertexInterp(iso, g.p[v3], g.p[v2], g.val[v3], g.val[v2]),
 				VertexInterp(iso, g.p[v3], g.p[v1], g.val[v3], g.val[v1])));

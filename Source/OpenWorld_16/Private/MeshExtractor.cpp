@@ -187,7 +187,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						ID = GameMode->GetVoxelFromWorld(pos);
 						while (ID == -2)
 						{
-							UE_LOG(RenderTerrain, Display, TEXT("Failed to get density"));
+							UE_LOG(Mesh_Extractor, Display, TEXT("Failed to get density"));
 							FPlatformProcess::Sleep(0.001);
 							ID = GameMode->GetVoxelFromWorld(pos);
 						}
@@ -293,7 +293,7 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 			{
 				for (uint8 i = 0; i < ChunkSize; i++)
 				{
-					GRIDCELL cell;
+					FGridcell cell;
 					// Fills the grid used to calculate the surface
 					for (int8 a = 0; a < 8; a++)
 					{
@@ -313,14 +313,14 @@ void FMeshExtractor::ExtractMesh(TArray<FDensity>* Density, FVector2D Position)
 						UE_LOG(Mesh_Extractor, Display, TEXT("[4/7] First grid extracted!"));
 						bGridDone = true;
 					}
-					TArray<TRIANGLE> triangles;
+					TArray<FTriangle> triangles;
 					
 					// Calculate shape using Marching Cubes algorithm
 					if (!Polygonise(cell, 128, triangles)) continue;
 					
 					int16 ID = 0;
 
-					for (TRIANGLE& triangle : triangles/*int8 a = 0; a < triangles.Num(); a++*/)
+					for (FTriangle& triangle : triangles)
 					{
 						int32 id1 = triangle.mat[0];
 						int32 id2 = triangle.mat[1];

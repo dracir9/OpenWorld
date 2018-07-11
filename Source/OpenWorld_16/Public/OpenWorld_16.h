@@ -20,32 +20,38 @@ struct  FTriangle
 {
 	GENERATED_BODY()
 
-
-	//
-		FVector p[3];
+		
+	UPROPERTY()
+		TArray<FVector> p;
 
 	UPROPERTY()
 		FIntVector mat;
 
 	FTriangle()
 	{
+		p.SetNum(3);
 		p[0] = p[1] = p[2] = FVector::ZeroVector;
+		p.Shrink();
 
 		mat = FIntVector::ZeroValue;
 	}
 
 	FTriangle(FIntVector material) : mat(material)
 	{
+		p.SetNum(3);
 		p[0] = p[1] = p[2] = FVector::ZeroVector;
+		p.Shrink();
 	}
 
-	FTriangle(FVector p1, FVector p2, FVector p3, FIntVector material = FIntVector::ZeroValue)
+	FTriangle(FVector p1, FVector p2, FVector p3, int32 m1 = 0, int32 m2 = 0, int32 m3 = 0)
 	{
+		p.SetNum(3);
 		p[0] = p1;
 		p[1] = p2;
 		p[2] = p3;
+		p.Shrink();
 
-		mat = material;
+		mat = FIntVector(m1, m2, m3);
 	}
 };
 
@@ -64,12 +70,15 @@ struct FPoint
 	{}
 };
 
-typedef struct 
+USTRUCT()
+struct FGridcell
 {
+	GENERATED_BODY()
+
 	FVector p[8];
-	unsigned char val[8];
+	uint8 val[8];
 	uint16 mat[8];
-} GRIDCELL;
+};
 
 UENUM(BlueprintType)
 enum class EFillState : uint8

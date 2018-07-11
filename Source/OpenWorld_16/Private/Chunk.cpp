@@ -64,8 +64,12 @@ void AChunk::InitializeChunk()
 			Density = SaveGameInstance->WorldData.FindRef(Position / (VoxelSize*ChunkSize)).Density;
 			if (!IsGridValid(Density))
 			{
-
+				UE_LOG(RenderTerrain, Warning, TEXT("Invalid Grid!"));
 				Async<void>(EAsyncExecution::ThreadPool, InitializeAsync());
+			}
+			else
+			{
+				bCanRender = true;
 			}
 		}
 		else
@@ -372,11 +376,11 @@ bool AChunk::IsGridValid(const TArray<FDensity>& Grid) const
 	{
 		for (uint8 i = 0; i < 16; i++)
 		{
-			if (Grid[i].FillState == EFillState::FS_Mixt || Grid[i].Voxel.Num() != ChunkSize * ChunkSize * ChunkSize)
+			if (Grid[i].FillState == EFillState::FS_Mixt && Grid[i].Voxel.Num() != ChunkSize * ChunkSize * ChunkSize)
 			{
 				return false;
 			}
-			else if (Grid[i].FillState == EFillState::FS_Full || Grid[i].Voxel.Num() != pow(ChunkSize, 3) - pow(ChunkSize-2, 3))
+			else if (Grid[i].FillState == EFillState::FS_Full && Grid[i].Voxel.Num() != pow(ChunkSize, 3) - pow(ChunkSize-2, 3))
 			{
 				return false;
 			}
