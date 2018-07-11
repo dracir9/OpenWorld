@@ -1,2 +1,0 @@
-# OpenWorld
-Procedurally generated world
